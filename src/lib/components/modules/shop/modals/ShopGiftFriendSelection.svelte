@@ -1,0 +1,145 @@
+<script lang="ts">
+  import { toast } from 'svelte-sonner';
+  import GiftIcon from '@lucide/svelte/icons/gift';
+  import LoaderCircleIcon from '@lucide/svelte/icons/loader-circle';
+  import { EpicAPIError } from '$lib/exceptions/EpicAPIError';
+  import { language, t } from '$lib/i18n';
+  import { giftCatalogEntry } from '$lib/modules/mcp';
+  import { accountStore } from '$lib/storage';
+  import { accountDataCache } from '$lib/stores';
+  import AccountCombobox from '$components/ui/AccountCombobox.svelte';
+  import { Button, buttonVariants } from '$components/ui/button';
+  import * as Dialog from '$components/ui/dialog';
+  import type { ShopItem } from '$types/shop';
+
+  type Props = {
+    item: ShopItem;
+    isSendingGifts: boolean;
+    open: boolean;
+  };
+
+  let { item, isSendingGifts, open = $bindable(false) }: Props = $props();
+
+  const activeAccount = accountStore.getActiveStore();
+  const {
+    vbucks: ownedVbucks = 0,
+    friends = [],
+    remainingGifts = 5
+  } = $derived(accountDataCache.get($activeAccount.accountId) || {});
+
+  let selectedFriends = $state<string[]>([]);
+
+  async function sendGifts() {
+    isSendingGifts = true;
+
+    try {
+      const giftData = await giftCatalogEntry($activeAccount, item.offerId, selectedFriends, item.price.final);
+      accountDataCache.set($activeAccount.accountId, {
+        remainingGifts: remainingGifts - selectedFriends.length,
+        vbucks: ownedVbucks - giftData.vbucksSpent,
+        friends
+      });
+
+      toast.success($t('itemShop.sentGift'));
+    } catch (error) {
+      if (error instanceof EpicAPIError) {
+        switch (error.errorCode) {
+          case 'errors.com.epicgames.modules.gamesubcatalog.gift_limit_reached': {
+            toast.error($t('itemShop.reachedDailyGiftLimit'));
+            accountDataCache.set($activeAccount.accountId, {
+              vbucks: ownedVbucks,
+              friends,
+              remainingGifts: 0
+            });
+
+            return;
+          }
+          case 'errors.com.epicgames.modules.gameplayutils.not_enough_mtx': {
+            const [, errorItemPrice, errorOwnedVbucks] = error.messageVars;
+
+            toast.error(
+              $t('itemShop.needMoreVbucksToGift', {
+                amount: Number.parseInt(errorItemPrice) - Number.parseInt(errorOwnedVbucks)
+              })
+            );
+
+            accountDataCache.set($activeAccount.accountId, {
+              vbucks: ownedVbucks,
+              friends,
+              remainingGifts
+            });
+
+            return;
+          }
+          case 'errors.com.epicgames.modules.gamesubcatalog.purchase_not_allowed': {
+            return toast.error($t('itemShop.friendsMayOwnItem'));
+          }
+          case 'errors.com.epicgames.modules.gamesubcatalog.gift_recipient_not_eligible': {
+            return toast.error($t('itemShop.friendsNotEligible'));
+          }
+          case 'errors.com.epicgames.modules.gamesubcatalog.receiver_owns_item_from_bundle': {
+            return toast.error($t('itemShop.friendsOwnItemFromBundle'));
+          }
+          default: {
+            if (error.errorMessage.toLowerCase().includes('mfa')) {
+              return toast.error($t('itemShop.enableMFA'));
+            }
+
+            if (
+              error.messageVars?.[0] === 'errors.com.epicgames.modules.gamesubcatalog.receiver_will_not_accept_gifts'
+            ) {
+              return toast.error($t('itemShop.friendsDoNotAcceptGifts'));
+            }
+          }
+        }
+      }
+
+      toast.error($t('itemShop.failedToGift'));
+    } finally {
+      isSendingGifts = false;
+      open = false;
+    }
+  }
+</script>
+
+<Dialog.Root bind:open>
+  <Dialog.Content>
+    <Dialog.Header>
+      <Dialog.Title>
+        {$t('itemShop.giftConfirmation.title')}
+      </Dialog.Title>
+
+      <Dialog.Description class="flex flex-wrap items-center gap-1 wrap-break-word whitespace-normal">
+        {@html $t('itemShop.giftConfirmation.description', {
+          name: `<span class="font-semibold">${item.name}</span>`,
+          price: `<span class="font-semibold">${(item.price.final * (selectedFriends.length || 1)).toLocaleString($language)}</span>`,
+          vbucksIcon: '<img class="size-5 inline-block" alt="V-Bucks" src="/resources/currency_mtxswap.png"/>'
+        })}
+      </Dialog.Description>
+    </Dialog.Header>
+
+    <AccountCombobox customList={friends} disabled={!friends?.length} type="multiple" bind:value={selectedFriends} />
+
+    <Dialog.Footer class="grid w-full grid-cols-2 gap-2">
+      <Dialog.Close class={buttonVariants({ variant: 'secondary' })}>
+        {$t('cancel')}
+      </Dialog.Close>
+
+      <Button
+        class="flex items-center gap-2"
+        disabled={!selectedFriends.length ||
+          isSendingGifts ||
+          ownedVbucks < item.price.final * (selectedFriends.length || 1)}
+        onclick={sendGifts}
+      >
+        {#if isSendingGifts}
+          <LoaderCircleIcon class="size-5 animate-spin" />
+          {$t('itemShop.sendingGift')}
+        {:else}
+          <GiftIcon class="size-5" />
+          {$t('itemShop.sendGift')}
+        {/if}
+      </Button>
+    </Dialog.Footer>
+  </Dialog.Content>
+</Dialog.Root>

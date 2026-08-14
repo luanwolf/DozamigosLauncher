@@ -1,0 +1,38 @@
+{
+  "adrenalinerush": {
+    "name": "Adrenaline Rush",
+    "icon": "Icon-Gadget-AdrenalineRush-128.png"
+  },
+  "airstrike": {
+    "name": "Airstrike",
+    "icon": "Icon-Gadget-Airstrike-128.png"
+  },
+  "banner": {
+    "name": "Banner",
+    "icon": "Icon-Gadget-Banner-128.png"
+  },
+  "proximitymine": {
+    "name": "Proximity Mine",
+    "icon": "Icon-Gadget-ProximityMine-128.png"
+  },
+  "slowfield": {
+    "name": "Slow Field",
+    "icon": "Icon-Gadget-Slowfield-128.png"
+  },
+  "supplydrop": {
+    "name": "Supply Drop",
+    "icon": "Icon-Gadget-SupplyDrop-128.png"
+  },
+  "teleporter": {
+    "name": "Teleporter",
+    "icon": "Icon-Gadget-Teleporter-128.png"
+  },
+  "botturret": {
+    "name": "Hover Turret",
+    "icon": "Icon-Gadget-TurretBot-128.png"
+  },
+  "hoverturret": {
+    "name": "Hover Turret",
+    "icon": "Icon-Gadget-TurretBot-128.png"
+  }
+}

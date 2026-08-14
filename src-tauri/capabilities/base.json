@@ -1,0 +1,93 @@
+{
+	"$schema": "../gen/schemas/desktop-schema.json",
+	"identifier": "base",
+	"description": "Capability for the main window",
+	"windows": ["main"],
+	"permissions": [
+		"core:default",
+		"opener:default",
+		"fs:default",
+		"fs:allow-remove",
+		{
+			"identifier": "http:default",
+			"allow": [
+				{
+					"url": "https://*.epicgames.com"
+				},
+				{
+					"url": "https://*.epicgames.com/*"
+				},
+				{
+					"url": "https://*.live.on.epicgames.com"
+				},
+				{
+					"url": "https://*.live.on.epicgames.com/*"
+				},
+				{
+					"url": "https://*.ogs.live.on.epicgames.com"
+				},
+				{
+					"url": "https://*.ogs.live.on.epicgames.com/*"
+				},
+				{
+					"url": "https://fortnite-api.com"
+				},
+				{
+					"url": "https://fortnite-api.com/*"
+				},
+				{
+					"url": "https://fnbr.co"
+				},
+				{
+					"url": "https://fnbr.co/*"
+				},
+				{
+					"url": "https://fortnite.gg"
+				},
+				{
+					"url": "https://fortnite.gg/*"
+				},
+				{
+					"url": "https://fnggcdn.com"
+				},
+				{
+					"url": "https://fnggcdn.com/*"
+				},
+				{
+					"url": "https://ucs-images.fortnite.com"
+				},
+				{
+					"url": "https://ucs-images.fortnite.com/*"
+				}
+			]
+		},
+		{
+			"identifier": "fs:allow-app-write-recursive",
+			"allow": [
+				{
+					"path": "$DATA/dozamigos-launcher/**"
+				},
+				{
+					"path": "$DATA/dozamigos-launcher"
+				}
+			]
+		},
+		{
+			"identifier": "fs:allow-app-read-recursive",
+			"allow": [
+				{
+					"path": "$DATA/dozamigos-launcher/**"
+				},
+				{
+					"path": "$DATA/dozamigos-launcher"
+				}
+			]
+		},
+		"clipboard-manager:default",
+		"clipboard-manager:allow-write-text",
+		"clipboard-manager:allow-read-text",
+		"os:default",
+		"notification:default",
+		"websocket:default"
+	]
+}

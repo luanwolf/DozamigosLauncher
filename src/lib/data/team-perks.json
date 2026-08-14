@@ -1,0 +1,110 @@
+{
+  "bioenergysource": {
+    "name": "Bio-Energy Source",
+    "icon": "Icon-Global-Bio-EnergySource.png"
+  },
+  "blakebeardsstash": {
+    "name": "Blakebeard's Stash",
+    "icon": "Icon-TeamPerk-BlakebeardsTreasure-128.png"
+  },
+  "blastfromthepast": {
+    "name": "Blast From The Past",
+    "icon": "Perk-TeamPerk-BlastFromThePast-128.png"
+  },
+  "boombase": {
+    "name": "Boom B.A.S.E.",
+    "icon": "Icon-TeamPerk-BoomBase-128.png"
+  },
+  "coolcustomer": {
+    "name": "Cool Customer",
+    "icon": "Icon-Soldier-CoolCustomer-128.png"
+  },
+  "zap": {
+    "name": "Z.A.P.",
+    "icon": "Icon-TeamPerk-DangerDanger-128.png"
+  },
+  "dimmak": {
+    "name": "Dim Mak",
+    "icon": "Icon-Ninja-DimMak-128.png"
+  },
+  "endlessshadow": {
+    "name": "Endless Shadow",
+    "icon": "Icon-TeamPerk-EndlessShadow-128.png"
+  },
+  "holidaycheer": {
+    "name": "Happy Holidays",
+    "icon": "Icon-TeamPerk-HappyHolidays-128.png"
+  },
+  "huntersinstinct": {
+    "name": "Hunter's Instinct",
+    "icon": "Icon-TeamPerk-HuntersInstinct-128.png"
+  },
+  "keepout": {
+    "name": "Keep Out",
+    "icon": "Icon-Soldier-KeepOut-128.png"
+  },
+  "kineticoverdrive": {
+    "name": "Kinetic Overdrive",
+    "icon": "Icon-Constructor-KineticOverdrive-128.png"
+  },
+  "longarmofthelaw": {
+    "name": "Long Arm Of The Law",
+    "icon": "Icon-Outlander-LongArmOfTheLaw-128.png"
+  },
+  "underdog": {
+    "name": "Underdog",
+    "icon": "Icon-Global-Underdog.png"
+  },
+  "onetwopunch": {
+    "name": "One-Two Punch",
+    "icon": "Icon-Global-OneTwoPunch.png"
+  },
+  "phaseblaster": {
+    "name": "Phase Blaster",
+    "icon": "Icon-TeamPerk-PhaseBlaster-128.png"
+  },
+  "preemptivestrike": {
+    "name": "Preemptive Strike",
+    "icon": "Icon-TeamPerk-PreemptiveStrike-128.png"
+  },
+  "recycling": {
+    "name": "Recycling",
+    "icon": "Icon-Constructor-Recycling-128.png"
+  },
+  "roundtrip": {
+    "name": "Round Trip",
+    "icon": "Icon-TeamPerk-RoundTrip-128.png"
+  },
+  "shakeitoff": {
+    "name": "Shake It Off",
+    "icon": "Icon-TeamPerk-ShakeItOff-128.png"
+  },
+  "shiftinggears": {
+    "name": "Shifting Gears",
+    "icon": "Icon-Outlander-ShiftingGears-128.png"
+  },
+  "slowyourroll": {
+    "name": "Slow Your Roll",
+    "icon": "Icon-Global-SlowYourRoll.png"
+  },
+  "soaringmantis": {
+    "name": "Soaring Mantis",
+    "icon": "Icon-Ninja-SoaringMantis-128.png"
+  },
+  "superchargedtraps": {
+    "name": "Supercharged Traps",
+    "icon": "Icon-Constructor-TrapDamageBoost-128.png"
+  },
+  "totallygnarly": {
+    "name": "Totally Rockin' Out",
+    "icon": "Icon-TeamPerk-TotallyGnarly-128.png"
+  },
+  "trickandtreat": {
+    "name": "Trick And Treat",
+    "icon": "Icon-TeamPerk-TrickAndTreat-128.png"
+  },
+  "hotswap": {
+    "name": "Hot Swap",
+    "icon": "Icon-Global-Hotswap.png"
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Dozamigos Launcher",
+  "version": "0.1.0",
+  "identifier": "com.dozamigos-launcher.app",
+  "build": {
+    "beforeDevCommand": "bun run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "bun run build",
+    "frontendDist": "../build"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Dozamigos Launcher",
+        "width": 1400,
+        "height": 910,
+        "fullscreen": false,
+        "decorations": false,
+        "center": true,
+        "visible": false,
+        "minWidth": 320,
+        "backgroundColor": "#1C1A14"
+      }
+    ],
+    "security": {
+      "csp": {
+        "default-src": "'self'",
+        "connect-src": "http://ipc.localhost http://tauri.localhost https://*.epicgames.com https://*.live.on.epicgames.com https://*.ogs.live.on.epicgames.com wss://xmpp-service-prod.ol.epicgames.com https://fortnite-api.com https://fnbr.co https://fortnite.gg https://fnggcdn.com",
+        "img-src": "'self' https://*.epicgames.com https://fortnite-api.com https://*.fortnite-api.com https://fortnite.gg https://fnggcdn.com https://image.fnbr.co https://media.fortniteapi.io https://*.unrealengine.com",
+        "media-src": "'self' blob: https://fnggcdn.com https://ucs-images.fortnite.com https://*.unrealengine.com",
+        "style-src": "'self' 'unsafe-inline' https://fonts.googleapis.com",
+        "font-src": "'self' https://fonts.gstatic.com data:"
+      }
+    }
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDJDQUU5Rjc3NTI4QUE1NQpSV1JWcWloMTkrbktBblZuY0xZWHh1WHZWTW0reHFWWmtoQWU5QVp5aG16T3VlR0tadlpSY1dXRQo=",
+      "endpoints": [
+        "https://github.com/luanwolf/DozamigosLauncher/releases/latest/download/latest.json"
+      ],
+      "windows": {
+        "installMode": "passive"
+      }
+    }
+  },
+  "bundle": {
+    "active": true,
+    "createUpdaterArtifacts": true,
+    "publisher": "Heyash",
+    "copyright": "Copyright © 2026 Heyash",
+    "shortDescription": "Launcher for Fortnite Battle Royale and Save the World",
+    "longDescription": "Dozamigos Launcher — Fortnite Battle Royale and Save the World companion app by Heyash.",
+    "targets": [
+      "nsis"
+    ],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "externalBin": [
+      "binaries/legendary"
+    ],
+    "windows": {
+      "nsis": {
+        "installerIcon": "icons/icon.ico",
+        "headerImage": "installer/header.bmp",
+        "sidebarImage": "installer/sidebar.bmp",
+        "installMode": "currentUser",
+        "languages": [
+          "PortugueseBR",
+          "English"
+        ],
+        "displayLanguageSelector": false,
+        "startMenuFolder": "Dozamigos"
+      }
+    }
+  }
+}

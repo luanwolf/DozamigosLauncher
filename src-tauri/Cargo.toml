@@ -1,0 +1,66 @@
+[package]
+name = "dozamigos-launcher"
+version = "0.1.0"
+description = "A cross-platform launcher for Fortnite Battle Royale and Save the World"
+authors = ["Heyash"]
+edition = "2021"
+publish = false
+
+[lib]
+name = "dozamigos_launcher_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[profile.dev]
+incremental = true
+
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+strip = true
+panic = "abort"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["devtools"] }
+tauri-plugin-opener = "2"
+serde = { version = "1", features = ["derive"] }
+# generate_context! expands plugin config (updater) through serde_json.
+serde_json = "1"
+tauri-plugin-fs = "2"
+tauri-plugin-http = "2"
+tauri-plugin-clipboard-manager = "2"
+tauri-plugin-os = "2"
+tauri-plugin-notification = "2"
+tauri-plugin-websocket = "2"
+sys-locale = "0.3"
+tauri-plugin-prevent-default = "3"
+
+[target.'cfg(windows)'.dependencies]
+winrt-notification = "0.5"
+windows = { version = "0.61", features = [
+  "Win32_Foundation",
+  "Win32_System_Com",
+  "Win32_System_Com_StructuredStorage",
+  "Win32_System_Registry",
+  "Win32_UI_Shell",
+  "Win32_UI_Shell_PropertiesSystem",
+  "Win32_UI_WindowsAndMessaging",
+] }
+dirs = "6"
+
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+tauri = { version = "2", features = ["tray-icon", "devtools"] }
+tauri-plugin-single-instance = "2"
+tauri-plugin-shell = "2"
+tauri-plugin-dialog = "2"
+tauri-plugin-autostart = "2"
+tauri-plugin-updater = "2"
+tauri-plugin-process = "2"
+sysinfo = "0.38"
+tokio = "1"
+fs2 = "0.4"
+shlex = "1"
+discord-rich-presence = "1"

@@ -1,0 +1,842 @@
+{
+  "fightTheStorm": {
+    "names": {
+      "de": "Bekämpfe den Sturm",
+      "en": "Fight the Storm",
+      "es": "Lucha contra la tormenta",
+      "fr": "Combattre la tempête",
+      "pt-br": "Enfrente a Tempestade",
+      "tr": "Fırtınayla Savaş"
+    }
+  },
+  "fightCategory2Storm": {
+    "names": {
+      "de": "Kategorie 2-Sturm bekämpfen",
+      "en": "Fight Category 2 Storm",
+      "es": "Lucha contra una tormenta de categoría 2",
+      "fr": "Combattre la tempête de catégorie 2",
+      "pt-br": "Enfrente a Tempestade de Categoria 2",
+      "tr": "2. Kategori Fırtınayla Savaş"
+    }
+  },
+  "fightCategory3Storm": {
+    "names": {
+      "de": "Kategorie 3-Sturm bekämpfen",
+      "en": "Fight Category 3 Storm",
+      "es": "Lucha contra una tormenta de categoría 3",
+      "fr": "Combattre la tempête de catégorie 3",
+      "pt-br": "Enfrente a Tempestade de Categoria 3",
+      "tr": "3. Kategori Fırtınayla Savaş"
+    }
+  },
+  "fightCategory4Storm": {
+    "names": {
+      "de": "Bekämpfe Kategorie 4-Sturm",
+      "en": "Fight Category 4 Storm",
+      "es": "Lucha contra una tormenta de categoría 4",
+      "fr": "Combattre la tempête de catégorie 4",
+      "pt-br": "Enfrente a Tempestade de Categoria 4",
+      "tr": "4. Kategori Fırtınayla Savaş"
+    }
+  },
+  "buildTheFort": {
+    "names": {
+      "de": "Baue die Festung.",
+      "en": "Build the Fort",
+      "es": "Construye el fuerte",
+      "fr": "Construire le fort",
+      "pt-br": "Construa o Forte",
+      "tr": "Kaleyi i̇nşa et"
+    }
+  },
+  "buildTheRadarGrid": {
+    "names": {
+      "de": "Baue das Radarraster",
+      "en": "Build the Radar Grid",
+      "es": "Construye la red de radares",
+      "fr": "Construire le réseau radar",
+      "pt-br": "Construa a Grade de Radar",
+      "tr": "Radar Şebekesini İnşa Et"
+    }
+  },
+  "challengeTheHorde": {
+    "names": {
+      "de": "Bekämpfe die Horde",
+      "en": "Challenge the Horde",
+      "es": "Desafía a la horda",
+      "fr": "Défier la horde",
+      "pt-br": "Desafie a Horda",
+      "tr": "Sürüye Meydan Oku"
+    }
+  },
+  "closeTheGate(PerfMem)": {
+    "names": {
+      "de": "Schließe das Tor (PerfMem)",
+      "en": "Close the Gate (PerfMem)",
+      "es": "Cierra la puerta (PerfMem)",
+      "fr": "Fermer le portail (PerfMem)",
+      "pt-br": "Fechar o Portão (PerfMem)",
+      "tr": "Kapıyı Kapat (PerfMem)"
+    }
+  },
+  "deliverTheGoods": {
+    "names": {
+      "de": "Güter abliefern",
+      "en": "Deliver The Goods",
+      "es": "Entrega la mercancía",
+      "fr": "Livrer la marchandise",
+      "pt-br": "Entregue as Mercadorias",
+      "tr": "Malları Götür"
+    }
+  },
+  "destroyTheEncampments": {
+    "names": {
+      "de": "Die Lager zerstören",
+      "en": "Destroy The Encampments",
+      "es": "Destruye los campamentos",
+      "fr": "Détruire les camps",
+      "pt-br": "Destrua os Agrupamentos",
+      "tr": "Kampları Yok Et"
+    }
+  },
+  "eliminateAndCollect": {
+    "names": {
+      "de": "Erledigen und sammeln",
+      "en": "Eliminate and Collect",
+      "es": "Elimina y recolecta",
+      "fr": "Éliminer et collecter",
+      "pt-br": "Elimine e Colete",
+      "tr": "Avla ve Topla"
+    }
+  },
+  "frostnite": {
+    "names": {
+      "de": "Frostnite",
+      "en": "Frostnite",
+      "es": "Frostnite",
+      "fr": "Nuit de glace",
+      "pt-br": "Frionite",
+      "tr": "Fortnite Soğukları"
+    }
+  },
+  "frostnite:FinalFrost": {
+    "names": {
+      "de": "Frostnite: Finaler Frost",
+      "en": "Frostnite: Final Frost",
+      "es": "Frostnite: Última escarcha",
+      "fr": "Nuit de glace - Ultime glaciation",
+      "pt-br": "Frionite: Geada Final",
+      "tr": "Fortnite Soğukları: Son Soğuklar"
+    }
+  },
+  "frostnite:FrostyTurf": {
+    "names": {
+      "de": "Frostnite: Frostfeld",
+      "en": "Frostnite: Frosty Turf",
+      "es": "Frostnite: Territorio escarchado",
+      "fr": "Nuit de glace - Gazon glacial",
+      "pt-br": "Frionite: Território Gelado",
+      "tr": "Fortnite Soğukları: Donmuş Saha"
+    }
+  },
+  "frostnite:MerryMelee": {
+    "names": {
+      "de": "Frostnite: Frohes Nahkampffest",
+      "en": "Frostnite: Merry Melee",
+      "es": "Frostnite: Refriega festiva",
+      "fr": "Nuit de glace - Joyeuse mêlée",
+      "pt-br": "Frionite: Arma Branca Feliz",
+      "tr": "Fortnite Soğukları: Yakın Dövüş Cümbüşü"
+    }
+  },
+  "frostnite:NewWaveHoliday": {
+    "names": {
+      "de": "Frostnite: Das Fest schlägt Wellen",
+      "en": "Frostnite: New Wave Holiday",
+      "es": "Frostnite: Fiesta de la Nueva Oleada",
+      "fr": "Nuit de glace - Vagues festives",
+      "pt-br": "Frionite: Feliz Onda Nova",
+      "tr": "Fortnite Soğukları: Dalga Dalga Yılbaşı Coşkusu"
+    }
+  },
+  "frostnite:SpecialDelivery": {
+    "names": {
+      "de": "Frostnite: Sonderlieferung",
+      "en": "Frostnite: Special Delivery",
+      "es": "Frostnite: Entrega especial",
+      "fr": "Nuit de glace - Livraison spéciale",
+      "pt-br": "Frionite: Entrega Especial",
+      "tr": "Fortnite Soğukları: Evlere Servis"
+    }
+  },
+  "frostnite:Superheated": {
+    "names": {
+      "de": "Frostnite: Überhitzt",
+      "en": "Frostnite: Superheated",
+      "es": "Frostnite: Sobrecalentado",
+      "fr": "Nuit de glace - Structures en sueur",
+      "pt-br": "Frionite: Superaquecido",
+      "tr": "Fortnite Soğukları: Süper Isınmış"
+    }
+  },
+  "frostnite:TopItOff": {
+    "names": {
+      "de": "Frostnite: Brennstoffdurst",
+      "en": "Frostnite: Top It Off",
+      "es": "Frostnite: Hasta arriba",
+      "fr": "Nuit de glace - Faire le plein",
+      "pt-br": "Frionite: Além de Tudo",
+      "tr": "Fortnite Soğukları: Bir Bu Eksikti"
+    }
+  },
+  "rescueTheSurvivors": {
+    "names": {
+      "de": "Rette die Überlebenden",
+      "en": "Rescue the Survivors",
+      "es": "Rescata a los supervivientes",
+      "fr": "Sauver les survivants",
+      "pt-br": "Resgate os Sobreviventes",
+      "tr": "Felaketzedeleri Kurtar"
+    }
+  },
+  "rideTheLightning": {
+    "names": {
+      "de": "Reite auf dem Blitz",
+      "en": "Ride The Lightning",
+      "es": "Monta el rayo",
+      "fr": "Chevaucher la foudre",
+      "pt-br": "Domine o Relâmpago",
+      "tr": "Yıldırım Hızıyla"
+    }
+  },
+  "launchTheRocket": {
+    "names": {
+      "de": "Starte die Rakete",
+      "en": "Launch the Rocket",
+      "es": "Lanza el cohete",
+      "fr": "Lancer la fusée",
+      "pt-br": "Lance o Foguete",
+      "tr": "Roketi Fırlat"
+    }
+  },
+  "hitTheRoad": {
+    "names": {
+      "de": "Auf die endlose Straße",
+      "en": "Hit the Road",
+      "es": "En marcha",
+      "fr": "Sur la route",
+      "pt-br": "Pegando a Estrada",
+      "tr": "Yola Çık"
+    }
+  },
+  "onboardingFort": {
+    "names": {
+      "de": "Festung eingliedern",
+      "en": "Onboarding Fort",
+      "es": "Adentrándose en el fuerte",
+      "fr": "Embarquement immédiat",
+      "pt-br": "Forte de Integração",
+      "tr": "Eğitim Kalesi"
+    }
+  },
+  "repairTheShelter": {
+    "names": {
+      "de": "Repariere den Schutzbunker",
+      "en": "Repair the Shelter",
+      "es": "Repara el refugio",
+      "fr": "Réparer le refuge",
+      "pt-br": "Repare o Abrigo",
+      "tr": "Sığınağı Onar"
+    }
+  },
+  "refuelTheHomebase": {
+    "names": {
+      "de": "Treibstoff für die Heimatbasis",
+      "en": "Refuel the Homebase",
+      "es": "Reabastece la base",
+      "fr": "Réapprovisionner la base",
+      "pt-br": "Reabasteça a Base Inicial",
+      "tr": "Ana Üsse Yakıt İkmali Yap"
+    }
+  },
+  "resupply": {
+    "names": {
+      "de": "Neuversorgung",
+      "en": "Resupply",
+      "es": "Reabastécete",
+      "fr": "Se réapprovisionner",
+      "pt-br": "Reabastecimento",
+      "tr": "İkmal"
+    }
+  },
+  "retrieveTheData": {
+    "names": {
+      "de": "Datenbeschaffung",
+      "en": "Retrieve the Data",
+      "es": "Recupera los datos",
+      "fr": "Récupérer les données",
+      "pt-br": "Recupere os Dados",
+      "tr": "Verileri Al"
+    }
+  },
+  "steelIcarus": {
+    "names": {
+      "de": "Stählerner Ikarus",
+      "en": "Steel Icarus",
+      "es": "Ícaro de acero",
+      "fr": "Un Icare de tôles",
+      "pt-br": "Steel Icarus",
+      "tr": "Çelik İkarus"
+    }
+  },
+  "theCrypts": {
+    "names": {
+      "de": "Die Krypten",
+      "en": "The Crypts",
+      "es": "Las criptas",
+      "fr": "Cryptes",
+      "pt-br": "Catacumbas",
+      "tr": "Mahzen Mezarlık"
+    }
+  },
+  "theCrypts(MeleeOnly!)": {
+    "names": {
+      "de": "Die Krypten (nur Nahkampf!)",
+      "en": "The Crypts (Melee Only!)",
+      "es": "Las criptas (¡solo cuerpo a cuerpo!)",
+      "fr": "Cryptes (mêlée uniquement !)",
+      "pt-br": "Catacumbas (Apenas Armas Brancas!)",
+      "tr": "Mahzen Mezarlık (Sadece Yakın Dövüş!)"
+    }
+  },
+  "theCrypts(Melee+Timed!)": {
+    "names": {
+      "de": "Die Krypten (Nahkampf + Zeitlimit!)",
+      "en": "The Crypts (Melee+Timed!)",
+      "es": "Las criptas (¡cuerpo a cuerpo + contrarreloj!)",
+      "fr": "Cryptes (mêlée+chronométré !)",
+      "pt-br": "Catacumbas (Armas Brancas e Limite de Tempo!)",
+      "tr": "Mahzen Mezarlık (Yakın Dövüş+Zamanlı!)"
+    }
+  },
+  "theCrypts(TimedRun!)": {
+    "names": {
+      "de": "Die Krypten (Zeitlimit!)",
+      "en": "The Crypts (Timed Run!)",
+      "es": "Las criptas (¡contrarreloj!)",
+      "fr": "Cryptes (course chronométrée !)",
+      "pt-br": "Catacumbas (Limite de Tempo!)",
+      "tr": "Mahzen Mezarlık (Zamanlı Oyun!)"
+    }
+  },
+  "inferno": {
+    "names": {
+      "de": "Inferno",
+      "en": "Inferno",
+      "es": "Infierno",
+      "fr": "Enfer",
+      "pt-br": "Inferno",
+      "tr": "Yangın Yeri"
+    }
+  },
+  "inferno(TimedRun!)": {
+    "names": {
+      "de": "Inferno (Zeitlimit!)",
+      "en": "Inferno (Timed Run!)",
+      "es": "Infierno (¡contrarreloj!)",
+      "fr": "Enfer (course chronométrée !)",
+      "pt-br": "Inferno (Limite de Tempo!)",
+      "tr": "Yangın Yeri (Zamanlı Oyun!)"
+    }
+  },
+  "theGrotto": {
+    "names": {
+      "de": "The Grotto",
+      "en": "The Grotto",
+      "es": "La Gruta",
+      "fr": "Grotte",
+      "pt-br": "Gruta",
+      "tr": "Yeraltı Odası"
+    }
+  },
+  "theGrotto(TimedRun!)": {
+    "names": {
+      "de": "Die Grotte (Zeitlimit!)",
+      "en": "The Grotto (Timed Run!)",
+      "es": "La Gruta (¡contrarreloj!)",
+      "fr": "Grotte (course chronométrée !)",
+      "pt-br": "Gruta (Limite de Tempo!)",
+      "tr": "Yeraltı Odası (Zamanlı Oyun!)"
+    }
+  },
+  "theLabyrinth": {
+    "names": {
+      "de": "Das Labyrinth",
+      "en": "The Labyrinth",
+      "es": "El Laberinto",
+      "fr": "Labyrinthe",
+      "pt-br": "Labirinto",
+      "tr": "Labirent"
+    }
+  },
+  "theLabyrinth(TimedRun!)": {
+    "names": {
+      "de": "Das Labyrinth (Zeitlimit!)",
+      "en": "The Labyrinth (Timed Run!)",
+      "es": "El Laberinto (¡contrarreloj!)",
+      "fr": "Labyrinthe (course chronométrée !)",
+      "pt-br": "Labirinto (Limite de Tempo!)",
+      "tr": "Labirent (Zamanlı Oyun!)"
+    }
+  },
+  "theLab": {
+    "names": {
+      "de": "Das Labor",
+      "en": "The Lab",
+      "es": "El Laboratorio",
+      "fr": "Le Labo",
+      "pt-br": "Laboratório",
+      "tr": "Laboratuvar"
+    }
+  },
+  "surviveTheStorm": {
+    "names": {
+      "de": "Überlebe den Sturm",
+      "en": "Survive the Storm",
+      "fr": "Survivre à la tempête",
+      "es": "Sobrevive a la tormenta",
+      "pt-br": "Sobreviva à Tempestade",
+      "tr": "Fırtınayı Atlat"
+    }
+  },
+  "surviveTheStorm:3Days": {
+    "names": {
+      "de": "Überlebe den Sturm: 3 Tage",
+      "en": "Survive the Storm: 3 Days",
+      "es": "Sobrevive a la tormenta: 3 días",
+      "fr": "Survivre à la tempête : 3 j",
+      "pt-br": "Sobreviva à Tempestade: 3 dias",
+      "tr": "Fırtınayı Atlat: 3 Gün"
+    }
+  },
+  "surviveTheStorm:7Days": {
+    "names": {
+      "de": "Überlebe den Sturm: 7 Tage",
+      "en": "Survive the Storm: 7 Days",
+      "es": "Sobrevive a la tormenta: 7 días",
+      "fr": "Survivre à la tempête : 7 j",
+      "pt-br": "Sobreviva à Tempestade: 7 dias",
+      "tr": "Fırtınayı Atlat: 7 Gün"
+    }
+  },
+  "surviveTheStorm:14Days": {
+    "names": {
+      "de": "Überlebe den Sturm: 14 Tage",
+      "en": "Survive the Storm: 14 Days",
+      "es": "Sobrevive a la tormenta: 14 días",
+      "fr": "Survivre à la tempête : 14 jours",
+      "pt-br": "Sobreviva à Tempestade: 14 dias",
+      "tr": "Fırtına’yı Atlat: 14 Gün"
+    }
+  },
+  "surviveTheStorm:3+Days": {
+    "names": {
+      "de": "Überlebe den Sturm: Mindestens 3 Tage",
+      "en": "Survive the Storm: 3+ Days",
+      "es": "Sobrevive a la tormenta: 3 días o más",
+      "fr": "Survivre à la tempête : 3 jours min.",
+      "pt-br": "Sobreviva à Tempestade: 3 dias ou mais",
+      "tr": "Fırtınayı Atlat: +3 Gün"
+    }
+  },
+  "surviveTheStorm:7+Days": {
+    "names": {
+      "de": "Überlebe den Sturm: Mindestens 7 Tage",
+      "en": "Survive the Storm: 7+ Days",
+      "es": "Sobrevive a la tormenta: 7 días o más",
+      "fr": "Survivre à la tempête : 7 jours min.",
+      "pt-br": "Sobreviva à Tempestade: 7 dias ou mais",
+      "tr": "Fırtınayı Atlat: 7+ Gün"
+    }
+  },
+  "evacuateTheShelter": {
+    "names": {
+      "de": "Den Schutzbunker evakuieren",
+      "en": "Evacuate the Shelter",
+      "es": "Evacúa el refugio",
+      "fr": "Évacuer le refuge",
+      "pt-br": "Evacue o Abrigo",
+      "tr": "Sığınağı Tahliye Et"
+    }
+  },
+  "theOutpost": {
+    "names": {
+      "de": "Der Außenposten",
+      "en": "The Outpost",
+      "es": "El puesto de avanzada",
+      "fr": "L'Avant-poste",
+      "pt-br": "O Posto Avançado",
+      "tr": "Karakol"
+    }
+  },
+  "homebaseStormShield": {
+    "names": {
+      "de": "Heimatbasis-Sturmschild",
+      "en": "Homebase Storm Shield",
+      "es": "Escudo antitormentas de la base",
+      "fr": "Bouclier antitempête de la base",
+      "pt-br": "Escudo Antitempestade da Base Inicial",
+      "tr": "Ana Üs Fırtına Kalkanı"
+    }
+  },
+  "plankertonStormShield": {
+    "names": {
+      "de": "Plankerton-Sturmschild",
+      "en": "Plankerton Storm Shield",
+      "es": "Escudo antitormentas de Villatablón",
+      "fr": "Bouclier antitempête de Villeplanche",
+      "pt-br": "Escudo Antitempestade de Plankerton",
+      "tr": "Kalaslıevler Fırtına Kalkanı"
+    }
+  },
+  "cannyValleyStormShield": {
+    "names": {
+      "de": "Bru-Tal-Sturmschild",
+      "en": "Canny Valley Storm Shield",
+      "es": "Escudo antitormentas de Valle Latoso",
+      "fr": "Bouclier antitempête de Morne-la-Vallée",
+      "pt-br": "Escudo Antitempestade de Canny Valley",
+      "tr": "Tekinli Vadi Fırtına Kalkanı"
+    }
+  },
+  "twinePeaksStormShield": {
+    "names": {
+      "de": "Twine Peaks-Sturmschild",
+      "en": "Twine Peaks Storm Shield",
+      "es": "Escudo antitormentas de Cumbres Leñosas",
+      "fr": "Bouclier antitempête de Pics Hardis",
+      "pt-br": "Escudo Antitempestade de Twine Peaks",
+      "tr": "Dikiz Tepeler Fırtına Kalkanı"
+    }
+  },
+  "weeklyHordeChallenge": {
+    "names": {
+      "de": "Wöchentliche Hordenherausforderung",
+      "en": "Weekly Horde Challenge",
+      "es": "Desafío de la horda semanal",
+      "fr": "Défi de la horde hebdomadaire",
+      "pt-br": "Desafio da Horda Semanal",
+      "tr": "Haftalık Sürü Mücadelesi"
+    }
+  },
+  "exploreTheMist": {
+    "names": {
+      "de": "Erkunde den Nebel",
+      "en": "Explore the Mist",
+      "es": "Explora la bruma",
+      "fr": "Explorer la brume",
+      "pt-br": "Explore a Névoa",
+      "tr": "Sisi Keşfe Çık"
+    }
+  },
+  "trapTheStorm": {
+    "names": {
+      "de": "Fange den Sturm",
+      "en": "Trap the Storm",
+      "es": "Atrapa la tormenta",
+      "fr": "Piéger la tempête",
+      "pt-br": "Prenda a Tempestade",
+      "tr": "Fırtınayı Kıstır"
+    }
+  },
+  "surviveTheNight": {
+    "names": {
+      "de": "Überlebe die Nacht",
+      "en": "Survive the Night",
+      "es": "Sobrevive a la noche",
+      "fr": "Survivre à la nuit",
+      "pt-br": "Sobreviva à Noite",
+      "tr": "Geceyi Atlat"
+    }
+  },
+  "thePortal": {
+    "names": {
+      "de": "Das Portal",
+      "en": "The Portal",
+      "es": "El portal",
+      "fr": "Le portail",
+      "pt-br": "O Portal",
+      "tr": "Portal"
+    }
+  },
+  "walkThePlank": {
+    "names": {
+      "de": "Über die Planke",
+      "en": "Walk the Plank",
+      "es": "Date un paseo por la tabla",
+      "fr": "Marcher sur la planche",
+      "pt-br": "Ande na Prancha",
+      "tr": "Kalasta Yürüyenler"
+    }
+  },
+  "yarrr!": {
+    "names": {
+      "de": "Arr!",
+      "en": "Yarrr!",
+      "es": "¡Arrrr!",
+      "fr": "Mille sabords !",
+      "pt-br": "Iarrr!",
+      "tr": "Korsanlarrr!"
+    }
+  },
+  "protectThePresents": {
+    "names": {
+      "de": "Beschütze die Geschenke",
+      "en": "Protect The Presents",
+      "es": "Protege los regalos",
+      "fr": "Protégez les cadeaux",
+      "pt-br": "Proteja os Presentes",
+      "tr": "Hediyeleri Koru"
+    }
+  },
+  "in-VendingDoom": {
+    "names": {
+      "de": "Verderbnisverkauf",
+      "en": "In-Vending Doom",
+      "es": "Doom expendedor",
+      "fr": "Distributeur de désespoir",
+      "pt-br": "Salvação Vendida",
+      "tr": "Otomatik Kıyamet"
+    }
+  },
+  "frightMaze": {
+    "names": {
+      "de": "Fürchterliches Labyrinth",
+      "en": "Fright Maze",
+      "es": "Laberinto espeluznante",
+      "fr": "Labyrinthe de l'horreur",
+      "pt-br": "Labirinto do Terror",
+      "tr": "Korku Labirenti"
+    }
+  },
+  "hollyJollyRansom": {
+    "names": {
+      "de": "Fröhlich-festliche Forderung",
+      "en": "Holly Jolly Ransom",
+      "es": "Rescate festivo",
+      "fr": "Une joyeuse rançon",
+      "pt-br": "Resgate Festivo",
+      "tr": "Mutlu Kaçırılmalar"
+    }
+  },
+  "jar-RelatedConsequences": {
+    "names": {
+      "de": "Konsequenzen aus dem Glas",
+      "en": "Jar-Related Consequences",
+      "es": "No te comas el tarro",
+      "fr": "Conséquences abocalyptiques",
+      "pt-br": "Consequências Jarrásticas",
+      "tr": "Kavanozla İlgili Sonuçlar"
+    }
+  },
+  "re-Shoots": {
+    "names": {
+      "de": "Neuaufnahmen",
+      "en": "Re-Shoots",
+      "es": "Repetición de tomas",
+      "fr": "Il faut tout refaire",
+      "pt-br": "Refilmagens",
+      "tr": "Tekrar Çekimler"
+    }
+  },
+  "backstage": {
+    "names": {
+      "de": "Backstage",
+      "en": "Backstage",
+      "es": "Entre bambalinas",
+      "fr": "Coulisses",
+      "pt-br": "Bastidores",
+      "tr": "Kulis"
+    }
+  },
+  "theDoorToDarkness": {
+    "names": {
+      "de": "Die Tür zur Finsternis",
+      "en": "The Door To Darkness",
+      "es": "El portal a la oscuridad",
+      "fr": "La porte des ténèbres",
+      "pt-br": "A Entrada para a Escuridão",
+      "tr": "Karanlığa Açılan Kapı"
+    }
+  },
+  "night1:RumorsOfGhosts": {
+    "names": {
+      "de": "Nacht 1: Gerüchte über Geister",
+      "en": "Night 1: Rumors of Ghosts",
+      "es": "Noche 1: Rumores de fantasmas",
+      "fr": "Nuit 1 - Rumeurs de fantômes",
+      "pt-br": "Noite 1: Boatos de Atividade Fantasma",
+      "tr": "1. Gece: Hayalet Dedikoduları"
+    }
+  },
+  "yarrr'sReturn": {
+    "names": {
+      "de": "Augenklappen-Comeback",
+      "en": "Yarrr's Return",
+      "es": "El regreso de Arrrr",
+      "fr": "Le retour des pirates",
+      "pt-br": "Retorno de Iarrr",
+      "tr": "Noksan Korsan"
+    }
+  },
+  "constructorBuildOff": {
+    "names": {
+      "de": "Konstrukteurswettbewerb",
+      "en": "Constructor Build Off",
+      "es": "Desafío del constructor",
+      "fr": "Duel de construction",
+      "pt-br": "Batalha de Construtores",
+      "tr": "İnşa Yarışması"
+    }
+  },
+  "searchVinderman’sMansion": {
+    "names": {
+      "de": "Durchsuche Vindermans Anwesen",
+      "en": "Search Vinderman’s Mansion",
+      "es": "Registra la mansión de Vinderman",
+      "fr": "Fouiller le manoir de Vinderman",
+      "pt-br": "Vasculhar a Mansão do Vinderman",
+      "tr": "Vinderman’ın Malikânesini araştır"
+    }
+  },
+  "stabilizeTheRift": {
+    "names": {
+      "de": "Stabilisiere den Riss",
+      "en": "Stabilize the Rift",
+      "es": "Estabiliza la grieta",
+      "fr": "Stabiliser la faille",
+      "pt-br": "Estabilize a Fenda",
+      "tr": "Yırtığı Stabilize Et"
+    }
+  },
+  "fightTheGunslinger": {
+    "names": {
+      "de": "Kämpfe gegen den Pistolero",
+      "en": "Fight The Gunslinger",
+      "es": "Enfréntate al pistolero",
+      "fr": "Affronter l'as de la gâchette",
+      "pt-br": "Enfrente o Pistoleiro",
+      "tr": "Silahşorla Savaş"
+    }
+  },
+  "deployTheProbe": {
+    "names": {
+      "de": "Setze die Messsonde ein",
+      "en": "Deploy the Probe",
+      "es": "Despliega la sonda",
+      "fr": "Déployer la sonde",
+      "pt-br": "Instalar a Sonda",
+      "tr": "Sondayı Yerleştir"
+    }
+  },
+  "buildasaurusRex": {
+    "names": {
+      "de": "Tyrannobaurus Rex",
+      "en": "Buildasaurus Rex",
+      "es": "Construyesaurus Rex",
+      "fr": "Constructosaure rex",
+      "pt-br": "Construssauro Rex",
+      "tr": "Dino-Zor, İnşa Kolay"
+    }
+  },
+  "buildTheMemorial": {
+    "names": {
+      "de": "Errichte das Denkmal",
+      "en": "Build The Memorial",
+      "es": "Construye un monumento homenaje",
+      "fr": "Construire un mémorial",
+      "pt-br": "Construa o Memorial",
+      "tr": "Anıtı İnşa Et"
+    }
+  },
+  "liberatePlankHarbor": {
+    "names": {
+      "de": "Befreie Plank Harbor",
+      "en": "Liberate Plank Harbor",
+      "es": "Libera Puerto Tablón",
+      "fr": "Libérer Port-de-Planche",
+      "pt-br": "Liberte o Porto de Plank",
+      "tr": "Kalas Limanı’nı İşgalden Kurtar"
+    }
+  },
+  "watchTheSkies": {
+    "names": {
+      "de": "Augen nach oben",
+      "en": "Watch the Skies",
+      "es": "Mira al cielo",
+      "fr": "Surveiller le ciel",
+      "pt-br": "De Olho no Céu",
+      "tr": "Gökleri Gözle"
+    }
+  },
+  "testTheSuit": {
+    "names": {
+      "de": "Teste den Anzug",
+      "en": "Test the Suit",
+      "es": "Pon a prueba el traje",
+      "fr": "Tester la combinaison",
+      "pt-br": "Teste o Traje",
+      "tr": "Zırhı Test Et"
+    }
+  },
+  "vindertechResearchLab": {
+    "names": {
+      "de": "Vindertech-Forschungslabor",
+      "en": "Vindertech Research Lab",
+      "es": "Laboratorio de investigación de Vindertech",
+      "fr": "Laboratoire Vinderman",
+      "pt-br": "Laboratório de Pesquisa Vindertech",
+      "tr": "Vindertech Araştırma Laboratuvarı"
+    }
+  },
+  "deliverTheBomb": {
+    "names": {
+      "de": "Liefere die Bombe ab",
+      "en": "Deliver The Bomb",
+      "es": "Entrega la bomba",
+      "fr": "Livrer la bombe",
+      "pt-br": "Entregue a Bomba",
+      "tr": "Bombayı Götür"
+    }
+  },
+  "scanTheComet": {
+    "names": {
+      "de": "Scanne den Kometen",
+      "en": "Scan the Comet",
+      "es": "Escanea el cometa",
+      "fr": "Scanner la comète",
+      "pt-br": "Faça uma Varredura no Cometa",
+      "tr": "Kuyrukluyıldızı Tara"
+    }
+  },
+  "destroyTheMeteor": {
+    "names": {
+      "de": "Zerstöre den Meteoriten",
+      "en": "Destroy The Meteor",
+      "es": "Destruye el meteorito",
+      "fr": "Détruire la comète",
+      "pt-br": "Destrua o Meteoro",
+      "tr": "Meteoru Yok Et"
+    }
+  },
+  "huntTheTitan": {
+    "names": {
+      "de": "Jage den Titanen",
+      "en": "Hunt The Titan",
+      "es": "Caza al titán",
+      "fr": "Chasse au Titan",
+      "pt-br": "Cace o Titã",
+      "tr": "Titanı Avla"
+    }
+  }
+}

@@ -1,0 +1,527 @@
+import { SvelteMap } from 'svelte/reactivity';
+import { createClient, type Agent } from 'stanza';
+import { AsyncLock } from '$lib/async-lock';
+import { defaultClient } from '$lib/constants/clients';
+import { ConnectionEvents, EpicEvents } from '$lib/constants/events';
+import { EventEmitter } from '$lib/event-emitter';
+import { getChildLogger } from '$lib/logger';
+import { getCachedToken } from '$lib/modules/auth-session';
+import { cacheNameAndAvatar, getOrInsertEntry } from '$lib/modules/friends';
+import { getParty } from '$lib/modules/party';
+import { accountStore } from '$lib/storage';
+import { partyCache } from '$lib/stores';
+import type { AccountData } from '$types/account';
+import type {
+  EpicEventFriendRemoved,
+  EpicEventFriendRequest,
+  EpicEventInteractionNotification,
+  EpicEventMemberConnected,
+  EpicEventMemberDisconnected,
+  EpicEventMemberExpired,
+  EpicEventMemberJoined,
+  EpicEventMemberKicked,
+  EpicEventMemberLeft,
+  EpicEventMemberNewCaptain,
+  EpicEventMemberStateUpdated,
+  EpicEventPartyPing,
+  EpicEventPartyUpdated
+} from '$types/game/events';
+import type { PartyMember } from '$types/game/party';
+
+type EventMap = {
+  [EpicEvents.MemberConnected]: EpicEventMemberConnected;
+  [EpicEvents.MemberDisconnected]: EpicEventMemberDisconnected;
+  [EpicEvents.MemberExpired]: EpicEventMemberExpired;
+  [EpicEvents.MemberJoined]: EpicEventMemberJoined;
+  [EpicEvents.MemberKicked]: EpicEventMemberKicked;
+  [EpicEvents.MemberLeft]: EpicEventMemberLeft;
+  [EpicEvents.MemberStateUpdated]: EpicEventMemberStateUpdated;
+  [EpicEvents.MemberNewCaptain]: EpicEventMemberNewCaptain;
+  [EpicEvents.PartyUpdated]: EpicEventPartyUpdated;
+  [EpicEvents.PartyInvite]: EpicEventPartyPing;
+  [EpicEvents.FriendRequest]: EpicEventFriendRequest;
+  [EpicEvents.FriendRemove]: EpicEventFriendRemoved;
+  [EpicEvents.InteractionNotification]: EpicEventInteractionNotification;
+
+  [ConnectionEvents.SessionStarted]: void;
+  [ConnectionEvents.Connected]: void;
+  [ConnectionEvents.Disconnected]: void;
+  [ConnectionEvents.Destroyed]: void;
+};
+
+type AccountOptions = AccountData & {
+  accessToken: string;
+};
+
+type Purpose = 'autoKick' | 'friends';
+
+const MAX_RECONNECT_ATTEMPTS = 50;
+const logger = getChildLogger('XMPPManager');
+
+export type FriendPresence = {
+  jid: string;
+  type: 'online' | 'away' | 'offline';
+  status?: string;
+  delay?: Date;
+};
+
+export class XMPPManager extends EventEmitter<EventMap> {
+  public static instances = new Map<string, XMPPManager>();
+  public connection?: Agent;
+  private purposes = new Set<Purpose>();
+  public presences = new SvelteMap<string, FriendPresence>();
+
+  private reconnectTimeout?: number;
+  private intentionalDisconnect = false;
+  private reconnectAttempts = 0;
+
+  private constructor(
+    private account: AccountOptions,
+    purpose: Purpose
+  ) {
+    super();
+    this.purposes.add(purpose);
+  }
+
+  static new(account: AccountData, purpose: Purpose) {
+    const lock = AsyncLock.newGlobal(`${account.accountId}:xmpp:new`);
+    return lock.withLock(async () => {
+      const existingInstance = XMPPManager.instances.get(account.accountId);
+      if (existingInstance) {
+        existingInstance.purposes.add(purpose);
+        return existingInstance;
+      }
+
+      const accessToken = await getCachedToken(account, defaultClient, true);
+      const instance = new XMPPManager({ ...account, accessToken }, purpose);
+      XMPPManager.instances.set(account.accountId, instance);
+      return instance;
+    });
+  }
+
+  connect() {
+    if (this.connection?.sessionStarted) return;
+
+    const lock = AsyncLock.newGlobal(`${this.account.accountId}:xmpp:connect`);
+    return lock.withLock(async () => {
+      if (this.connection?.sessionStarted) return;
+
+      logger.debug('Connecting', { accountId: this.account.accountId });
+
+      const server = 'prod.ol.epicgames.com';
+      const resourceHash = window.crypto
+        .getRandomValues(new Uint8Array(16))
+        .reduce((hex, byte) => hex + byte.toString(16).padStart(2, '0'), '')
+        .toUpperCase();
+
+      this.connection = createClient({
+        jid: `${this.account.accountId}@${server}`,
+        server,
+        transports: {
+          websocket: `wss://xmpp-service-${server}`,
+          bosh: false
+        },
+        credentials: {
+          host: server,
+          username: this.account.accountId,
+          password: this.account.accessToken
+        },
+        resource: `V2:Fortnite:WIN::${resourceHash}`
+      });
+
+      this.connection.enableKeepAlive({ interval: 30 });
+      this.setupEvents();
+
+      return new Promise<void>((resolve, reject) => {
+        const timeout = setTimeout(() => reject(new Error('Connection timeout')), 15000);
+
+        this.connection!.once(ConnectionEvents.SessionStarted, () => {
+          clearTimeout(timeout);
+          resolve();
+        });
+
+        this.connection!.once(ConnectionEvents.StreamError, (err) => {
+          clearTimeout(timeout);
+          reject(err);
+        });
+
+        this.connection!.connect();
+      });
+    });
+  }
+
+  disconnect() {
+    this.intentionalDisconnect = true;
+
+    clearTimeout(this.reconnectTimeout);
+    this.reconnectTimeout = undefined;
+
+    this.connection?.disconnect();
+  }
+
+  removePurpose(purpose: Purpose) {
+    this.purposes.delete(purpose);
+    if (!this.purposes.size) this.disconnect();
+  }
+
+  setStatus(status: string, onlineType: 'online' | 'away' | 'chat' | 'dnd' | 'xa' = 'online') {
+    if (!this.connection?.sessionStarted) throw new Error('Connection not established');
+
+    return this.connection.sendPresence({
+      status: JSON.stringify({
+        Status: status,
+        bIsPlaying: false,
+        bIsJoinable: false
+      }),
+      show: onlineType === 'online' ? undefined : onlineType,
+      delay: {
+        timestamp: new Date('9999-12-31T23:59:59.999Z')
+      }
+    });
+  }
+
+  resetStatus() {
+    if (!this.connection?.sessionStarted) throw new Error('Connection not established');
+
+    return this.connection.sendPresence({
+      status: JSON.stringify({
+        Status: '',
+        bIsPlaying: false,
+        bIsJoinable: false
+      })
+    });
+  }
+
+  private setupEvents() {
+    if (!this.connection) return;
+
+    this.connection.on(ConnectionEvents.SessionStarted, () => {
+      this.intentionalDisconnect = false;
+      this.reconnectAttempts = 0;
+
+      if (this.reconnectTimeout) {
+        clearTimeout(this.reconnectTimeout);
+        this.reconnectTimeout = undefined;
+      }
+
+      this.emit(ConnectionEvents.SessionStarted, undefined);
+    });
+
+    this.connection.on(ConnectionEvents.Connected, () => {
+      this.emit(ConnectionEvents.Connected, undefined);
+    });
+
+    this.connection.on(ConnectionEvents.Disconnected, async () => {
+      this.emit(ConnectionEvents.Disconnected, undefined);
+
+      if (this.intentionalDisconnect) {
+        if (this.reconnectTimeout) {
+          clearTimeout(this.reconnectTimeout);
+          this.reconnectTimeout = undefined;
+        }
+
+        this.emit(ConnectionEvents.Destroyed, undefined);
+
+        this.presences.clear();
+        this.connection?.removeAllListeners();
+        this.connection = undefined;
+        this.removeAllListeners();
+
+        XMPPManager.instances.delete(this.account.accountId);
+        this.account = undefined!;
+        return;
+      }
+
+      if (!this.reconnectTimeout) {
+        const delay = this.getReconnectDelay();
+        this.reconnectTimeout = window.setTimeout(() => this.tryReconnect(), delay);
+      }
+    });
+
+    this.connection.on('message', async (message) => {
+      if (
+        (message.type && message.type !== 'normal') ||
+        !message.body ||
+        message.from !== 'xmpp-admin@prod.ol.epicgames.com'
+      )
+        return;
+
+      let body: any;
+      try {
+        body = JSON.parse(message.body);
+      } catch {
+        return;
+      }
+
+      const { type } = body;
+      if (!type) return;
+
+      switch (type) {
+        case EpicEvents.MemberStateUpdated:
+          this.handleMemberStateUpdated(body as EpicEventMemberStateUpdated);
+          break;
+        case EpicEvents.PartyUpdated:
+          this.handlePartyUpdated(body as EpicEventPartyUpdated);
+          break;
+        case EpicEvents.MemberJoined:
+          await this.handleMemberJoin(body as EpicEventMemberJoined);
+          break;
+        case EpicEvents.MemberExpired:
+        case EpicEvents.MemberLeft:
+        case EpicEvents.MemberKicked:
+          this.handleMemberLeave(body as EpicEventMemberLeft | EpicEventMemberKicked | EpicEventMemberExpired);
+          break;
+        case EpicEvents.MemberNewCaptain:
+          this.handleMemberNewCaptain(body as EpicEventMemberNewCaptain);
+          break;
+        case EpicEvents.FriendRequest:
+          this.handleFriendRequest(body as EpicEventFriendRequest);
+          break;
+        case EpicEvents.FriendRemove:
+          this.handleFriendRemoved(body as EpicEventFriendRemoved);
+          break;
+      }
+
+      this.emit(type, body);
+    });
+
+    this.connection.on('session:bound', async () => {
+      const roster = await this.connection!.getRoster();
+      const jids = roster.items.map((item) => item.jid);
+
+      for (const jid of jids) {
+        this.connection!.sendPresence({ to: jid, type: 'probe' });
+      }
+    });
+
+    this.connection.on('presence', (pres) => {
+      let status: string | undefined;
+      try {
+        status = JSON.parse(pres.status || '').Status;
+      } catch {
+        /* empty */
+      }
+
+      const jid = pres.from.split('/')[0];
+      const accountId = jid.split('@')[0];
+
+      if (pres.type === 'unavailable' || pres.type === 'error') {
+        this.presences.delete(accountId);
+        return;
+      }
+
+      const oldPresence = this.presences.get(accountId);
+      if (oldPresence?.delay && oldPresence.delay > (pres.delay?.timestamp || new Date())) {
+        return;
+      }
+
+      this.presences.set(accountId, {
+        jid,
+        type: pres.show === 'away' ? 'away' : status || status === '' ? 'online' : 'offline',
+        status,
+        delay: pres.delay?.timestamp
+      });
+    });
+  }
+
+  private getReconnectDelay() {
+    return Math.min(1000 * 2 ** this.reconnectAttempts, 30_000);
+  }
+
+  private async tryReconnect() {
+    if (this.intentionalDisconnect || this.reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) return;
+
+    try {
+      if (!this.reconnectAttempts) {
+        const newToken = await getCachedToken(this.account, defaultClient, true);
+        this.account.accessToken = newToken;
+      }
+
+      await this.connect();
+      logger.info('Reconnected successfully');
+    } catch (error) {
+      this.reconnectAttempts++;
+      logger.warn('Reconnect attempt failed', {
+        accountId: this.account.accountId,
+        attempt: this.reconnectAttempts,
+        error
+      });
+
+      if (!this.intentionalDisconnect) {
+        const delay = this.getReconnectDelay();
+        this.reconnectTimeout = window.setTimeout(() => this.tryReconnect(), delay);
+      }
+    }
+  }
+
+  private handleMemberStateUpdated(data: EpicEventMemberStateUpdated) {
+    const parties = partyCache.entries().filter(([, party]) => party.id === data.party_id);
+    for (const [accountId, party] of parties) {
+      const partyMember = party.members.find((member) => member.account_id === data.account_id);
+      if (!partyMember) continue;
+
+      party.revision = data.revision;
+      party.updated_at = data.updated_at;
+      partyMember.joined_at = data.joined_at;
+      partyMember.updated_at = data.updated_at;
+
+      if (data.member_state_removed) {
+        for (const state of data.member_state_removed) {
+          delete partyMember.meta[state];
+        }
+      }
+
+      if (data.member_state_updated) {
+        partyMember.meta = { ...partyMember.meta, ...data.member_state_updated };
+      }
+
+      if (data.member_state_overridden) {
+        partyMember.meta = { ...partyMember.meta, ...data.member_state_overridden };
+      }
+
+      partyCache.set(accountId, { ...party });
+    }
+  }
+
+  private handlePartyUpdated(data: EpicEventPartyUpdated) {
+    const parties = partyCache.entries().filter(([, party]) => party.id === data.party_id);
+    for (const [accountId, party] of parties) {
+      party.id = data.party_id;
+      party.revision = data.revision;
+      party.updated_at = data.updated_at;
+      party.config = {
+        ...party.config,
+        type: data.party_type,
+        intention_ttl: data.intention_ttl_seconds,
+        invite_ttl: data.invite_ttl_seconds,
+        max_size: data.max_number_of_members,
+        sub_type: data.party_sub_type,
+        joinability: data.party_privacy_type
+      };
+
+      party.members = party.members.map((member) => ({
+        ...member,
+        role: member.account_id === data.captain_id ? 'CAPTAIN' : 'MEMBER'
+      }));
+
+      if (data.party_state_removed) {
+        for (const state of data.party_state_removed) {
+          delete party.meta[state];
+        }
+      }
+
+      if (data.party_state_updated) {
+        party.meta = { ...party.meta, ...data.party_state_updated };
+      }
+
+      if (data.party_state_overridden) {
+        party.meta = { ...party.meta, ...data.party_state_overridden };
+      }
+
+      partyCache.set(accountId, { ...party });
+    }
+  }
+
+  private handleMemberLeave(data: EpicEventMemberLeft | EpicEventMemberKicked | EpicEventMemberExpired) {
+    partyCache.delete(data.account_id);
+
+    const parties = partyCache.entries().filter(([, party]) => party.id === data.party_id);
+    for (const [accountId, party] of parties) {
+      party.members = party.members.filter((member) => member.account_id !== data.account_id);
+      party.revision = data.revision || party.revision;
+
+      partyCache.set(accountId, { ...party });
+    }
+  }
+
+  private async handleMemberJoin(data: EpicEventMemberJoined) {
+    const parties = partyCache.entries().filter(([, party]) => party.id === data.party_id);
+
+    const newMember: PartyMember = {
+      account_id: data.account_id,
+      revision: data.revision,
+      connections: [data.connection],
+      meta: data.member_state_updated,
+      joined_at: data.joined_at,
+      updated_at: data.updated_at,
+      role: 'MEMBER'
+    };
+
+    for (const [accountId, party] of parties) {
+      const alreadyPresent = party.members.some((m) => m.account_id === data.account_id);
+      if (!alreadyPresent) {
+        party.members = [...party.members, newMember];
+      }
+
+      party.revision = data.revision;
+      party.updated_at = data.updated_at || party.updated_at;
+
+      partyCache.set(accountId, { ...party });
+    }
+
+    const joiningAccount = accountStore.getAccount(data.account_id);
+    if (joiningAccount) {
+      const partyData = await getParty(joiningAccount).catch(() => null);
+      if (!partyData) partyCache.delete(data.account_id);
+    }
+  }
+
+  private handleMemberNewCaptain(data: EpicEventMemberNewCaptain) {
+    const parties = partyCache.entries().filter(([, party]) => party.id === data.party_id);
+    for (const [accountId, party] of parties) {
+      party.members = party.members.map((member) => ({
+        ...member,
+        role: member.account_id === data.account_id ? 'CAPTAIN' : 'MEMBER'
+      }));
+
+      party.revision = data.revision || party.revision;
+      partyCache.set(accountId, { ...party });
+    }
+  }
+
+  private handleFriendRequest(data: EpicEventFriendRequest) {
+    const friends = getOrInsertEntry(this.account.accountId);
+    if (data.status === 'PENDING') {
+      if (data.from === this.account.accountId) {
+        cacheNameAndAvatar(this.account, data.to);
+        friends.outgoing.set(data.to, {
+          accountId: data.to,
+          mutual: 0,
+          favorite: false,
+          created: data.timestamp
+        });
+      } else {
+        cacheNameAndAvatar(this.account, data.from);
+        friends.incoming.set(data.from, {
+          accountId: data.from,
+          mutual: 0,
+          favorite: false,
+          created: data.timestamp
+        });
+      }
+    } else if (data.status === 'ACCEPTED') {
+      const friendId = data.from === this.account.accountId ? data.to : data.from;
+
+      cacheNameAndAvatar(this.account, friendId);
+      friends.incoming.delete(friendId);
+      friends.outgoing.delete(friendId);
+      friends.friends.set(friendId, {
+        accountId: friendId,
+        mutual: 0,
+        alias: '',
+        note: '',
+        favorite: false,
+        created: data.timestamp
+      });
+    }
+  }
+
+  private handleFriendRemoved(data: EpicEventFriendRemoved) {
+    const friends = getOrInsertEntry(this.account.accountId);
+    const friendId = data.from === this.account.accountId ? data.to : data.from;
+
+    friends.friends.delete(friendId);
+    friends.incoming.delete(friendId);
+    friends.outgoing.delete(friendId);
+  }
+}

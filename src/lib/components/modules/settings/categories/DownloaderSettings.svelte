@@ -1,0 +1,146 @@
+<script lang="ts">
+  import { onMount, tick, untrack } from 'svelte';
+  import { toast } from 'svelte-sonner';
+  import { t } from '$lib/i18n';
+  import { logger } from '$lib/logger';
+  import { downloadingAppId } from '$lib/modules/download.svelte.js';
+  import { cacheApps, getLegendaryAccount, loginLegendary, logoutLegendary } from '$lib/modules/legendary';
+  import { downloaderSettingsSchema } from '$lib/schemas/settings';
+  import { accountStore, downloaderStore } from '$lib/storage';
+  import { handleError } from '$lib/utils';
+  import SettingItem from '$components/modules/settings/SettingItem.svelte';
+  import SettingsFolderPicker from '$components/modules/settings/SettingsFolderPicker.svelte';
+  import AccountCombobox from '$components/ui/AccountCombobox.svelte';
+  import { Switch } from '$components/ui/switch';
+  import type { DownloaderSettings } from '$types/settings';
+
+  let loadingAccount = $state(true);
+  let downloaderAccountId = $state<string>();
+  let switching = $state(false);
+  let mounted = false;
+
+  $effect(() => {
+    const accountId = downloaderAccountId;
+    if (mounted) {
+      untrack(() => {
+        switchOrDeleteAccount(accountId);
+      });
+    }
+  });
+
+  type SettingKey = keyof NonNullable<DownloaderSettings>;
+  type SettingValue = string | number | boolean;
+
+  async function handleSettingChange<K extends SettingKey, V extends SettingValue = SettingValue>(
+    eventOrValue: Event | V,
+    key: K
+  ) {
+    const value =
+      typeof eventOrValue === 'object' && eventOrValue ? (eventOrValue.target as HTMLInputElement).value : eventOrValue;
+
+    const newSettings: DownloaderSettings = {
+      ...$downloaderStore,
+      [key]: value
+    };
+
+    if (!downloaderSettingsSchema.safeParse(newSettings).success) {
+      return toast.error($t('settings.invalidValue'));
+    }
+
+    downloaderStore.set(() => newSettings);
+  }
+
+  async function switchOrDeleteAccount(accountId?: string) {
+    switching = true;
+
+    try {
+      await logoutLegendary();
+
+      if (accountId) {
+        const account = accountStore.getAccount(accountId)!;
+        await loginLegendary(account);
+        cacheApps().catch((error) => {
+          logger.error('Failed to cache apps after switching downloader account', { error });
+        });
+      }
+
+      toast.success(
+        accountId ? $t('settings.downloader.account.switched') : $t('settings.downloader.account.loggedOut')
+      );
+    } catch (error) {
+      handleError({
+        error,
+        message: accountId
+          ? $t('settings.downloader.account.failedToSwitch')
+          : $t('settings.downloader.account.failedToLogout')
+      });
+    } finally {
+      switching = false;
+    }
+  }
+
+  onMount(async () => {
+    downloaderAccountId = (await getLegendaryAccount()) || undefined;
+    loadingAccount = false;
+
+    await tick();
+    mounted = true;
+  });
+</script>
+
+<div class="space-y-6">
+  <SettingItem
+    description={$t('settings.downloader.downloadPath.description')}
+    labelFor="downloadPath"
+    orientation="vertical"
+    title={$t('settings.downloader.downloadPath.title')}
+  >
+    <SettingsFolderPicker
+      id="downloadPath"
+      defaultPath={$downloaderStore.downloadPath}
+      onchange={(e) => handleSettingChange(e, 'downloadPath')}
+      placeholder={$downloaderStore.downloadPath}
+      showClearButton={false}
+      value={$downloaderStore.downloadPath}
+    />
+  </SettingItem>
+
+  <SettingItem
+    description={$t('settings.downloader.account.description')}
+    labelFor="account"
+    orientation="vertical"
+    title={$t('settings.downloader.account.title')}
+  >
+    <AccountCombobox
+      disabled={switching || loadingAccount || !!$downloadingAppId}
+      type="single"
+      bind:value={downloaderAccountId}
+    />
+  </SettingItem>
+
+  <SettingItem
+    description={$t('settings.downloader.autoUpdate.description')}
+    labelFor="autoUpdate"
+    orientation="horizontal"
+    title={$t('settings.downloader.autoUpdate.title')}
+  >
+    <Switch
+      id="autoUpdate"
+      checked={$downloaderStore.autoUpdate}
+      onCheckedChange={(checked) => handleSettingChange(checked, 'autoUpdate')}
+    />
+  </SettingItem>
+
+  <SettingItem
+    description={$t('settings.downloader.sendNotifications.description')}
+    labelFor="sendNotifications"
+    orientation="horizontal"
+    title={$t('settings.downloader.sendNotifications.title')}
+  >
+    <Switch
+      id="sendNotifications"
+      checked={$downloaderStore.sendNotifications}
+      onCheckedChange={(checked) => handleSettingChange(checked, 'sendNotifications')}
+    />
+  </SettingItem>
+</div>

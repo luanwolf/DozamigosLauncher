@@ -1,0 +1,966 @@
+{
+  "hid_commando_007hw_rs01": {
+    "en": "Brainiac Jonesy",
+    "pt-br": "Cérebro Jonesy"
+  },
+  "hid_commando_007hw": {
+    "en": "Ghoul Trooper Ramirez",
+    "pt-br": "Soldado Carniçal Ramirez"
+  },
+  "hid_commando_007": {
+    "en": "Support Specialist Hawk",
+    "pt-br": "Especialista de Apoio Falcão"
+  },
+  "hid_commando_008_foundersf": {
+    "en": "Special Forces Ramirez",
+    "pt-br": "Forças Especiais Ramirez"
+  },
+  "hid_commando_008_foundersm": {
+    "en": "Special Forces Jonesy",
+    "pt-br": "Forças Especiais Jonesy"
+  },
+  "hid_commando_008": {
+    "en": "Special Forces Banshee",
+    "pt-br": "Forças Especiais Banshee"
+  },
+  "hid_commando_009_m": {
+    "en": "Centurion Hawk",
+    "pt-br": "Centurião Falcão"
+  },
+  "hid_commando_009": {
+    "en": "Colonel Wildcat",
+    "pt-br": "Coronel Gata Selvagem"
+  },
+  "hid_commando_010_bday": {
+    "en": "Birthday Brigade Ramirez",
+    "pt-br": "Brigada de Aniversário Ramirez"
+  },
+  "hid_commando_010": {
+    "en": "Sergeant Jonesy",
+    "pt-br": "Sargento Jonesy"
+  },
+  "hid_commando_011_f_v1_roadtrip": {
+    "en": "Redline Ramirez",
+    "pt-br": "Linha Vermelha Ramirez"
+  },
+  "hid_commando_011_m_easter": {
+    "en": "Rabbit Raider Jonesy",
+    "pt-br": "Coelho Saqueador Jonesy"
+  },
+  "hid_commando_011_m": {
+    "en": "Buckshot Raptor",
+    "pt-br": "Buckshot Raptor"
+  },
+  "hid_commando_011": {
+    "en": "Shrapnel Headhunter",
+    "pt-br": "Shrapnel Headhunter"
+  },
+  "hid_commando_013": {
+    "en": "Demolisher Jonesy",
+    "pt-br": "Demolisher Jonesy"
+  },
+  "hid_commando_013_stpatricks_f_v1": {
+    "en": "Four Leaf Wildcat",
+    "pt-br": "Four Leaf Gata Selvagem"
+  },
+  "hid_commando_013_stpatricks_f_v2": {
+    "en": "Highland Warrior Wildcat",
+    "pt-br": "Highland Warrior Gata Selvagem"
+  },
+  "hid_commando_013_stpatricks_m": {
+    "en": "Battle Hound Jonesy",
+    "pt-br": "Battle Hound Jonesy"
+  },
+  "hid_commando_014_m": {
+    "en": "Berserker Renegade",
+    "pt-br": "Berserker Renegade"
+  },
+  "hid_commando_014": {
+    "en": "Onslaught Headhunter",
+    "pt-br": "Onslaught Headhunter"
+  },
+  "hid_commando_014_wukong": {
+    "en": "Wukong",
+    "pt-br": "Wukong"
+  },
+  "hid_commando_015_f_v1_blockbuster": {
+    "en": "Chromium Ramirez",
+    "pt-br": "Chromium Ramirez"
+  },
+  "hid_commando_015_m_v1_blockbuster": {
+    "en": "Diecast Jonesy",
+    "pt-br": "Diecast Jonesy"
+  },
+  "hid_commando_015_m_v1": {
+    "en": "Bullet Storm Jonesy",
+    "pt-br": "Bullet Storm Jonesy"
+  },
+  "hid_commando_016_f_v1": {
+    "en": "Double Agent Evelynn",
+    "pt-br": "Double Agent Evelynn"
+  },
+  "hid_commando_016_m_v1": {
+    "en": "Undercover Vaughn",
+    "pt-br": "Undercover Vaughn"
+  },
+  "hid_commando_017_f_v1": {
+    "en": "First Shot Rio",
+    "pt-br": "First Shot Rio"
+  },
+  "hid_commando_018": {
+    "en": "Quickdraw Calamity",
+    "pt-br": "Quickdraw Calamity"
+  },
+  "hid_commando_019": {
+    "en": "Steel Wool Carlos",
+    "pt-br": "Steel Wool Carlos"
+  },
+  "hid_commando_021": {
+    "en": "Liteshow Spitfire",
+    "pt-br": "Liteshow Spitfire"
+  },
+  "hid_commando_022": {
+    "en": "Archetype Havoc",
+    "pt-br": "Archetype Havoc"
+  },
+  "hid_commando_023": {
+    "en": "Jolly Headhunter",
+    "pt-br": "Jolly Headhunter"
+  },
+  "hid_commando_024": {
+    "en": "Sgt. Winter",
+    "pt-br": "Sgt. Winter"
+  },
+  "hid_commando_025": {
+    "en": "Crackshot",
+    "pt-br": "Crackshot"
+  },
+  "hid_commando_026": {
+    "en": "Fallen Love Ranger Jonesy",
+    "pt-br": "Fallen Love Ranger Jonesy"
+  },
+  "hid_commando_027_piratesoldier": {
+    "en": "Buccaneer Jonesy",
+    "pt-br": "Buccaneer Jonesy"
+  },
+  "hid_commando_028_bunnybrawler": {
+    "en": "Bunny Brawler Luna",
+    "pt-br": "Bunny Brawler Luna"
+  },
+  "hid_commando_029_dinosoldier": {
+    "en": "Rex Jonesy",
+    "pt-br": "Rex Jonesy"
+  },
+  "hid_commando_030_retroscifisoldier": {
+    "en": "Extraterrestrial Rio",
+    "pt-br": "Extraterrestrial Rio"
+  },
+  "hid_commando_031_radsoldier": {
+    "en": "Breakbeat Wildcat",
+    "pt-br": "Breakbeat Gata Selvagem"
+  },
+  "hid_commando_032_halloweensoldier": {
+    "en": "JONESEE-BOT",
+    "pt-br": "JONESEE-BOT"
+  },
+  "hid_commando_033_halloweenquestsoldier": {
+    "en": "Swamp Knight",
+    "pt-br": "Swamp Knight"
+  },
+  "hid_commando_034_toytinkerer": {
+    "en": "Ted",
+    "pt-br": "Ted"
+  },
+  "hid_commando_035_caped_valentine": {
+    "en": "Dashing Hawk",
+    "pt-br": "Dashing Falcão"
+  },
+  "hid_commando_038_shock_wave": {
+    "en": "Powerhouse",
+    "pt-br": "Powerhouse"
+  },
+  "hid_commando_039_pajama_party": {
+    "en": "Tricera Ops Ramirez",
+    "pt-br": "Tricera Ops Ramirez"
+  },
+  "hid_commando_040_pirate_br": {
+    "en": "Buccaneer Ramirez",
+    "pt-br": "Buccaneer Ramirez"
+  },
+  "hid_commando_041_pirate_02_br": {
+    "en": "Sea Wolf Jonesy",
+    "pt-br": "Sea Wolf Jonesy"
+  },
+  "hid_commando_042_major": {
+    "en": "Major Oswald",
+    "pt-br": "Major Oswald"
+  },
+  "hid_commando_044_gumshoe_dark": {
+    "en": "Noir",
+    "pt-br": "Noir"
+  },
+  "hid_commando_045_chaos_agent": {
+    "en": "Chaos Agent",
+    "pt-br": "Chaos Agent"
+  },
+  "hid_commando_046_forestqueen": {
+    "en": "Autumn Queen",
+    "pt-br": "Autumn Queen"
+  },
+  "hid_commando_047_prickly_patroller": {
+    "en": "Prickly Patroller Ramirez",
+    "pt-br": "Prickly Patroller Ramirez"
+  },
+  "hid_commando_gcgrenade": {
+    "en": "Commando Spitfire",
+    "pt-br": "Commando Spitfire"
+  },
+  "hid_commando_gcgrenade_t": {
+    "en": "Sub Commando Jonesy",
+    "pt-br": "Sub Commando Jonesy"
+  },
+  "hid_commando_grenadegun_m_t": {
+    "en": "Rescue Trooper Havoc",
+    "pt-br": "Soldado de Resgate Havoc"
+  },
+  "hid_commando_grenadegun": {
+    "en": "Rescue Trooper Ramirez",
+    "pt-br": "Soldado de Resgate Ramirez"
+  },
+  "hid_commando_grenademaster": {
+    "en": "Master Grenadier Ramirez",
+    "pt-br": "Master Grenadier Ramirez"
+  },
+  "hid_commando_gunheadshothw_rs01": {
+    "en": "Skull Ranger Ramirez",
+    "pt-br": "Skull Ranger Ramirez"
+  },
+  "hid_commando_gunheadshothw": {
+    "en": "Skull Trooper Jonesy",
+    "pt-br": "Skull Trooper Jonesy"
+  },
+  "hid_commando_gunheadshot_m_v1_roadtrip": {
+    "en": "Tactical Assault Sledgehammer",
+    "pt-br": "Tactical Assault Sledgehammer"
+  },
+  "hid_commando_gunheadshot": {
+    "en": "Urban Assault Headhunter",
+    "pt-br": "Urban Assault Headhunter"
+  },
+  "hid_commando_gunheadshot_starter_m": {
+    "en": "Rogue Agent Jonesy",
+    "pt-br": "Rogue Agent Jonesy"
+  },
+  "hid_commando_guntough_f_4thjuly": {
+    "en": "Star-Spangled Headhunter",
+    "pt-br": "Star-Spangled Headhunter"
+  },
+  "hid_commando_guntough_m_4thjuly": {
+    "en": "Stars and Stripes Jonesy",
+    "pt-br": "Stars and Stripes Jonesy"
+  },
+  "hid_commando_guntough_rs01": {
+    "en": "Birthday Brigade Jonesy",
+    "pt-br": "Brigada de Aniversário Jonesy"
+  },
+  "hid_commando_guntough": {
+    "en": "Survivalist Jonesy",
+    "pt-br": "Survivalist Jonesy"
+  },
+  "hid_commando_guntough_valentine": {
+    "en": "Love Ranger Jonesy",
+    "pt-br": "Love Ranger Jonesy"
+  },
+  "hid_commando_myth02": {
+    "en": "Raven",
+    "pt-br": "Raven"
+  },
+  "hid_commando_myth03": {
+    "en": "Carbide",
+    "pt-br": "Carbide"
+  },
+  "hid_commando_shockdamage": {
+    "en": "Shock Trooper Renegade",
+    "pt-br": "Shock Trooper Renegade"
+  },
+  "hid_commando_sony": {
+    "en": "Commando Ramirez",
+    "pt-br": "Commando Ramirez"
+  },
+  "hid_commando_xbox": {
+    "en": "Commando Renegade",
+    "pt-br": "Commando Renegade"
+  },
+  "hid_constructor_007hw": {
+    "en": "Kyle the 13th",
+    "pt-br": "Kyle the 13th"
+  },
+  "hid_constructor_007": {
+    "en": "Controller Harper",
+    "pt-br": "Controller Harper"
+  },
+  "hid_constructor_008_foundersf": {
+    "en": "Power B.A.S.E. Penny",
+    "pt-br": "Power B.A.S.E. Penny"
+  },
+  "hid_constructor_008_foundersm": {
+    "en": "Power B.A.S.E. Kyle",
+    "pt-br": "Power B.A.S.E. Kyle"
+  },
+  "hid_constructor_008": {
+    "en": "Power B.A.S.E. Knox",
+    "pt-br": "Power B.A.S.E. Knox"
+  },
+  "hid_constructor_009": {
+    "en": "Sentinel Hype",
+    "pt-br": "Sentinel Hype"
+  },
+  "hid_constructor_010": {
+    "en": "Guardian Bull",
+    "pt-br": "Guardião Bull"
+  },
+  "hid_constructor_011_f_v1_roadtrip": {
+    "en": "Thunder Thora",
+    "pt-br": "Thunder Thora"
+  },
+  "hid_constructor_011": {
+    "en": "Machinist Harper",
+    "pt-br": "Machinist Harper"
+  },
+  "hid_constructor_013": {
+    "en": "Warden Kyle",
+    "pt-br": "Warden Kyle"
+  },
+  "hid_constructor_014_f": {
+    "en": "Riot Control Izza",
+    "pt-br": "Riot Control Izza"
+  },
+  "hid_constructor_014": {
+    "en": "Riot Response Hazard",
+    "pt-br": "Riot Response Hazard"
+  },
+  "hid_constructor_015": {
+    "en": "Heavy B.A.S.E. Kyle",
+    "pt-br": "Heavy B.A.S.E. Kyle"
+  },
+  "hid_constructor_016_f_v1": {
+    "en": "Demolitionist Penny",
+    "pt-br": "Demolidor Penny"
+  },
+  "hid_constructor_016_m_v1_blockbuster": {
+    "en": "8-Bit Demo",
+    "pt-br": "8-Bit Demo"
+  },
+  "hid_constructor_016_m_v1": {
+    "en": "Saboteur Bull",
+    "pt-br": "Saboteur Bull"
+  },
+  "hid_constructor_017_f_v1": {
+    "en": "Vintage-Tech Penny",
+    "pt-br": "Vintage-Tech Penny"
+  },
+  "hid_constructor_018": {
+    "en": "Black Knight Garridan",
+    "pt-br": "Black Knight Garridan"
+  },
+  "hid_constructor_019": {
+    "en": "Sentry Gunner Airheart",
+    "pt-br": "Sentry Gunner Airheart"
+  },
+  "hid_constructor_020": {
+    "en": "Sentry Gunner Krampus",
+    "pt-br": "Sentry Gunner Krampus"
+  },
+  "hid_constructor_021": {
+    "en": "Dark Vanguard Airheart",
+    "pt-br": "Dark Vanguard Airheart"
+  },
+  "hid_constructor_022": {
+    "en": "Conqueror Magnus",
+    "pt-br": "Conqueror Magnus"
+  },
+  "hid_constructor_023": {
+    "en": "The Ice King",
+    "pt-br": "The Ice King"
+  },
+  "hid_constructor_024_pirateconstructor": {
+    "en": "Privateer Hype",
+    "pt-br": "Privateer Hype"
+  },
+  "hid_constructor_025_progressivepirateconstructor": {
+    "en": "Blakebeard The Blackhearted",
+    "pt-br": "Blakebeard The Blackhearted"
+  },
+  "hid_constructor_026_bombsquadconstructor": {
+    "en": "BombSquad Kyle",
+    "pt-br": "BombSquad Kyle"
+  },
+  "hid_constructor_027_dinoconstructor": {
+    "en": "Prehistoric Izza",
+    "pt-br": "Prehistoric Izza"
+  },
+  "hid_constructor_028_retroscificonstructor": {
+    "en": "ED-EE",
+    "pt-br": "ED-EE"
+  },
+  "hid_constructor_029_radstoryconstructor": {
+    "en": "Dennis Jr.",
+    "pt-br": "Dennis Jr."
+  },
+  "hid_constructor_030_radconstructor": {
+    "en": "Power Pop Penny",
+    "pt-br": "Power Pop Penny"
+  },
+  "hid_constructor_031_halloweenconstructor": {
+    "en": "\"Arrlene\" Izza",
+    "pt-br": "\"Arrlene\" Izza"
+  },
+  "hid_constructor_032_toyconstructor": {
+    "en": "Sgt. Tank Gatling",
+    "pt-br": "Sgt. Tanque Gatling"
+  },
+  "hid_constructor_033_villain_fleming": {
+    "en": "Gold Knox",
+    "pt-br": "Gold Knox"
+  },
+  "hid_constructor_034_mechstructor": {
+    "en": "Machinist Mina",
+    "pt-br": "Machinist Mina"
+  },
+  "hid_constructor_035_birthday_constructor": {
+    "en": "Birthday Brigade Penny",
+    "pt-br": "Brigada de Aniversário Penny"
+  },
+  "hid_constructor_036_dino_constructor": {
+    "en": "Ankylo Kyle",
+    "pt-br": "Ankylo Kyle"
+  },
+  "hid_constructor_037_director": {
+    "en": "Director Riggs",
+    "pt-br": "Director Riggs"
+  },
+  "hid_constructor_038_gumshoe": {
+    "en": "Sleuth",
+    "pt-br": "Sleuth"
+  },
+  "hid_constructor_039_assemble_l": {
+    "en": "Lok-Bot",
+    "pt-br": "Lok-Bot"
+  },
+  "hid_constructor_040_lars": {
+    "en": "Lars",
+    "pt-br": "Lars"
+  },
+  "hid_constructor_042_butterfly": {
+    "en": "Flutter",
+    "pt-br": "Flutter"
+  },
+  "hid_constructor_043_hotwire": {
+    "en": "Hotwire",
+    "pt-br": "Hotwire"
+  },
+  "hid_constructor_41_alien_agent": {
+    "en": "Brainstorm",
+    "pt-br": "Brainstorm"
+  },
+  "hid_constructor_basebig": {
+    "en": "MEGA B.A.S.E. Kyle",
+    "pt-br": "MEGA B.A.S.E. Kyle"
+  },
+  "hid_constructor_basehyperhw": {
+    "en": "Catstructor Penny",
+    "pt-br": "Catstructor Penny"
+  },
+  "hid_constructor_basehyper": {
+    "en": "Hotfixer Hazard",
+    "pt-br": "Hotfixer Hazard"
+  },
+  "hid_constructor_hammerplasma_4thjuly": {
+    "en": "Patriot Penny",
+    "pt-br": "Patriot Penny"
+  },
+  "hid_constructor_hammerplasma": {
+    "en": "Electro-pulse Penny",
+    "pt-br": "Electro-pulse Penny"
+  },
+  "hid_constructor_hammertank": {
+    "en": "Tank Penny",
+    "pt-br": "Tanque Penny"
+  },
+  "hid_constructor_myth02": {
+    "en": "Steel Wool Syd",
+    "pt-br": "Steel Wool Syd"
+  },
+  "hid_constructor_plasmadamage_easter": {
+    "en": "Miss Bunny Penny",
+    "pt-br": "Miss Bunny Penny"
+  },
+  "hid_constructor_plasmadamage": {
+    "en": "Plasma Specialist Izza",
+    "pt-br": "Plasma Specialist Izza"
+  },
+  "hid_constructor_rushbase_f": {
+    "en": "Marathon Hype",
+    "pt-br": "Marathon Hype"
+  },
+  "hid_constructor_rushbase": {
+    "en": "B.A.S.E. Kyle",
+    "pt-br": "B.A.S.E. Kyle"
+  },
+  "hid_constructor_sony": {
+    "en": "Guardian Penny",
+    "pt-br": "Guardião Penny"
+  },
+  "hid_constructor_xbox": {
+    "en": "Guardian Knox",
+    "pt-br": "Guardião Knox"
+  },
+  "hid_ninja_007": {
+    "en": "Brawler Luna",
+    "pt-br": "Brawler Luna"
+  },
+  "hid_ninja_008": {
+    "en": "Stonefoot Crash",
+    "pt-br": "Stonefoot Crash"
+  },
+  "hid_ninja_009_f_valentine": {
+    "en": "Snuggle Specialist Sarah",
+    "pt-br": "Snuggle Specialist Sarah"
+  },
+  "hid_ninja_009": {
+    "en": "Skirmisher Edge",
+    "pt-br": "Skirmisher Edge"
+  },
+  "hid_ninja_010_f": {
+    "en": "Deadly Blade Crash",
+    "pt-br": "Deadly Blade Crash"
+  },
+  "hid_ninja_010": {
+    "en": "Deadly Star Scorpion",
+    "pt-br": "Deadly Star Scorpion"
+  },
+  "hid_ninja_011": {
+    "en": "Energy Thief Mari",
+    "pt-br": "Energy Thief Mari"
+  },
+  "hid_ninja_013": {
+    "en": "Alchemist Sarah",
+    "pt-br": "Alchemist Sarah"
+  },
+  "hid_ninja_014_f": {
+    "en": "Thunderstrike Mari",
+    "pt-br": "Thunderstrike Mari"
+  },
+  "hid_ninja_014": {
+    "en": "Whirlwind Scorch",
+    "pt-br": "Whirlwind Scorch"
+  },
+  "hid_ninja_015_f_v1_roadtrip": {
+    "en": "Whiteout Fiona",
+    "pt-br": "Whiteout Fiona"
+  },
+  "hid_ninja_015_f_v1": {
+    "en": "Harvester Sarah",
+    "pt-br": "Harvester Sarah"
+  },
+  "hid_ninja_016_f_v1": {
+    "en": "Deadly Lotus Luna",
+    "pt-br": "Deadly Lotus Luna"
+  },
+  "hid_ninja_016_m_v1": {
+    "en": "Piercing Lotus Edge",
+    "pt-br": "Piercing Lotus Edge"
+  },
+  "hid_ninja_017_m_v1": {
+    "en": "Infiltrator Ken",
+    "pt-br": "Infiltrator Ken"
+  },
+  "hid_ninja_018": {
+    "en": "Plague Doctor Igor",
+    "pt-br": "Plague Doctor Igor"
+  },
+  "hid_ninja_019": {
+    "en": "Dire",
+    "pt-br": "Dire"
+  },
+  "hid_ninja_020": {
+    "en": "Cloaked Shadow",
+    "pt-br": "Cloaked Shadow"
+  },
+  "hid_ninja_021": {
+    "en": "Forged Fate",
+    "pt-br": "Forged Fate"
+  },
+  "hid_ninja_022": {
+    "en": "Overtaker Hiro",
+    "pt-br": "Overtaker Hiro"
+  },
+  "hid_ninja_023": {
+    "en": "Lynx Kassandra",
+    "pt-br": "Lynx Kassandra"
+  },
+  "hid_ninja_024": {
+    "en": "Anti-Cuddle Sarah",
+    "pt-br": "Anti-Cuddle Sarah"
+  },
+  "hid_ninja_025_pirateninja": {
+    "en": "Swashbuckler Keelhaul",
+    "pt-br": "Swashbuckler Keelhaul"
+  },
+  "hid_ninja_026_reddragonninja": {
+    "en": "Hybrid",
+    "pt-br": "Hybrid"
+  },
+  "hid_ninja_027_bunnyninja": {
+    "en": "Dashing Hare Ken",
+    "pt-br": "Dashing Hare Ken"
+  },
+  "hid_ninja_028_razor": {
+    "en": "Razor",
+    "pt-br": "Razor"
+  },
+  "hid_ninja_029_dinoninja": {
+    "en": "Paleo Luna",
+    "pt-br": "Paleo Luna"
+  },
+  "hid_ninja_030_retroscifininja": {
+    "en": "Intergalactic Ken",
+    "pt-br": "Intergalactic Ken"
+  },
+  "hid_ninja_031_radninja": {
+    "en": "Varsity Hiro",
+    "pt-br": "Varsity Hiro"
+  },
+  "hid_ninja_033_halloweenninja": {
+    "en": "Mermonster Ken",
+    "pt-br": "Mermonster Ken"
+  },
+  "hid_ninja_034_toymonkey": {
+    "en": "Monks",
+    "pt-br": "Monks"
+  },
+  "hid_ninja_035_f_cupid": {
+    "en": "Stoneheart Farrah",
+    "pt-br": "Stoneheart Farrah"
+  },
+  "hid_ninja_037_junk_samurai": {
+    "en": "Samurai Scrapper",
+    "pt-br": "Samurai Scrapper"
+  },
+  "hid_ninja_038_male_ninja_pirate": {
+    "en": "Freebooter Ken",
+    "pt-br": "Flibusteiro Ken"
+  },
+  "hid_ninja_039_dino_ninja": {
+    "en": "Jurassic Ken",
+    "pt-br": "Jurassic Ken"
+  },
+  "hid_ninja_040_dennis": {
+    "en": "Dennis",
+    "pt-br": "Dennis"
+  },
+  "hid_ninja_041_deco": {
+    "en": "Venturion",
+    "pt-br": "Venturion"
+  },
+  "hid_ninja_042_assembler": {
+    "en": "Robo-Ray",
+    "pt-br": "Robo-Ray"
+  },
+  "hid_ninja_043_cranium": {
+    "en": "Deimos",
+    "pt-br": "Deimos"
+  },
+  "hid_ninja_044_fennix": {
+    "en": "Fennix",
+    "pt-br": "Fennix"
+  },
+  "hid_ninja_045_snowstrike": {
+    "en": "Snowstrike",
+    "pt-br": "Snowstrike"
+  },
+  "hid_ninja_eternalwanderer": {
+    "en": "Eternal Wanderer",
+    "pt-br": "Eternal Wanderer"
+  },
+  "hid_ninja_myth02": {
+    "en": "The Cloaked Star",
+    "pt-br": "The Cloaked Star"
+  },
+  "hid_ninja_myth03": {
+    "en": "Bladestorm Enforcer",
+    "pt-br": "Bladestorm Enforcer"
+  },
+  "hid_ninja_slashbreathhw": {
+    "en": "Sarah Hotep",
+    "pt-br": "Sarah Hotep"
+  },
+  "hid_ninja_slashbreath": {
+    "en": "Dragon Scorch",
+    "pt-br": "Dragon Scorch"
+  },
+  "hid_ninja_slashtail": {
+    "en": "Fleetfoot Ken",
+    "pt-br": "Fleetfoot Ken"
+  },
+  "hid_ninja_smokedimmak": {
+    "en": "Dim Mak Mari",
+    "pt-br": "Dim Mak Mari"
+  },
+  "hid_ninja_sony": {
+    "en": "Bluestreak Ken",
+    "pt-br": "Bluestreak Ken"
+  },
+  "hid_ninja_starsassassin_foundersf": {
+    "en": "Lotus Assassin Sarah",
+    "pt-br": "Lotus Assassin Sarah"
+  },
+  "hid_ninja_starsassassin_foundersm": {
+    "en": "Lotus Assassin Ken",
+    "pt-br": "Lotus Assassin Ken"
+  },
+  "hid_ninja_starsassassin": {
+    "en": "Assassin Sarah",
+    "pt-br": "Assassin Sarah"
+  },
+  "hid_ninja_starsrainhw": {
+    "en": "Swift Shuriken Llamurai",
+    "pt-br": "Swift Shuriken Llamurai"
+  },
+  "hid_ninja_starsrain": {
+    "en": "Shuriken Master Sarah",
+    "pt-br": "Shuriken Master Sarah"
+  },
+  "hid_ninja_swordmaster": {
+    "en": "Swordmaster Ken",
+    "pt-br": "Swordmaster Ken"
+  },
+  "hid_ninja_xbox": {
+    "en": "Jade Assassin Sarah",
+    "pt-br": "Jade Assassin Sarah"
+  },
+  "hid_outlander_007_rs01": {
+    "en": "Jingle Jess",
+    "pt-br": "Jingle Jess"
+  },
+  "hid_outlander_007": {
+    "en": "Enforcer Grizzly",
+    "pt-br": "Enforcer Grizzly"
+  },
+  "hid_outlander_008_foundersf": {
+    "en": "Recon Scout Jess",
+    "pt-br": "Recon Scout Jess"
+  },
+  "hid_outlander_008_foundersm": {
+    "en": "Recon Scout A.C.",
+    "pt-br": "Recon Scout A.C."
+  },
+  "hid_outlander_008": {
+    "en": "Recon Scout Eagle Eye",
+    "pt-br": "Recon Scout Eagle Eye"
+  },
+  "hid_outlander_009": {
+    "en": "Vanguard Southie",
+    "pt-br": "Vanguard Southie"
+  },
+  "hid_outlander_010_m_4thjuly": {
+    "en": "Old Glory A.C.",
+    "pt-br": "Old Glory A.C."
+  },
+  "hid_outlander_010_m": {
+    "en": "Trailblaster A.C.",
+    "pt-br": "Trailblaster A.C."
+  },
+  "hid_outlander_010": {
+    "en": "Shockblaster Buzz",
+    "pt-br": "Shockblaster Buzz"
+  },
+  "hid_outlander_011": {
+    "en": "Gunblazer Southie",
+    "pt-br": "Gunblazer Southie"
+  },
+  "hid_outlander_013": {
+    "en": "Fragment Flurry Jess",
+    "pt-br": "Fragment Flurry Jess"
+  },
+  "hid_outlander_013_stpatricks": {
+    "en": "Staredown Southie",
+    "pt-br": "Staredown Southie"
+  },
+  "hid_outlander_014_m": {
+    "en": "Flash A.C.",
+    "pt-br": "Flash A.C."
+  },
+  "hid_outlander_014": {
+    "en": "Fireflower Eagle Eye",
+    "pt-br": "Fireflower Eagle Eye"
+  },
+  "hid_outlander_015_f_v1": {
+    "en": "T.E.D.D. Shot Jess",
+    "pt-br": "T.E.D.D. Shot Jess"
+  },
+  "hid_outlander_016_f_v1": {
+    "en": "Ambush Buzz",
+    "pt-br": "Ambush Buzz"
+  },
+  "hid_outlander_016_m_v1": {
+    "en": "Shockgunner Grizzly",
+    "pt-br": "Shockgunner Grizzly"
+  },
+  "hid_outlander_017_m_v1": {
+    "en": "Wild Fragment Deadeye",
+    "pt-br": "Wild Fragment Deadeye"
+  },
+  "hid_outlander_018": {
+    "en": "Sanguine Dusk",
+    "pt-br": "Sanguine Dusk"
+  },
+  "hid_outlander_020": {
+    "en": "Valkyrie Rio",
+    "pt-br": "Valkyrie Rio"
+  },
+  "hid_outlander_021": {
+    "en": "Ventura Ramirez",
+    "pt-br": "Ventura Ramirez"
+  },
+  "hid_outlander_022": {
+    "en": "Subzero Zenith",
+    "pt-br": "Subzero Zenith"
+  },
+  "hid_outlander_023": {
+    "en": "The Ice Queen",
+    "pt-br": "The Ice Queen"
+  },
+  "hid_outlander_024": {
+    "en": "Steel Wool Anthony",
+    "pt-br": "Steel Wool Anthony"
+  },
+  "hid_outlander_025_pirateoutlander": {
+    "en": "Crossbones Barret",
+    "pt-br": "Crossbones Barret"
+  },
+  "hid_outlander_026_bunnyoutlander": {
+    "en": "Cottontail Eagle Eye",
+    "pt-br": "Cottontail Eagle Eye"
+  },
+  "hid_outlander_027_dinooutlander": {
+    "en": "Fossil Southie",
+    "pt-br": "Fossil Southie"
+  },
+  "hid_outlander_028_retroscifistoryoutlander": {
+    "en": "Azalea Clark",
+    "pt-br": "Azalea Clark"
+  },
+  "hid_outlander_029_retroscifioutlander": {
+    "en": "Cyberclops",
+    "pt-br": "Cyberclops"
+  },
+  "hid_outlander_030_radoutlander": {
+    "en": "Main Stage Quinn",
+    "pt-br": "Main Stage Quinn"
+  },
+  "hid_outlander_031_halloweenoutlander": {
+    "en": "Willow",
+    "pt-br": "Willow"
+  },
+  "hid_outlander_032_toyoutlander": {
+    "en": "Jilly Teacup",
+    "pt-br": "Jilly Teacup"
+  },
+  "hid_outlander_033_kurohomura": {
+    "en": "Kurohomura",
+    "pt-br": "Kurohomura"
+  },
+  "hid_outlander_034_period_fleming": {
+    "en": "Undercover Buzz",
+    "pt-br": "Undercover Buzz"
+  },
+  "hid_outlander_035_palespooky_outlander_holiday": {
+    "en": "Red Willow",
+    "pt-br": "Red Willow"
+  },
+  "hid_outlander_036_dino_outlander": {
+    "en": "Parasaur Jess",
+    "pt-br": "Parasaur Jess"
+  },
+  "hid_outlander_037_fuzzy_bear_teddy": {
+    "en": "Metal Team Leader",
+    "pt-br": "Metal Team Leader"
+  },
+  "hid_outlander_038_clip": {
+    "en": "Cassie \"Clip\" Lipman",
+    "pt-br": "Cassie \"Clip\" Lipman"
+  },
+  "hid_outlander_039_female_gumshoe": {
+    "en": "Gumshoe",
+    "pt-br": "Gumshoe"
+  },
+  "hid_outlander_040_assemblek": {
+    "en": "Robo-Kevin",
+    "pt-br": "Robo-Kevin"
+  },
+  "hid_outlander_041_dinocollector": {
+    "en": "Gia",
+    "pt-br": "Gia"
+  },
+  "hid_outlander_042_madcap": {
+    "en": "Madcap",
+    "pt-br": "Madcap"
+  },
+  "hid_outlander_043_madcommander": {
+    "en": "Mayhem",
+    "pt-br": "Mayhem"
+  },
+  "hid_outlander_myth02": {
+    "en": "Ragnarok",
+    "pt-br": "Ragnarok"
+  },
+  "hid_outlander_myth03": {
+    "en": "Field Agent Rio",
+    "pt-br": "Field Agent Rio"
+  },
+  "hid_outlander_punchdamage": {
+    "en": "Striker A.C.",
+    "pt-br": "Striker A.C."
+  },
+  "hid_outlander_punchphase": {
+    "en": "Shock Specialist A.C.",
+    "pt-br": "Especialista em Choque A.C."
+  },
+  "hid_outlander_sony": {
+    "en": "Trailblazer A.C.",
+    "pt-br": "Desbravadora A.C."
+  },
+  "hid_outlander_spherefragment": {
+    "en": "Trailblazer Quinn",
+    "pt-br": "Desbravadora Quinn"
+  },
+  "hid_outlander_xbox": {
+    "en": "Trailblazer Jess",
+    "pt-br": "Desbravadora Jess"
+  },
+  "hid_outlander_zonefragment": {
+    "en": "Phase Scout Jess",
+    "pt-br": "Phase Scout Jess"
+  },
+  "hid_outlander_zoneharvesthw": {
+    "en": "Bloodfinder A.C.",
+    "pt-br": "Bloodfinder A.C."
+  },
+  "hid_outlander_zoneharvest_blockbuster": {
+    "en": "Archaeolo-Jess",
+    "pt-br": "Archaeolo-Jess"
+  },
+  "hid_outlander_zoneharvest": {
+    "en": "Pathfinder Jess",
+    "pt-br": "Desbravador Jess"
+  },
+  "hid_outlander_zonepistolhw": {
+    "en": "Beetlejess",
+    "pt-br": "Beetlejess"
+  },
+  "hid_outlander_zonepistol": {
+    "en": "Ranger Deadeye",
+    "pt-br": "Ranger Deadeye"
+  }
+}

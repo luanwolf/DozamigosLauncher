@@ -1,0 +1,92 @@
+import type { Rarities } from '$lib/constants/stw/resources';
+import type { ZoneCategories } from '$lib/constants/stw/world-info';
+import type { Locale } from '$lib/paraglide/runtime';
+import type { ParsedWorldMission } from '$types/game/stw/world-info';
+
+export type RarityType = (typeof Rarities)[keyof typeof Rarities];
+export type ResourceType = 'construction' | 'currency' | 'evo' | 'perk' | 'sc' | 'token' | 'voucher' | 'xp' | 'xpboost';
+
+export type Resource = {
+  name: string;
+  type: ResourceType;
+};
+
+export type SurvivorData = {
+  gender: number;
+  name: string | null;
+  portrait: string | null;
+};
+
+export type SurvivorUniqueLeadData = {
+  managerSynergy: string;
+  personality: string;
+  portrait: string;
+};
+
+export type IngredientData = {
+  name: string;
+};
+
+export type TrapData = {
+  name: string;
+};
+
+export type TeamPerkData = {
+  name: string;
+  icon: string;
+};
+
+export type GadgetData = {
+  name: string;
+  icon: string;
+};
+
+export type HeroData = {
+  name: string;
+  type: 'Soldier' | 'Constructor' | 'Ninja' | 'Outlander';
+};
+
+export type ZoneThemeData = {
+  names: Record<Locale, string>;
+};
+
+export type TheaterData = {
+  names: Record<Locale, string>;
+};
+
+export type MissionData = {
+  names: Record<Locale, string>;
+};
+
+export type ParsedModifierData = NonNullable<ParsedWorldMission['modifiers']>[number];
+
+export type ParsedResourceData = {
+  imageUrl: string;
+  itemType: string;
+  key: string;
+  name: string;
+  rarity: RarityType;
+  type: 'defender' | 'hero' | 'melee' | 'ranged' | 'resource' | 'ingredient' | 'trap' | 'worker' | null;
+  quantity: number;
+};
+
+export type ParsedZoneData = {
+  id?: keyof typeof ZoneCategories;
+  imageUrl: string;
+};
+
+export type ParsedRarityData = {
+  type: string;
+  name: string;
+  rarity: RarityType;
+};
+
+export type DailyQuestData = {
+  names: Record<Locale, string>;
+  limit: number;
+  rewards: {
+    gold: number;
+    mtx: number;
+    xp: number;
+  };
+};

@@ -1,0 +1,610 @@
+{
+  "daily_destroyarcademachines": {
+    "names": {
+      "de": "Tägliche Zerstörung (Spielautomaten)",
+      "en": "Daily Destroy (Arcade Machines)",
+      "es": "Destrucción diaria (máquinas recreativas)",
+      "fr": "Destruction quotidienne (bornes d'arcade)",
+      "pt-br": "Destruição Diária (Máquinas de Fliperama)",
+      "tr": "Günlük Yok Etme (Oyun Makineleri)"
+    },
+    "limit": 3,
+    "rewards": {
+      "gold": 250,
+      "mtx": 100,
+      "xp": 14000
+    }
+  },
+  "daily_destroybears": {
+    "names": {
+      "de": "Tägliche Zerstörung (Teddybären)",
+      "en": "Daily Destroy (Teddy Bears)",
+      "es": "Destrucción diaria (ositos de peluche)",
+      "fr": "Destruction quotidienne (nounours)",
+      "pt-br": "Destruição Diária (Ursos de Pelúcia)",
+      "tr": "Günlük Yok Etme (Oyuncak Ayı)"
+    },
+    "limit": 8,
+    "rewards": {
+      "gold": 250,
+      "mtx": 100,
+      "xp": 14000
+    }
+  },
+  "daily_destroyfiretrucks": {
+    "names": {
+      "de": "Tägliche Zerstörung (Feuerwehrautos)",
+      "en": "Daily Destroy (Fire Trucks)",
+      "es": "Destrucción diaria (camiones de bomberos)",
+      "fr": "Destruction quotidienne (camions de pompier)",
+      "pt-br": "Destruição Diária (Carros de Bombeiro)",
+      "tr": "Günlük Yok Etme (İtfaiye Kamyonu)"
+    },
+    "limit": 3,
+    "rewards": {
+      "gold": 250,
+      "mtx": 100,
+      "xp": 14000
+    }
+  },
+  "daily_destroygnomes": {
+    "names": {
+      "de": "Tägliche Zerstörung (Gartenzwerge)",
+      "en": "Daily Destroy (Garden Gnomes)",
+      "es": "Destrucción diaria (gnomos de jardín)",
+      "fr": "Destruction quotidienne (nains de jardin)",
+      "pt-br": "Destruição Diária (Gnomos de Jardim)",
+      "tr": "Günlük Yok Etme (Bahçe Cüceleri)"
+    },
+    "limit": 3,
+    "rewards": {
+      "gold": 250,
+      "mtx": 100,
+      "xp": 14000
+    }
+  },
+  "daily_destroypropanetanks": {
+    "names": {
+      "de": "Tägliche Zerstörung (Propantanks)",
+      "en": "Daily Destroy (Propane Tanks)",
+      "es": "Destrucción diaria (tanques de propano)",
+      "fr": "Destruction quotidienne (bonbonnes de gaz)",
+      "pt-br": "Destruição Diária (Tanques de Propano)",
+      "tr": "Günlük Yok Etme (Gaz Tankları)"
+    },
+    "limit": 10,
+    "rewards": {
+      "gold": 250,
+      "mtx": 100,
+      "xp": 14000
+    }
+  },
+  "daily_destroyseesaws": {
+    "names": {
+      "de": "Tägliche Zerstörung (Wippen)",
+      "en": "Daily Destroy (Park Seesaws)",
+      "es": "Destrucción diaria (balancines)",
+      "fr": "Destruction quotidienne (balançoires)",
+      "pt-br": "Destruição Diária (Gangorras de Parque)",
+      "tr": "Günlük Yok Etme (Tahterevalli)"
+    },
+    "limit": 6,
+    "rewards": {
+      "gold": 250,
+      "mtx": 100,
+      "xp": 14000
+    }
+  },
+  "daily_destroyserverracks": {
+    "names": {
+      "de": "Tägliche Zerstörung (Serverschränke)",
+      "en": "Daily Destroy (Server Racks)",
+      "es": "Destrucción diaria (grupos de servidores)",
+      "fr": "Destruction quotidienne (baies à serveur)",
+      "pt-br": "Destruição Diária (Armários de Servidor)",
+      "tr": "Günlük Yok Etme (Sunucu Kabinleri)"
+    },
+    "limit": 4,
+    "rewards": {
+      "gold": 250,
+      "mtx": 100,
+      "xp": 14000
+    }
+  },
+  "daily_destroytransformers": {
+    "names": {
+      "de": "Tägliche Zerstörung (Transformatoren)",
+      "en": "Daily Destroy (Transformers)",
+      "es": "Destrucción diaria (transformadores)",
+      "fr": "Destruction quotidienne (transformateurs)",
+      "pt-br": "Destruição Diária (Transformadores)",
+      "tr": "Günlük Yok Etme (Trafolar)"
+    },
+    "limit": 2,
+    "rewards": {
+      "gold": 250,
+      "mtx": 100,
+      "xp": 14000
+    }
+  },
+  "daily_destroytvs": {
+    "names": {
+      "de": "Tägliche Zerstörung (Fernseher)",
+      "en": "Daily Destroy (TVs)",
+      "es": "Destrucción diaria (televisores)",
+      "fr": "Destruction quotidienne (télévisions)",
+      "pt-br": "Destruição Diária (TVs)",
+      "tr": "Günlük Yok Etme (Televizyonlar)"
+    },
+    "limit": 20,
+    "rewards": {
+      "gold": 250,
+      "mtx": 100,
+      "xp": 14000
+    }
+  },
+  "daily_discovery_industriallocations": {
+    "names": {
+      "de": "Tägliche Industriebaustellenaufklärung",
+      "en": "Daily Scouting Industrial Construction",
+      "es": "Exploración diaria de construcción industrial",
+      "fr": "Exploration quotidienne (industrie)",
+      "pt-br": "Vigilância Diária de Construção Industrial",
+      "tr": "Günlük Keşif Endüstriyel İnşa"
+    },
+    "limit": 3,
+    "rewards": {
+      "gold": 250,
+      "mtx": 100,
+      "xp": 14000
+    }
+  },
+  "daily_discovery_rurallocations": {
+    "names": {
+      "de": "Tägliche Landaufklärung ",
+      "en": "Daily Scouting Rural ",
+      "es": "Exploración diaria rural ",
+      "fr": "Exploration quotidienne (campagne) ",
+      "pt-br": "Vigilância Diária Rural ",
+      "tr": "Günlük Kırsal Keşifleri "
+    },
+    "limit": 3,
+    "rewards": {
+      "gold": 250,
+      "mtx": 100,
+      "xp": 14000
+    }
+  },
+  "daily_discovery_shelters": {
+    "names": {
+      "de": "Tägliche Schutzbunkeraufklärung",
+      "en": "Daily Scouting Shelters",
+      "es": "Exploración diaria de refugios",
+      "fr": "Exploration quotidienne (refuges)",
+      "pt-br": "Vigilância Diária de Abrigos",
+      "tr": "Günlük Keşif Sığınakları"
+    },
+    "limit": 4,
+    "rewards": {
+      "gold": 250,
+      "mtx": 100,
+      "xp": 14000
+    }
+  },
+  "daily_discovery_suburbanlocations": {
+    "names": {
+      "de": "Tägliche Vorstadtaufklärung",
+      "en": "Daily Scouting Suburbia",
+      "es": "Exploración diaria en suburbios",
+      "fr": "Exploration quotidienne (banlieue)",
+      "pt-br": "Vigilância Diária de Subúrbio",
+      "tr": "Günlük Keşif Banliyöleri"
+    },
+    "limit": 10,
+    "rewards": {
+      "gold": 250,
+      "mtx": 100,
+      "xp": 14000
+    }
+  },
+  "daily_discovery_urbanlocations": {
+    "names": {
+      "de": "Tägliche Stadtaufklärung",
+      "en": "Daily Scouting Cities",
+      "es": "Exploración diaria de ciudades",
+      "fr": "Exploration quotidienne (villes)",
+      "pt-br": "Vigilância Diária de Cidades",
+      "tr": "Günlük Şehir Keşifleri"
+    },
+    "limit": 8,
+    "rewards": {
+      "gold": 250,
+      "mtx": 100,
+      "xp": 14000
+    }
+  },
+  "daily_explorezones": {
+    "names": {
+      "de": "Erkundungstruppe",
+      "en": "Exploration Party",
+      "es": "Grupo de exploración",
+      "fr": "Groupe d'exploration",
+      "pt-br": "Grupo de Exploração",
+      "tr": "Keşif Ekibi"
+    },
+    "limit": 3,
+    "rewards": {
+      "gold": 250,
+      "mtx": 100,
+      "xp": 14000
+    }
+  },
+  "daily_high_priority": {
+    "names": {
+      "de": "Alle zusammen",
+      "en": "All Together Now",
+      "es": "Ahora todos juntos",
+      "fr": "Attentifs ensemble",
+      "pt-br": "Todos Juntos Agora",
+      "tr": "Şimdi Hep Beraber"
+    },
+    "limit": 50,
+    "rewards": {
+      "gold": 250,
+      "mtx": 150,
+      "xp": 14000
+    }
+  },
+  "daily_huskextermination_anyhero": {
+    "names": {
+      "de": "Hüllenausrottung (Beliebiger Held)",
+      "en": "Husk Extermination (Any Hero)",
+      "es": "Exterminación de cáscaras (con cualquier héroe)",
+      "fr": "Extermination de Carcasses (tout héros)",
+      "pt-br": "Extermínio de Carcaças (Qualquer Herói)",
+      "tr": "Suratsız Katliamı (Herhangi bir kahramanla)"
+    },
+    "limit": 500,
+    "rewards": {
+      "gold": 250,
+      "mtx": 100,
+      "xp": 14000
+    }
+  },
+  "daily_huskextermination_constructor": {
+    "names": {
+      "de": "Hüllenausrottung (Konstrukteur)",
+      "en": "Husk Extermination (Constructor)",
+      "es": "Exterminación de cáscaras (constructor)",
+      "fr": "Extermination de Carcasses (Constructeur)",
+      "pt-br": "Extermínio de Carcaças (Construtor)",
+      "tr": "Suratsız Katliamı (İnşaatçı)"
+    },
+    "limit": 300,
+    "rewards": {
+      "gold": 250,
+      "mtx": 100,
+      "xp": 14000
+    }
+  },
+  "daily_huskextermination_melee": {
+    "names": {
+      "de": "Hüllenausrottung (Nahkampf)",
+      "en": "Husk Extermination (Melee)",
+      "es": "Exterminación de cáscaras (cuerpo a cuerpo)",
+      "fr": "Extermination de Carcasses (mêlée)",
+      "pt-br": "Extermínio de Carcaças (Corpo a Corpo)",
+      "tr": "Suratsız Katliamı (Yakın Dövüş)"
+    },
+    "limit": 300,
+    "rewards": {
+      "gold": 250,
+      "mtx": 100,
+      "xp": 14000
+    }
+  },
+  "daily_huskextermination_ninja": {
+    "names": {
+      "de": "Hüllenausrottung (Ninja)",
+      "en": "Husk Extermination (Ninja)",
+      "es": "Exterminación de cáscaras (ninja)",
+      "fr": "Extermination de Carcasses (Ninja)",
+      "pt-br": "Extermínio de Carcaças (Ninja)",
+      "tr": "Suratsız Katliamı (Ninja)"
+    },
+    "limit": 300,
+    "rewards": {
+      "gold": 250,
+      "mtx": 100,
+      "xp": 14000
+    }
+  },
+  "daily_huskextermination_outlander": {
+    "names": {
+      "de": "Hüllenausrottung (Entdecker)",
+      "en": "Husk Extermination (Outlander)",
+      "es": "Exterminación de cáscaras (trotamundos)",
+      "fr": "Extermination de Carcasses (Aventurier)",
+      "pt-br": "Extermínio de Carcaças (Forasteiro)",
+      "tr": "Suratsız Katliamı (İzci)"
+    },
+    "limit": 300,
+    "rewards": {
+      "gold": 250,
+      "mtx": 100,
+      "xp": 14000
+    }
+  },
+  "daily_huskextermination_ranged_assault": {
+    "names": {
+      "de": "Hüllenausrottung (Sturmgewehr)",
+      "en": "Husk Extermination (Assault Rifle)",
+      "es": "Exterminación de cáscaras (fusil de asalto)",
+      "fr": "Extermination de Carcasses (fusil d'assaut)",
+      "pt-br": "Extermínio de Carcaças (Rifle de Assalto)",
+      "tr": "Suratsız Katliamı (Taarruz Tüfeği)"
+    },
+    "limit": 300,
+    "rewards": {
+      "gold": 250,
+      "mtx": 100,
+      "xp": 14000
+    }
+  },
+  "daily_huskextermination_ranged_pistol": {
+    "names": {
+      "de": "Hüllenausrottung (Pistole)",
+      "en": "Husk Extermination (Pistol)",
+      "es": "Exterminación de cáscaras (pistola)",
+      "fr": "Extermination de Carcasses (pistolet)",
+      "pt-br": "Extermínio de Carcaças (Pistola)",
+      "tr": "Suratsız Katliamı (Tabanca)"
+    },
+    "limit": 300,
+    "rewards": {
+      "gold": 250,
+      "mtx": 100,
+      "xp": 14000
+    }
+  },
+  "daily_huskextermination_ranged_shotgun": {
+    "names": {
+      "de": "Hüllenausrottung (Schrotflinte)",
+      "en": "Husk Extermination (Shotgun)",
+      "es": "Exterminación de cáscaras (escopeta)",
+      "fr": "Extermination de Carcasses (fusil à pompe)",
+      "pt-br": "Extermínio de Carcaças (Espingarda)",
+      "tr": "Suratsız Katliamı (Pompalı Tüfek)"
+    },
+    "limit": 300,
+    "rewards": {
+      "gold": 250,
+      "mtx": 100,
+      "xp": 14000
+    }
+  },
+  "daily_huskextermination_ranged_smg": {
+    "names": {
+      "de": "Hüllenausrottung (Maschinenpistole)",
+      "en": "Husk Extermination (SMG)",
+      "es": "Exterminación de cáscaras (subfusil)",
+      "fr": "Extermination de Carcasses (pistolet-mitrailleur)",
+      "pt-br": "Extermínio de Carcaças (SMG)",
+      "tr": "Suratsız Katliamı (Hafif Makineli Tüfek)"
+    },
+    "limit": 300,
+    "rewards": {
+      "gold": 250,
+      "mtx": 100,
+      "xp": 14000
+    }
+  },
+  "daily_huskextermination_ranged_sniper": {
+    "names": {
+      "de": "Hüllenausrottung (Scharfschützengewehr)",
+      "en": "Husk Extermination (Sniper Rifle)",
+      "es": "Exterminación de cáscaras (fusil de tirador)",
+      "fr": "Extermination de Carcasses (fusil de sniper)",
+      "pt-br": "Extermínio de Carcaças (Rifle de Precisão)",
+      "tr": "Suratsız Katliamı (Keskin Nişancı Tüfeği)"
+    },
+    "limit": 300,
+    "rewards": {
+      "gold": 250,
+      "mtx": 100,
+      "xp": 14000
+    }
+  },
+  "daily_huskextermination_soldier": {
+    "names": {
+      "de": "Hüllenausrottung (Soldat)",
+      "en": "Husk Extermination (Soldier)",
+      "es": "Exterminación de cáscaras (soldado)",
+      "fr": "Extermination de Carcasses (Soldat)",
+      "pt-br": "Extermínio de Carcaças (Soldado)",
+      "tr": "Suratsız Katliamı (Asker)"
+    },
+    "limit": 300,
+    "rewards": {
+      "gold": 250,
+      "mtx": 100,
+      "xp": 14000
+    }
+  },
+  "daily_huskextermination_trap": {
+    "names": {
+      "de": "Hüllenausrottung (Falle)",
+      "en": "Husk Extermination (Trap)",
+      "es": "Exterminación de cáscaras (trampa)",
+      "fr": "Extermination de Carcasses (piège)",
+      "pt-br": "Extermínio de Carcaças (Armadilha)",
+      "tr": "Suratsız Katliamı (Tuzak)"
+    },
+    "limit": 150,
+    "rewards": {
+      "gold": 250,
+      "mtx": 100,
+      "xp": 14000
+    }
+  },
+  "daily_mission_buildradar": {
+    "names": {
+      "de": "Bau den Radarturm",
+      "en": "Build the Radar Tower",
+      "es": "Construye la torre del radar",
+      "fr": "Construire la tour radar",
+      "pt-br": "Construa a Torre de Radar",
+      "tr": "Radar Kulesini inşa et"
+    },
+    "limit": 4,
+    "rewards": {
+      "gold": 250,
+      "mtx": 100,
+      "xp": 14000
+    }
+  },
+  "daily_mission_specialist_anyhero_1": {
+    "names": {
+      "de": "Missionsspezialist (beliebiger Held)",
+      "en": "Mission Specialist (Any Hero)",
+      "es": "Enviado espacial (cualquier héroe)",
+      "fr": "Spécialiste de mission (tout héros)",
+      "pt-br": "Especialista em Missões (Qualquer Herói)",
+      "tr": "Görev Uzmanı (Herhangi Bir Kahraman)"
+    },
+    "limit": 3,
+    "rewards": {
+      "gold": 250,
+      "mtx": 100,
+      "xp": 14000
+    }
+  },
+  "daily_mission_specialist_anyhero_2": {
+    "names": {
+      "de": "Missionsveteran (beliebiger Held)",
+      "en": "Mission Veteran (Any Hero)",
+      "es": "Veterano de misión (cualquier héroe)",
+      "fr": "Vétéran de mission (tout héros)",
+      "pt-br": "Veterano em Missões (Qualquer Herói)",
+      "tr": "Görev Ustası (Herhangi Bir Kahraman)"
+    },
+    "limit": 5,
+    "rewards": {
+      "gold": 410,
+      "mtx": 150,
+      "xp": 14000
+    }
+  },
+  "daily_mission_specialist_constructor": {
+    "names": {
+      "de": "Missionsspezialist (Konstrukteur)",
+      "en": "Mission Specialist (Constructor)",
+      "es": "Especialista en misiones (constructor)",
+      "fr": "Spécialiste de mission (Constructeur)",
+      "pt-br": "Especialista de Missão (Construtor)",
+      "tr": "Görev Uzmanı (İnşaatçı)"
+    },
+    "limit": 3,
+    "rewards": {
+      "gold": 250,
+      "mtx": 100,
+      "xp": 14000
+    }
+  },
+  "daily_mission_specialist_ninja": {
+    "names": {
+      "de": "Missionsspezialist (Ninja)",
+      "en": "Mission Specialist (Ninja)",
+      "es": "Especialista en misiones (ninja)",
+      "fr": "Spécialiste de mission (Ninja)",
+      "pt-br": "Especialista de Missão (Ninja)",
+      "tr": "Görev Uzmanı (Ninja)"
+    },
+    "limit": 3,
+    "rewards": {
+      "gold": 250,
+      "mtx": 100,
+      "xp": 14000
+    }
+  },
+  "daily_mission_specialist_outlander": {
+    "names": {
+      "de": "Missionsspezialist (Entdecker)",
+      "en": "Mission Specialist (Outlander)",
+      "es": "Especialista en misiones (trotamundos)",
+      "fr": "Spécialiste de mission (Aventurier)",
+      "pt-br": "Especialista em Missão (Forasteiro)",
+      "tr": "Görev Uzmanı (İzci)"
+    },
+    "limit": 3,
+    "rewards": {
+      "gold": 250,
+      "mtx": 100,
+      "xp": 14000
+    }
+  },
+  "daily_mission_specialist_soldier": {
+    "names": {
+      "de": "Missionsspezialist (Soldat)",
+      "en": "Mission Specialist (Soldier)",
+      "es": "Especialista en misiones (soldado)",
+      "fr": "Spécialiste de mission (Soldat)",
+      "pt-br": "Especialista de Missão (Soldado)",
+      "tr": "Görev Uzmanı (Asker)"
+    },
+    "limit": 3,
+    "rewards": {
+      "gold": 250,
+      "mtx": 100,
+      "xp": 14000
+    }
+  },
+  "daily_partyof50": {
+    "names": {
+      "de": "25er Gruppe",
+      "en": "Party of 25",
+      "es": "Grupo de 25",
+      "fr": "Entre vingt et trente",
+      "pt-br": "Grupo de 25",
+      "tr": "25 Kişilik Grup"
+    },
+    "limit": 25,
+    "rewards": {
+      "gold": 250,
+      "mtx": 100,
+      "xp": 14000
+    }
+  },
+  "daily_safes": {
+    "names": {
+      "de": "Safe ist anders",
+      "en": "Playing It Safe",
+      "es": "Sin riesgos",
+      "fr": "Coffrez-moi ça",
+      "pt-br": "Fanático por Cofres",
+      "tr": "Kasa Kasa Bir Hal Oldun"
+    },
+    "limit": 1,
+    "rewards": {
+      "gold": 250,
+      "mtx": 100,
+      "xp": 14000
+    }
+  },
+  "daily_treasurechests": {
+    "names": {
+      "de": "Vergessene Schätze",
+      "en": "Lost Treasures",
+      "es": "Tesoros perdidos",
+      "fr": "Trésors perdus",
+      "pt-br": "Tesouros Perdidos",
+      "tr": "Kayıp Hazineler"
+    },
+    "limit": 5,
+    "rewards": {
+      "gold": 250,
+      "mtx": 100,
+      "xp": 14000
+    }
+  }
+}

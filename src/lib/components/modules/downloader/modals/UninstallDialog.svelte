@@ -1,0 +1,58 @@
+<script lang="ts">
+  import { toast } from 'svelte-sonner';
+  import { t } from '$lib/i18n';
+  import { uninstallLegendaryApp } from '$lib/modules/legendary';
+  import { ownedAppsCache } from '$lib/stores';
+  import { handleError } from '$lib/utils';
+  import { Button, buttonVariants } from '$components/ui/button';
+  import * as Dialog from '$components/ui/dialog';
+
+  type Props = {
+    id: string;
+  };
+
+  let { id = $bindable() }: Props = $props();
+
+  const app = $derived($ownedAppsCache.find((x) => x.id === id)!);
+
+  let isOpen = $state(true);
+  let isDeleting = $state(false);
+
+  async function uninstallApp() {
+    isDeleting = true;
+
+    try {
+      await uninstallLegendaryApp(app.id);
+      toast.success($t('library.uninstallConfirmation.uninstalled', { name: app.title }));
+    } catch (error) {
+      handleError({ error, message: $t('library.uninstallConfirmation.failedToUninstall', { name: app.title }) });
+    } finally {
+      isDeleting = false;
+      isOpen = false;
+    }
+  }
+</script>
+
+<Dialog.Root onOpenChangeComplete={(open) => !open && (id = '')} bind:open={isOpen}>
+  <Dialog.Content>
+    <Dialog.Header>
+      <Dialog.Title>
+        {$t('library.uninstallConfirmation.title')}
+      </Dialog.Title>
+
+      <Dialog.Description>
+        {$t('library.uninstallConfirmation.description', { name: app.title })}
+      </Dialog.Description>
+    </Dialog.Header>
+
+    <Dialog.Footer class="grid w-full grid-cols-2 gap-2">
+      <Dialog.Close class={buttonVariants({ variant: 'secondary' })}>
+        {$t('cancel')}
+      </Dialog.Close>
+
+      <Button disabled={isDeleting} loading={isDeleting} onclick={uninstallApp}>
+        {$t('confirm')}
+      </Button>
+    </Dialog.Footer>
+  </Dialog.Content>
+</Dialog.Root>

@@ -1,0 +1,1386 @@
+{
+  "$schema": "https://inlang.com/schema/inlang-message-format",
+  "language": "Português (Brasil)",
+  "yes": "Sim",
+  "no": "Não",
+  "cancel": "Cancelar",
+  "confirm": "Confirmar",
+  "loading": "Carregando...",
+  "updater": {
+    "available": "Nova versão {version} encontrada.",
+    "downloading": "Baixando atualização {version}… {percent}%",
+    "installing": "Instalando atualização {version}…",
+    "failed": "Não foi possível atualizar automaticamente."
+  },
+  "scrollToTop": "Voltar ao topo",
+  "vbucks": "V-Bucks",
+  "xp": "XP",
+  "quest": "Missão",
+  "stw": {
+    "xrayTickets": "Tickets de Raio-X",
+    "gold": "Ouro",
+    "founderEditions": {
+      "none": "Sem Pacote de Fundador",
+      "founder": "Fundador",
+      "standard": "Padrão",
+      "deluxe": "Deluxe",
+      "superDeluxe": "Super Deluxe",
+      "limited": "Limitado",
+      "ultimate": "Ultimate"
+    }
+  },
+  "gameModes": {
+    "battleRoyale": "Battle Royale",
+    "creative": "Criativo",
+    "saveTheWorld": "Salve o Mundo"
+  },
+  "errors": {
+    "notLoggedIn": "Faça login pra ver esta página.",
+    "loginExpired": "A sessão de {accountName} caiu. Entre de novo.",
+    "eulaRequired": "{accountName} precisa aceitar o EULA."
+  },
+  "rarities": {
+    "common": "Comum",
+    "uncommon": "Incomum",
+    "rare": "Raro",
+    "epic": "Épico",
+    "legendary": "Lendário",
+    "mythic": "Mítico"
+  },
+  "times": {
+    "seconds": {
+      "one": "{count} segundo",
+      "other": "{count} segundos"
+    },
+    "minutes": {
+      "one": "{count} minuto",
+      "other": "{count} minutos"
+    },
+    "hours": {
+      "one": "{count} hora",
+      "other": "{count} horas"
+    },
+    "days": {
+      "one": "{count} dia",
+      "other": "{count} dias"
+    }
+  },
+  "sidebar": {
+    "loginRequired": "Faça login pra abrir isto.",
+    "externalLinks": {
+      "discord": "Servidor do Discord",
+      "repository": "Repositório no GitHub"
+    },
+    "version": "Versão",
+    "categories": {
+      "home": "Início",
+      "deck": "Início",
+      "epicLibrary": "Biblioteca Epic Games",
+      "account": "Conta",
+      "battleRoyale": "Battle Royale",
+      "saveTheWorld": "Salve o Mundo",
+      "authentication": "Autenticação",
+      "customizableMenu": "Menu"
+    }
+  },
+  "zones": {
+    "panelLabel": "Menu",
+    "backToDeck": "Voltar ao início",
+    "liveStrip": "Hoje",
+    "deck": {
+      "title": "Início",
+      "blurb": "Temporada e atalhos."
+    },
+    "battleRoyale": {
+      "title": "Battle Royale",
+      "blurb": "Loja, vestiário, stats e mapa."
+    },
+    "saveTheWorld": {
+      "title": "Salve o Mundo",
+      "blurb": "Alertas, lhamas e loja."
+    },
+    "account": {
+      "title": "Conta",
+      "blurb": "Perfil, login, EULA e ajustes."
+    },
+    "epicLibrary": {
+      "title": "Epic",
+      "blurb": "Biblioteca e downloads."
+    }
+  },
+  "newVersionAvailable": {
+    "title": "Nova Versão Disponível",
+    "description": "A versão {version} saiu. Baixe pra atualizar.",
+    "download": "Baixar"
+  },
+  "combobox": {
+    "search": "Pesquisar...",
+    "selectItems": "Selecionar itens",
+    "noResults": "Nenhum resultado encontrado"
+  },
+  "accountHub": {
+    "page": {
+      "title": "Conta",
+      "description": "Sua conta, códigos e login na Epic."
+    },
+    "switchAccount": "Alterar conta",
+    "switchAccountDialog": {
+      "title": "Selecionar conta",
+      "description": "Escolha qual conta usar agora."
+    },
+    "sections": {
+      "accountDetails": "Detalhes da conta",
+      "profile": "Perfil",
+      "redeem": "Resgatar códigos",
+      "authentication": "Autenticação",
+      "epic": "Acesso Epic",
+      "friends": "Amigos"
+    },
+    "profile": {
+      "accountId": "ID da conta",
+      "displayName": "Nome de exibição",
+      "email": "E-mail",
+      "emailUnavailable": "Indisponível",
+      "showSensitive": "Mostrar dados",
+      "hideSensitive": "Ocultar dados",
+      "created": "Conta criada em",
+      "createdUnavailable": "Data de criação indisponível",
+      "linkedPlatforms": "Plataformas vinculadas",
+      "noLinkedPlatforms": "Nenhuma plataforma externa vinculada",
+      "loading": "Carregando perfil…",
+      "loadFailed": "Não foi possível carregar o perfil",
+      "minorStatus": "Status de menor",
+      "minorStatusValues": {
+        "notMinor": "Não é menor",
+        "minor": "Menor de idade",
+        "parentalApprovalRequired": "Aprovação parental necessária",
+        "needsVerification": "Verificação necessária"
+      },
+      "cabinedMode": "Modo cabine",
+      "platforms": {
+        "psn": "PlayStation",
+        "xbl": "Xbox",
+        "nintendo": "Nintendo",
+        "nintendo_switch": "Nintendo",
+        "twitch": "Twitch",
+        "google": "Google",
+        "apple": "Apple",
+        "facebook": "Facebook",
+        "github": "GitHub",
+        "vk": "VK"
+      }
+    },
+    "epic": {
+      "openWebsite": "Entrar no site da Epic Games",
+      "openAccountSettings": "Abrir configurações da conta",
+      "copyLoginLink": "Copiar link de login"
+    }
+  },
+  "epicGamesWebsite": {
+    "page": {
+      "title": "Site da Epic Games",
+      "description": "Clique no botão abaixo para fazer login na Epic Games."
+    },
+    "login": "Entrar no site da Epic Games",
+    "loggingIn": "Entrando",
+    "openedWebsite": "Site da Epic Games aberto",
+    "failedToOpenWebsite": "Não foi possível abrir o site da Epic Games",
+    "copied": "URL de login copiado para a área de transferência",
+    "failedToCopy": "Não foi possível copiar a URL de login"
+  },
+  "eula": {
+    "page": {
+      "title": "EULA",
+      "description": "Verifique e aceite o EULA das contas selecionadas."
+    },
+    "check": "Verificar EULA",
+    "checking": "Verificando EULA",
+    "allAccountsAlreadyAccepted": "Todas as contas selecionadas já aceitaram o EULA"
+  },
+  "redeemCodes": {
+    "page": {
+      "title": "Resgatar Códigos",
+      "description": "Selecione as contas e informe os códigos para resgatar recompensas na Epic."
+    },
+    "codesPlaceholder": "Insira os códigos para resgatar e pressione Enter",
+    "redeemCodes": "Resgatar Códigos",
+    "redeeming": "Resgatando",
+    "redeemed": "Resgatado",
+    "redeemErrors": {
+      "notFound": "Código não encontrado",
+      "itemsAlreadyOwned": "Itens já adquiridos",
+      "alreadyUsed": "Código já utilizado",
+      "unknownError": "Erro desconhecido"
+    },
+    "loginExpired": "Sessão expirada. Faça login novamente."
+  },
+  "vbucksInformation": {
+    "page": {
+      "title": "V-Bucks",
+      "description": "Saldo de V-Bucks em todas as contas conectadas."
+    },
+    "getInformation": "Ver V-Bucks",
+    "loading": "Carregando V-Bucks",
+    "total": "Total",
+    "refresh": "Atualizar",
+    "noAccounts": "Nenhuma conta conectada.",
+    "loginExpired": "Sessão expirada. Faça login novamente.",
+    "unknownError": "Erro desconhecido"
+  },
+  "deviceAuth": {
+    "page": {
+      "title": "Autenticação de dispositivo",
+      "description": "Gerencie as autenticações de dispositivo da conta ativa."
+    },
+    "authInfo": {
+      "noName": "Sem Nome",
+      "activeAuth": "O launcher usa esta autenticação de dispositivo",
+      "id": "ID do Dispositivo",
+      "created": "Criado em",
+      "lastAccess": "Último Acesso",
+      "location": "Localização",
+      "ip": "IP",
+      "date": "Data"
+    },
+    "noAuths": "Nenhuma autenticação de dispositivo encontrada",
+    "failedToFetch": "Não foi possível obter a lista de autenticações de dispositivo",
+    "generate": "Gerar autenticação de dispositivo",
+    "generating": "Gerando autenticação de dispositivo...",
+    "generated": "Autenticação de dispositivo gerada",
+    "failedToGenerate": "Não foi possível gerar autenticação de dispositivo",
+    "deleting": "Removendo autenticação de dispositivo...",
+    "deleted": "Autenticação de dispositivo removida",
+    "deletedAndLoggedOut": "Autenticação de dispositivo removida e sessão encerrada",
+    "failedToDelete": "Não foi possível remover a autenticação de dispositivo"
+  },
+  "accessToken": {
+    "page": {
+      "title": "Token de Acesso",
+      "description": "Gere tokens de acesso para integrações e testes."
+    },
+    "selectTokenType": "Selecionar tipo de token",
+    "selectClient": "Selecionar cliente",
+    "generate": "Gerar Token de Acesso",
+    "generating": "Gerando",
+    "generated": "Gerado e copiado para a área de transferência",
+    "failedToGenerate": "Não foi possível gerar o token de acesso"
+  },
+  "exchangeCode": {
+    "page": {
+      "title": "Código de Autenticação",
+      "description": "Clique no botão abaixo para gerar um código de autenticação."
+    },
+    "generate": "Gerar Código de Autenticação",
+    "generating": "Gerando",
+    "generated": "Gerado e copiado para a área de transferência",
+    "failedToGenerate": "Não foi possível gerar o código de autenticação"
+  },
+  "autoKick": {
+    "page": {
+      "title": "Sair automaticamente",
+      "description": "Sair da missão, resgatar e transferir materiais sozinho no STW."
+    },
+    "mobileIncompatibilityWarning": {
+      "title": "Atenção",
+      "description": "Minimizar o app ou apagar a tela pode atrapalhar o automático."
+    },
+    "addCurrentAccount": "Adicionar conta atual",
+    "accountStatus": {
+      "active": "Ativo",
+      "loginExpired": "Sessão Expirada",
+      "disconnected": "Desconectado"
+    },
+    "settings": {
+      "kick": "Expulsar",
+      "claim": "Resgatar Recompensas",
+      "transferMaterials": "Transferir Materiais",
+      "invite": "Convidar"
+    },
+    "notifications": {
+      "leftBase": {
+        "title": "Saiu da base STW",
+        "message": "{name}: você saiu automaticamente da base. Volte ao jogo para entrar em uma nova base."
+      }
+    }
+  },
+  "supportCreator": {
+    "page": {
+      "title": "Apoie-um-Criador",
+      "description": "Coloque seu código de criador. Renove a cada 14 dias pra continuar ativo."
+    },
+    "creatorCode": "Código do Criador",
+    "codePlaceholder": "Digite o código do criador...",
+    "apply": "Aplicar",
+    "remove": "Remover",
+    "checkCurrent": "Ver Código Atual",
+    "checking": "Verificando...",
+    "currentCode": "Código Atual",
+    "noCode": "Nenhum código definido",
+    "autoRefresh": "Renovar automaticamente a cada 14 dias",
+    "autoRefreshDescription": "Renova sozinho antes de vencer.",
+    "autoRefreshing": "Renovando código \"{code}\" automaticamente...",
+    "autoRefreshDone": "Código \"{code}\" renovado com sucesso",
+    "setSuccess": "Código \"{code}\" aplicado com sucesso",
+    "setError": "Falha ao definir o código do criador",
+    "invalidCreator": "Esse código não existe ou está inativo.",
+    "validatedAs": "Ok: {name}",
+    "removeSuccess": "Código do criador removido",
+    "removeError": "Falha ao remover o código do criador",
+    "checkError": "Falha ao verificar o código do criador",
+    "expiresIn": "Expira em {days} dia(s)",
+    "expiredToday": "Código vencido. Clique em Aplicar pra renovar.",
+    "summaryAccounts": "{count} conta(s)",
+    "summaryWithCode": "{count} com código",
+    "statusActive": "Ativo",
+    "statusEmpty": "Vazio"
+  },
+  "freeLlamas": {
+    "page": {
+      "title": "Lhamas Gratuitas",
+      "description": "Resgate as lhamas grátis das contas. Dá pra deixar no automático."
+    },
+    "resultStatus": {
+      "claimed": "Resgatada(s)",
+      "none": "Nenhuma disponível",
+      "error": "Erro ao resgatar"
+    },
+    "claim": "Resgatar Lhamas Gratuitas",
+    "claiming": "Resgatando...",
+    "claimed": "{count} Lhama(s) resgatada(s)!",
+    "openedCount": "{count} Lhama(s) aberta(s)",
+    "noneAvailable": "Nenhuma Lhama gratuita disponível no momento",
+    "autoClaim": "Resgatar automaticamente",
+    "autoClaimDescription": "A cada hora (UTC), varre as contas e resgata o que tiver.",
+    "claimError": "Falha ao resgatar lhamas para esta conta",
+    "summaryAccounts": "{count} conta(s)",
+    "summaryClaimed": "{count} lhama(s) resgatada(s)"
+  },
+  "dailyQuests": {
+    "page": {
+      "title": "Missões Diárias",
+      "description": "Veja e troque missões diárias do STW. Marque as que quiser trocar no reset."
+    },
+    "resultStatus": {
+      "blacklisted": "Substituição automática",
+      "selected": "Selecionada para substituir"
+    },
+    "getQuests": "Ver Missões Diárias",
+    "loading": "Carregando Missões",
+    "rerollSelected": "Substituir Selecionadas ({count})",
+    "rerolling": "Substituindo...",
+    "rerollsRemaining": "{count} substituição(ões) disponível(is)",
+    "noRerollsLeft": "Sem substituições disponíveis",
+    "selectToReroll": "Selecione missões para substituir",
+    "rerollDone": "Substituição concluída",
+    "autoReroll": "Substituição automática",
+    "autoRerollDescription": "No reset (00:00 UTC), troca as missões marcadas em todas as contas.",
+    "configureBlacklist": "Configurar missões a substituir",
+    "blacklistCount": "{count} missão(ões) marcada(s)",
+    "blacklistEmpty": "Nenhuma marcada. Clique pra escolher o que trocar no automático.",
+    "clearBlacklist": "Limpar tudo",
+    "selectAll": "Marcar tudo",
+    "summaryAccounts": "{count} conta(s)",
+    "summaryQuests": "{count} missão(ões) ativa(s)",
+    "activeQuestCount": "{count} ativa(s)"
+  },
+  "earnedXP": {
+    "page": {
+      "title": "EXP Ganha",
+      "description": "XP de BR, Criativo e Salve o Mundo."
+    },
+    "check": "Verificar EXP Ganha",
+    "loading": "Carregando",
+    "resetsAt": "Reinicia em {time}",
+    "summaryAccounts": "{count} conta(s)"
+  },
+  "leaks": {
+    "page": {
+      "title": "Vazamentos",
+      "description": "Itens novos que apareceram nos arquivos do jogo."
+    },
+    "refresh": "Atualizar vazamentos",
+    "loading": "Carregando…",
+    "failedToFetch": "Não foi possível carregar os vazamentos. Tente novamente mais tarde.",
+    "empty": "Nada vazado por enquanto.",
+    "buildInfo": "Build {build}",
+    "lastAddition": "Última adição: {date}",
+    "itemCount": "{count} cosméticos"
+  },
+  "itemShop": {
+    "page": {
+      "title": "Loja de Itens",
+      "description": "Loja do dia: skins, emotes e pacotes."
+    },
+    "lastUpdated": "Atualizado em: {date}",
+    "nextRotation": "Próxima rotação em {time}",
+    "searchPlaceholder": "Buscar itens...",
+    "failedtoFetch": "Não foi possível carregar os itens da loja. Tente novamente mais tarde.",
+    "noItems": "Nenhum item encontrado",
+    "selectFilter": "Selecionar um filtro",
+    "filterByType": "Tipo",
+    "allTypes": "Todos os tipos",
+    "refresh": "Atualizar loja",
+    "exportWebp": "Exportar Loja",
+    "exportProgress": "Baixando imagens… {percent}%",
+    "exported": "Loja exportada com {count} ofertas.",
+    "exportFailed": "Não foi possível exportar a loja.",
+    "exportEmpty": "Não há ofertas para exportar.",
+    "openExport": "Abrir imagem",
+    "exportDate": "Dia {date}",
+    "filters": {
+      "new": "Novidade",
+      "leavingSoon": "Saindo em breve",
+      "longestWait": "Mais tempo fora da loja",
+      "wishlist": "Lista de desejos",
+      "affordable": "Dá para comprar"
+    },
+    "wishlist": {
+      "add": "Adicionar à lista de desejos",
+      "remove": "Remover da lista de desejos"
+    },
+    "progress": {
+      "title": "Passe e desafios",
+      "description": "Passe e missões da conta.",
+      "loginRequired": "Entre na sua conta Epic para ver passe e desafios.",
+      "weeklyBr": "XP semanal (BR)",
+      "weeklyCreative": "XP semanal (Creativo)",
+      "battlePassLevel": "Nível {level}",
+      "xpToNext": "Faltam {amount} XP para o próximo nível",
+      "activeQuests": "Missões ativas",
+      "noQuests": "Nenhuma missão ativa encontrada no perfil."
+    },
+    "owned": "Adquirido",
+    "bundle": "Pacote",
+    "sectionOther": "Mais da loja",
+    "purchase": "Comprar",
+    "gift": "Presentear",
+    "itemInformation": {
+      "price": "Preço",
+      "firstSeen": "Primeira aparição",
+      "lastSeen": "Última aparição",
+      "leavesOn": "Sai em",
+      "appearances": "Vezes na loja",
+      "appearancesCount": "{count} vezes",
+      "historyTitle": "Histórico recente na loja",
+      "stylesTitle": "Estilos",
+      "videoCredit": "Prévia do cosmético por Fortnite.GG"
+    },
+    "vbucksCalculator": {
+      "title": "Faltam V-Bucks?",
+      "shortfall": "Você precisa de mais {amount} V-Bucks para este item.",
+      "buyPack": "Comprar pacote de {amount} ({price})"
+    },
+    "notEnoughVbucks": "V-Bucks insuficientes",
+    "noFriends": "Nenhum amigo encontrado",
+    "noRemainingGifts": "Nenhum presente restante hoje",
+    "purchaseConfirmation": {
+      "title": "Confirmar Compra",
+      "description": "Tem certeza que deseja comprar {name} por {price} {vbucksIcon}?"
+    },
+    "purchasing": "Comprando",
+    "purchased": "Item comprado com sucesso",
+    "needMoreVbucksToPurchase": "Você precisa de mais {amount} V-Bucks para comprar este item",
+    "alreadyOwned": "Você já possui este item",
+    "failedToPurchase": "Não foi possível comprar o item",
+    "giftConfirmation": {
+      "title": "Confirmar Presente",
+      "description": "Escolha os amigos para presentear com {name} por {price} {vbucksIcon}."
+    },
+    "selectFriends": "Selecionar amigos",
+    "selectedFriendCount": "{count} amigos selecionados",
+    "sendGift": "Enviar Presente",
+    "sendingGift": "Enviando presente",
+    "sentGift": "Presente enviado com sucesso",
+    "reachedDailyGiftLimit": "Você atingiu o limite diário de presentes",
+    "needMoreVbucksToGift": "Você precisa de mais {amount} V-Bucks para presentear este item",
+    "friendsMayOwnItem": "Não foi possível enviar o presente. Um ou mais amigos já podem ter este item.",
+    "friendsNotEligible": "Não foi possível enviar o presente. Um ou mais amigos não são elegíveis.",
+    "friendsOwnItemFromBundle": "Não foi possível enviar o presente. Um ou mais amigos já possuem um item deste pacote.",
+    "friendsDoNotAcceptGifts": "Não foi possível enviar o presente. Um ou mais amigos não aceitam presentes.",
+    "enableMFA": "Você precisa ativar a Autenticação de Dois Fatores (2FA) para presentear itens",
+    "failedToGift": "Não foi possível enviar o presente"
+  },
+  "buyVbucks": {
+    "page": {
+      "title": "Comprar V-Bucks",
+      "description": "Escolha um pacote e abra a loja da Epic já logado."
+    },
+    "hint": "Abra ou copie o link. Ele já entra logado. Use na hora (vale só uma vez).",
+    "openOnStore": "Comprar na Epic",
+    "openAll": "Ver todos os pacotes",
+    "linkCopied": "Link de compra copiado para {account}",
+    "failedToCopyLink": "Falha ao copiar o link de compra",
+    "failedToOpenStore": "Não foi possível abrir a loja",
+    "extraBonus": "{percent}% extra",
+    "epicRewards": "Compras na Epic Games Store devolvem 20% em Recompensas Epic (crédito na loja Epic).",
+    "availableOn": "Disponível na Epic Games Store"
+  },
+  "locker": {
+    "page": {
+      "title": "Vestiário",
+      "description": "Cosméticos disponíveis na conta"
+    },
+    "refresh": "Atualizar",
+    "exportWebp": "Exportar Vestiário",
+    "exporting": "Baixando imagens…",
+    "exportProgress": "Baixando imagens… {percent}%",
+    "exported": "Vestiário exportado com {count} itens.",
+    "exportFailed": "Não foi possível exportar o vestiário.",
+    "exportEmpty": "Nada para exportar nesta categoria.",
+    "openExport": "Abrir imagem",
+    "loading": "Carregando vestiário...",
+    "loadFailed": "Não foi possível carregar o vestiário.",
+    "search": "Buscar cosmético...",
+    "empty": "Nenhum item nesta categoria.",
+    "equippedNow": "Equipado agora",
+    "categories": {
+      "outfits": "Trajes",
+      "backpacks": "Mochilas",
+      "pickaxes": "Picaretas",
+      "gliders": "Planadores",
+      "emotes": "Emotes",
+      "wraps": "Envelopamentos"
+    }
+  },
+  "specialOffers": {
+    "page": {
+      "title": "Ofertas especiais",
+      "description": "Pacotes oficiais do Fortnite comprados com dinheiro pela Epic Games Store ou PlayStation Store."
+    },
+    "refresh": "Atualizar",
+    "loading": "Carregando ofertas especiais…",
+    "loadFailed": "Não foi possível carregar as ofertas especiais.",
+    "openFailed": "Não foi possível abrir a oferta.",
+    "empty": "Nenhuma oferta especial disponível agora.",
+    "endsOn": "Disponível até {date}",
+    "buyEpic": "Comprar na Epic",
+    "buyPsn": "Buscar na PSN"
+  },
+  "economy": {
+    "page": {
+      "title": "Economia e conta",
+      "description": "Saldo de V-Bucks, presentes, passe e resumo do armário na conta ativa."
+    },
+    "refresh": "Atualizar",
+    "loading": "Carregando…",
+    "loginRequired": "Entre na sua conta Epic para ver a economia.",
+    "vbucks": {
+      "total": "Saldo total",
+      "purchased": "Comprados",
+      "earned": "Ganhos",
+      "other": "Outros (passe, STW, etc.)"
+    },
+    "gifts": {
+      "title": "Presentes",
+      "remaining": "{count} restante(s) hoje",
+      "none": "Limite diário atingido",
+      "mfaRequired": "Ative 2FA para presentear",
+      "mfaEnabled": "2FA ativo. Pode presentear."
+    },
+    "battlePass": {
+      "title": "Passe de Batalha",
+      "level": "Nível {level}",
+      "xpToNext": "Faltam {amount} XP para o próximo nível"
+    },
+    "locker": {
+      "title": "Armário (resumo)",
+      "outfits": "Trajes",
+      "backpacks": "Mochilas",
+      "pickaxes": "Picaretas",
+      "gliders": "Planadores",
+      "emotes": "Emotes",
+      "wraps": "Envelopamentos",
+      "total": "{count} cosméticos"
+    },
+    "affiliate": "Código SAC ativo: {code}",
+    "links": {
+      "buyVbucks": "Comprar V-Bucks",
+      "itemShop": "Loja de Itens",
+      "account": "Conta"
+    }
+  },
+  "stwHub": {
+    "page": {
+      "title": "Centro STW",
+      "description": "Resumo do dia: alertas, missões e lhamas."
+    },
+    "gold": "Ouro STW",
+    "refresh": "Atualizar",
+    "quickLinks": "Atalhos"
+  },
+  "externalIntegrations": {
+    "page": {
+      "title": "Integrações",
+      "description": "Links e APIs que o launcher usa."
+    },
+    "status": {
+      "notIntegrated": "Inativo",
+      "linkOnly": "Só link",
+      "planned": "Em breve",
+      "integrated": "Ativo",
+      "needsLogin": "Precisa de login",
+      "needsApiKey": "Precisa de API key"
+    },
+    "categories": {
+      "sites": "Sites",
+      "fortniteApi": "fortnite-api.com",
+      "epic": "Epic Games",
+      "local": "No launcher"
+    },
+    "islandCode": {
+      "title": "Ilha Creative",
+      "hint": "Abre o site do Fortnite com o código. Não inicia o jogo daqui.",
+      "placeholder": "Código da ilha (ex.: 1234-5678-9012)",
+      "open": "Abrir no Fortnite",
+      "invalid": "Código inválido. Use 12 dígitos."
+    },
+    "openProfile": "Abrir perfil no FortniteDB",
+    "openSite": "Abrir site",
+    "openCorner": "Abrir",
+    "viewDocs": "Documentação",
+    "diagnostics": "Checagens",
+    "diagnosticsEmpty": "Nada pra mostrar ainda. Abra uma página pra gerar logs.",
+    "reference": "Docs no repositório",
+    "items": {
+      "fortniteGg": "Loja e cosméticos no navegador. Sem API pública.",
+      "fortniteDb": "Perfil e stats no site. Sem API pública.",
+      "statsBr": "Vitórias, K/D e partidas (fortnite-api).",
+      "creatorCode": "Confere o código de criador antes de salvar.",
+      "statsProxy": "Stats oficiais da Epic (com login).",
+      "eosLocker": "Vestiário pela conta Epic."
+    }
+  },
+  "brStats": {
+    "page": {
+      "title": "Stats BR",
+      "description": "Stats de Battle Royale da conta."
+    },
+    "loginRequired": "Entre com uma conta para carregar stats.",
+    "needsApiKey": "Falta a chave da fortnite-api no .env.",
+    "loadFailed": "Não foi possível carregar as estatísticas.",
+    "refresh": "Atualizar",
+    "sourceFn": "fortnite-api",
+    "sourceEpic": "Epic",
+    "wins": "Vitórias",
+    "kills": "Abates",
+    "kd": "K/D",
+    "matches": "Partidas",
+    "winRate": "Taxa de vitória"
+  },
+  "playlists": {
+    "page": {
+      "title": "Playlists",
+      "description": "Modos e LTMs ativos."
+    },
+    "refresh": "Atualizar",
+    "loadFailed": "Não foi possível carregar as playlists.",
+    "empty": "Nenhuma playlist ativa.",
+    "players": "{count} jogadores"
+  },
+  "creativeHub": {
+    "page": {
+      "title": "Creative",
+      "description": "Notícias Creative e Discovery."
+    },
+    "refresh": "Atualizar",
+    "newsFailed": "Falha ao carregar notícias Creative.",
+    "newsEmpty": "Sem notícias Creative no momento.",
+    "discoveryTitle": "Discovery",
+    "discoveryFailed": "Discovery indisponível. Tente logar de novo.",
+    "discoveryEmpty": "Nenhuma ilha na superfície Discovery."
+  },
+  "ranked": {
+    "page": {
+      "title": "Ranked",
+      "description": "Ranks competitivos da conta."
+    },
+    "loginRequired": "Entre com uma conta para ver ranks.",
+    "refresh": "Atualizar",
+    "loadFailed": "Não foi possível carregar o ranked.",
+    "empty": "Sem progressão ranked disponível.",
+    "division": "Divisão atual",
+    "highest": "Máxima",
+    "progress": "Progresso"
+  },
+  "brMap": {
+    "page": {
+      "title": "Mapa",
+      "description": "Mapa atual do BR com os POIs."
+    },
+    "mapAlt": "Mapa do Battle Royale",
+    "refresh": "Atualizar mapa",
+    "loadFailed": "Não foi possível carregar o mapa."
+  },
+  "home": {
+    "page": {
+      "title": "Início",
+      "description": "Temporada, atalhos e o que rolou hoje."
+    },
+    "greeting": "Oi, {name}.",
+    "guestGreeting": "Oi.",
+    "onboarding": {
+      "kicker": "Primeiros passos",
+      "title": "Bem-vindo ao Dozamigos Launcher",
+      "description": "Faltam duas coisinhas pra tudo funcionar: conectar sua conta Epic e apontar onde o Fortnite está instalado.",
+      "progress": "{done} de {total} concluídos",
+      "account": {
+        "title": "Conectar conta Epic",
+        "description": "Libera vestiário, loja, lhamas, missões e o resto do launcher.",
+        "action": "Entrar com a Epic Games",
+        "connected": "Conta conectada: {name}"
+      },
+      "gamePath": {
+        "title": "Localizar o Fortnite",
+        "description": "Precisamos da pasta do jogo pra abrir o Fortnite pelo launcher.",
+        "placeholder": "C:/Program Files/.../FortniteGame/Binaries/Win64"
+      },
+      "start": "Começar a usar",
+      "skip": "Configurar depois",
+      "skipHint": "Dá pra ajustar tudo depois em Configurações."
+    },
+    "season": {
+      "title": "Temporada do Battle Royale",
+      "kicker": "Temporada atual",
+      "endsIn": {
+        "one": "Termina em {count} dia",
+        "other": "Termina em {count} dias"
+      },
+      "daysRemaining": {
+        "one": "Falta {count} dia",
+        "other": "Faltam {count} dias"
+      },
+      "timeline": {
+        "one": "{count} dia pro fim da temporada ({percent}%).",
+        "other": "{count} dias pro fim da temporada ({percent}%)."
+      },
+      "progress": "{percent}% da temporada concluída",
+      "loadFailed": "Não foi possível carregar os dados da temporada.",
+      "loginForTimeline": "Entre na conta pra ver o progresso da temporada.",
+      "datesUnavailable": "Temporada encontrada, mas sem datas.",
+      "heroAlt": "Temporada {season}",
+      "heroAltFallback": "Temporada do Battle Royale",
+      "battlePass": {
+        "level": "Nível {level}",
+        "levelCurrent": "Nível atual {level}",
+        "xpInLevel": "{current} de {total} XP neste nível"
+      }
+    },
+    "missionAlerts": {
+      "viewAll": "Ver alertas"
+    },
+    "itemShop": {
+      "open": "Loja"
+    },
+    "freeGames": {
+      "kicker": "Grátis na Epic",
+      "claim": "Resgatar",
+      "viewAll": "Ver jogos gratuitos",
+      "endsAt": "Termina em {date}"
+    },
+    "buyVbucks": {
+      "open": "Comprar V-Bucks"
+    },
+    "news": {
+      "brTitle": "Novidades do Battle Royale",
+      "stwTitle": "Novidades do Salve o Mundo",
+      "loadFailed": "Não foi possível carregar as novidades.",
+      "empty": "Nenhuma novidade no momento.",
+      "previous": "Novidade anterior",
+      "next": "Próxima novidade",
+      "goToSlide": "Ir para novidade {index}"
+    }
+  },
+  "stwOverview": {
+    "page": {
+      "title": "Visão Geral"
+    },
+    "vbucks": {
+      "today": "V-Bucks hoje",
+      "week": "V-Bucks na semana",
+      "month": "V-Bucks no mês",
+      "year": "V-Bucks no ano",
+      "apiLimitation": "A API da Epic (world/info) só traz os alertas de hoje. Semana/mês/ano somam dias registrados neste launcher ({tracked}/{total} na semana atual)."
+    },
+    "freeLlamas": {
+      "refresh": "Atualizar Lhamas",
+      "openFull": "Abrir Lhamas gratuitas",
+      "packAvailable": "Lhama disponível"
+    },
+    "sections": {
+      "survivorWorkers": "Sobreviventes lendários/míticos",
+      "leadSurvivors": "Líderes sobreviventes lendários/míticos"
+    },
+    "dailyQuests": {
+      "title": "Missões diárias",
+      "refresh": "Atualizar missões",
+      "openFull": "Abrir missões diárias",
+      "loadFailed": "Não foi possível carregar as missões diárias.",
+      "empty": "Nenhuma missão diária ativa."
+    }
+  },
+  "stwStore": {
+    "page": {
+      "title": "Loja do Salve o Mundo",
+      "description": "Compre itens da loja STW com ouro."
+    },
+    "refresh": "Atualizar loja",
+    "loading": "Carregando loja...",
+    "empty": "Nenhuma oferta disponível no momento.",
+    "emptyAvailable": "Não há mais itens para comprar nesta rotação (ou você já comprou tudo).",
+    "availableOnlyHint": "Só o que ainda dá pra comprar na sua conta.",
+    "alreadyPurchased": "Esta oferta já não está disponível. A loja foi atualizada.",
+    "buy": "Comprar",
+    "purchased": "Compra concluída!",
+    "notEnoughGold": "Ouro insuficiente",
+    "items": "itens",
+    "sections": {
+      "event": "Loja de Evento",
+      "weekly": "Loja Semanal"
+    },
+    "limitUnlimited": "Sem limite de compras",
+    "limitMax": "Máximo: {max} por {period}",
+    "limitRemaining": "{remaining} de {max} por {period}",
+    "limitReached": "Limite atingido",
+    "purchasableRemaining": "Você pode comprar: {count}",
+    "heroOwned": "Já na coleção",
+    "owned": "Adquirido",
+    "limitPeriod": {
+      "event": "rotação da loja",
+      "daily": "dia",
+      "weekly": "semana",
+      "monthly": "mês",
+      "none": "período"
+    },
+    "purchaseDialog": {
+      "title": "Confirmar compra",
+      "confirmSingle": "Tem certeza de que deseja comprar {name} por {price} {goldIcon}?",
+      "description": "Escolha quantas vezes deseja comprar este item.",
+      "quantity": "Quantidade",
+      "maxHint": "Máximo: {max}",
+      "total": "Total",
+      "confirm": "Comprar",
+      "cancel": "Cancelar",
+      "perPurchase": "{count} por compra"
+    },
+    "bulkBuy": {
+      "button": "Comprar em massa",
+      "title": "Comprar a loja",
+      "description": "Escolha o que comprar. Perk-up e recursos usam o máximo possível.",
+      "confirm": "Comprar selecionados",
+      "offers": "Ofertas",
+      "purchases": "Itens",
+      "total": "Total estimado",
+      "progress": "Comprando {done}/{total}: {name}",
+      "done": "{count} ofertas compradas",
+      "noneBought": "Nenhuma oferta foi comprada",
+      "categories": {
+        "schematics": "Esquemas",
+        "heroes": "Heróis",
+        "perkUp": "PERK-UP!",
+        "flux": "Fluxo",
+        "resources": "Recursos"
+      }
+    }
+  },
+  "stwMissionAlerts": {
+    "page": {
+      "title": "Alertas de Missões",
+      "description": "Alertas do dia: V-Bucks, sobreviventes, PERK-UP e mais. Em verde, o que você já resgatou.",
+      "rotation": "Próxima rotação dos alertas em {time}"
+    },
+    "refresh": "Atualizar alertas",
+    "refreshing": "Atualizando...",
+    "loadFailed": "Não foi possível carregar os alertas. Tente de novo.",
+    "claimed": "Resgatado",
+    "groupMission": "Missão em Grupo",
+    "unknownMission": "Missão desconhecida",
+    "overview": {
+      "vbucksToday": "{count} V-Bucks hoje",
+      "survivors": "Sobreviventes",
+      "upgradeLlamas": "Fichas de Llama de Melhoria",
+      "perkup": "PERK-UP!",
+      "weeklySupercharger": "Supercarga semanal",
+      "superchargerHero": "Herói",
+      "superchargerSurvivor": "Sobrevivente",
+      "superchargerTrap": "Armadilha",
+      "superchargerWeapon": "Arma"
+    },
+    "tabs": {
+      "overview": "Visão Geral",
+      "all": "Todos os Alertas"
+    },
+    "sections": {
+      "survivors": "Sobreviventes Lendários/Míticos",
+      "twinePeaks": "Twine Peaks",
+      "twinePeaksHigh": "Twine Peaks ⚡{level}",
+      "ventures": "Ventures",
+      "venturesHigh": "Ventures ⚡{level}",
+      "upgradeLlamaTokens": "Fichas de Llama de Melhoria",
+      "perkup": "PERK-UP! Lendário",
+      "missionCount": "{count} missões"
+    },
+    "noMissions": "Nenhuma missão disponível",
+    "rewards": "Recompensas",
+    "alertRewards": "Recompensas de Alerta",
+    "filters": {
+      "title": "Filtros",
+      "zone": "Zona",
+      "missionType": "Tipo de Missão",
+      "group": "Grupo",
+      "rarity": "Raridade",
+      "rewards": "Recompensas",
+      "reset": "Limpar Filtros"
+    }
+  },
+  "lookupPlayers": {
+    "search": "Buscar por nome ou ID da conta",
+    "notFound": "Jogador não encontrado"
+  },
+  "serverStatus": {
+    "page": {
+      "title": "Status dos Servidores"
+    },
+    "statuses": {
+      "operational": "Operacional",
+      "down": "Fora do Ar",
+      "majorOutage": "Queda Grave",
+      "partialOutage": "Queda Parcial",
+      "underMaintenance": "Em Manutenção",
+      "degradedPerformance": "Desempenho Reduzido",
+      "unknown": "Desconhecido"
+    },
+    "notification": {
+      "title": "Status dos Servidores do Fortnite",
+      "message": "O Fortnite voltou a ficar online!"
+    },
+    "status": "Status: {status}",
+    "failedToFetch": "Não foi possível verificar o status dos servidores",
+    "lastUpdated": "Atualizado em: {date}",
+    "refresh": "Atualizar",
+    "refreshing": "Atualizando",
+    "notifyMe": {
+      "title": "Me notificar",
+      "description": "Receba uma notificação quando o Fortnite voltar a ficar online"
+    },
+    "queue": {
+      "title": "Fila Ativa",
+      "description": "Tempo estimado de espera: {time}"
+    }
+  },
+  "settings": {
+    "title": "Configurações",
+    "page": {
+      "title": "Configurações"
+    },
+    "description": "Preferências, contas e menu.",
+    "tabs": {
+      "general": "Geral",
+      "customizableMenu": "Menu",
+      "downloader": "Gerenciador de downloads",
+      "advanced": "Avançado",
+      "accounts": "Contas",
+      "integrations": "Integrações"
+    },
+    "advanced": {
+      "diagnostics": {
+        "title": "Checagens de API",
+        "description": "Abre as checagens locais. Nada sai do PC.",
+        "open": "Abrir"
+      }
+    },
+    "invalidValue": "Valor inválido.",
+    "general": {
+      "language": {
+        "title": "Idioma"
+      },
+      "rerunOnboarding": {
+        "title": "Configuração inicial",
+        "description": "Mostra de novo a tela de boas-vindas com os primeiros passos.",
+        "action": "Refazer"
+      },
+      "gamePath": {
+        "title": "Caminho do Fortnite",
+        "description": "Pasta do Fortnite. Dá pra escolher na mão ou detectar.",
+        "autoDetect": "Detectar automaticamente",
+        "detecting": "Procurando...",
+        "detected": "Fortnite encontrado e caminho atualizado!",
+        "notFound": "Instalação do Fortnite não encontrada"
+      },
+      "userAgent": {
+        "title": "User-Agent Personalizado"
+      },
+      "launchArguments": {
+        "title": "Argumentos de Inicialização",
+        "description": "Extras na hora de abrir o Fortnite."
+      },
+      "missionCheckInterval": {
+        "title": "Intervalo de Verificação de Missão",
+        "description": "De quanto em quanto checar se você está em missão STW."
+      },
+      "claimRewardsDelay": {
+        "title": "Atraso para Resgatar Recompensas",
+        "description": "Espera antes de resgatar recompensas depois de sair da missão."
+      },
+      "discordStatus": {
+        "title": "Status no Discord",
+        "description": "Mostra no Discord que você está no Dozamigos Launcher."
+      },
+      "hideToTray": {
+        "title": "Minimizar para a Bandeja do Sistema"
+      },
+      "openAtStartup": {
+        "title": "Abrir com o Windows",
+        "error": "Não foi possível alterar a inicialização automática."
+      },
+      "windowsNotifications": {
+        "title": "Notificações do Windows",
+        "description": "Mostrar alertas nativos como Dozamigos Launcher (lhamas, missões diárias, loja, status do servidor e outras automações).",
+        "denied": "O Windows bloqueou as notificações. Ative nas configurações do sistema."
+      },
+      "checkForUpdates": {
+        "title": "Verificar Atualizações"
+      },
+      "debugLogs": {
+        "title": "Ativar Logs de Depuração"
+      },
+      "openSettingsFolder": {
+        "title": "Abrir Pasta de Configurações",
+        "button": "Abrir Pasta"
+      }
+    },
+    "accounts": {
+      "accountOrder": {
+        "title": "Ordem das Contas",
+        "description": "Arraste para reorganizar a ordem em que as contas aparecem no launcher.",
+        "moveUp": "Mover para cima",
+        "moveDown": "Mover para baixo"
+      }
+    },
+    "downloader": {
+      "downloadPath": {
+        "title": "Pasta de Download",
+        "description": "Selecione a pasta onde o launcher vai baixar os jogos."
+      },
+      "autoUpdate": {
+        "title": "Atualização Automática",
+        "description": "Atualizar jogos automaticamente quando uma nova versão estiver disponível."
+      },
+      "sendNotifications": {
+        "title": "Enviar Notificações",
+        "description": "Enviar notificações quando um jogo for atualizado ou baixado."
+      },
+      "account": {
+        "title": "Conta",
+        "description": "Selecione a conta usada para baixar jogos.",
+        "switched": "Conta do downloader alterada com sucesso.",
+        "failedToSwitch": "Não foi possível alterar a conta do downloader.",
+        "loggedOut": "Sessão da conta do downloader encerrada.",
+        "failedToLogout": "Não foi possível encerrar a sessão da conta do downloader."
+      }
+    }
+  },
+  "launchGame": {
+    "launch": "Iniciar Jogo",
+    "stop": "Parar Jogo",
+    "alreadyRunning": "O Fortnite já está em execução",
+    "launching": "Iniciando o Fortnite...",
+    "notInstalled": "O Fortnite não está instalado. Instale-o primeiro.",
+    "launched": "Fortnite iniciado com sucesso",
+    "failedToLaunch": "Não foi possível iniciar o Fortnite",
+    "stopping": "Encerrando o Fortnite...",
+    "stopped": "Fortnite encerrado com sucesso",
+    "failedToStop": "Não foi possível encerrar o Fortnite"
+  },
+  "accountManager": {
+    "noAccount": "Sem conta",
+    "searchAccounts": "Pesquisar contas...",
+    "login": "Adicionar Nova Conta",
+    "logout": "Sair",
+    "failedToSwitch": "Não foi possível trocar para {name}",
+    "loggingOut": "Saindo de {name}...",
+    "loggedOut": "Sessão de {name} encerrada",
+    "failedToLogout": "Não foi possível sair de {name}",
+    "selectAccount": "Selecionar uma conta",
+    "selectAccounts": "Selecionar contas",
+    "selectedAccounts": "{count} contas selecionadas",
+    "chooseLoginMethod": "Escolher Método de Login",
+    "back": "Voltar",
+    "recommended": "Recomendado",
+    "continue": "Continuar",
+    "verifying": "Verificando...",
+    "loginSteps": {
+      "select": "Escolher Método",
+      "login": "Entrar",
+      "completed": "Concluído"
+    },
+    "loginMethods": {
+      "webConfirmation": {
+        "title": "Confirmação Web",
+        "description": "Faça login pelo site da Epic com uma simples etapa de confirmação.",
+        "instructions": "Clique no botão abaixo para abrir o site da Epic Games. Após confirmar o acesso, clique em \"Continuar\".",
+        "generatingURL": "Gerando URL...",
+        "openWebsite": "Abrir Site da Epic Games"
+      },
+      "exchangeCode": {
+        "title": "Código de Autenticação",
+        "description": "Entre com um código único da Epic Games.",
+        "instructions": "Abra a página da Epic, faça login e copie o código exibido (32 caracteres). Cole aqui em poucos minutos.",
+        "inputPlaceholder": "Cole o código da Epic aqui",
+        "openLink": "Abrir página de login da Epic",
+        "copyLink": "Copiar link pro amigo",
+        "linkCopied": "Link de login copiado",
+        "shareHint": "Pode enviar o link: cada pessoa faz login na própria conta Epic e cola o código dela aqui. Não envie o seu código . ele só funciona uma vez e entra na sua conta."
+      }
+    },
+    "failedToLogin": "Não foi possível fazer login",
+    "confirmRequest": "Por favor, confirme o login no site da Epic Games para continuar.",
+    "alreadyLoggedIn": "Você já está logado com {name}.",
+    "welcome": {
+      "title": "👋 Bem-vindo(a), {name}",
+      "description": "Login na conta Epic Games realizado com sucesso."
+    }
+  },
+  "friendsManagement": {
+    "page": {
+      "title": "Amigos",
+      "description": "Gerencie amigos, solicitações recebidas e enviadas, e a lista de bloqueados."
+    },
+    "lists": {
+      "friends": "Amigos",
+      "incoming": "Recebidos",
+      "outgoing": "Enviados",
+      "blocklist": "Bloqueados"
+    },
+    "failedToAdd": "Não foi possível adicionar amigo ou aceitar solicitação",
+    "failedToRemove": "Não foi possível remover amigo ou recusar solicitação",
+    "failedToBlock": "Não foi possível bloquear usuário",
+    "failedToUnblock": "Não foi possível desbloquear usuário",
+    "failedToChangeNickname": "Não foi possível alterar o apelido",
+    "noFriends": "Nenhum amigo",
+    "noIncomingRequests": "Nenhuma solicitação recebida",
+    "noOutgoingRequests": "Nenhuma solicitação enviada",
+    "noBlockedUsers": "Nenhum usuário bloqueado",
+    "sendFriendRequest": "Enviar Solicitação de Amizade",
+    "sentFriendRequest": "Solicitação de amizade enviada com sucesso",
+    "copyId": "Copiar ID",
+    "acceptRequest": "Aceitar solicitação",
+    "removeFriend": "Remover Amigo",
+    "cancelRequest": "Cancelar Solicitação",
+    "denyRequest": "Recusar Solicitação",
+    "blockUser": "Bloquear",
+    "unblockUser": "Desbloquear",
+    "changeNickname": "Alterar Apelido"
+  },
+  "freeGames": {
+    "page": {
+      "title": "Jogos Gratuitos",
+      "description": "Jogos gratuitos da Epic Games Store . resgate direto na conta ativa do launcher."
+    },
+    "refresh": "Atualizar",
+    "loading": "Carregando...",
+    "fetchError": "Falha ao buscar jogos gratuitos",
+    "noGames": "Nenhum jogo gratuito disponível no momento",
+    "free": "GRÁTIS",
+    "endsAt": "Termina em {date}",
+    "claimOnStore": "Abrir Epic Launcher",
+    "claimLinkHint": "Resgatar tenta obter na conta ativa do Dozamigos. Se a API falhar, abre o Epic Games Launcher no PC para concluir.",
+    "claimLinkCopied": "Link de resgate copiado para {account}",
+    "failedToCopyClaimLink": "Falha ao copiar o link de resgate",
+    "claimGame": "Resgatar",
+    "claimFailedUseLink": "O resgate no launcher falhou . abrindo o Epic Games Launcher no PC.",
+    "openingLauncher": "Abrindo o Epic Games Launcher para concluir o resgate…",
+    "claimAll": "Resgatar Todos os Jogos Gratuitos",
+    "claiming": "Resgatando...",
+    "claimedCount": "{count} jogo(s) resgatado(s)!",
+    "allAlreadyOwned": "Todos os jogos já estão na sua biblioteca",
+    "results": "Resultados",
+    "statusClaimed": "Resgatado",
+    "statusAlreadyOwned": "Já possuído",
+    "statusBrowserOnly": "Resgatar na Epic (link)",
+    "statusError": "Erro",
+    "autoClaim": "Resgatar automaticamente ao abrir",
+    "autoClaimDescription": "Resgata jogos gratuitos automaticamente ao carregar a página"
+  },
+  "library": {
+    "page": {
+      "title": "Biblioteca",
+      "description": "Jogos instalados e disponíveis na Epic Games Store desta conta."
+    },
+    "loggingIn": "Fazendo login...",
+    "loggedIn": "Login realizado com sucesso",
+    "failedToLogin": "Não foi possível fazer login",
+    "loggingOut": "Saindo...",
+    "loggedOut": "Sessão encerrada com sucesso",
+    "failedToLogout": "Não foi possível sair",
+    "refresh": "Atualizar",
+    "logout": "Sair",
+    "searchPlaceholder": "Buscar jogos...",
+    "filters": {
+      "select": "Selecionar filtros",
+      "showHidden": "Mostrar ocultos",
+      "installedOnly": "Apenas instalados",
+      "updatesAvailable": "Atualizações disponíveis"
+    },
+    "app": {
+      "unfavorite": "Remover dos favoritos",
+      "favorite": "Adicionar aos favoritos",
+      "show": "Mostrar",
+      "hide": "Ocultar",
+      "stop": "Parar",
+      "play": "Jogar",
+      "update": "Atualizar",
+      "repair": "Reparar",
+      "install": "Instalar",
+      "removeFromQueue": {
+        "short": "Remover",
+        "long": "Remover da Fila"
+      },
+      "dropdown": {
+        "autoUpdate": {
+          "enable": "Ativar Atualização Automática",
+          "disable": "Desativar Atualização Automática"
+        },
+        "verifyAndRepair": "Verificar e Reparar",
+        "uninstall": "Desinstalar",
+        "size": "Tamanho"
+      },
+      "failedToLaunch": "Não foi possível iniciar {name}",
+      "stopped": "{name} encerrado com sucesso",
+      "failedToStop": "Não foi possível encerrar {name}",
+      "verified": "Arquivos de {name} verificados com sucesso",
+      "requiresRepair": "{name} precisa de reparo, adicionado à fila",
+      "failedToVerify": "Não foi possível verificar os arquivos de {name}",
+      "installed": "{name} instalado com sucesso",
+      "failedToInstall": "Não foi possível instalar {name}",
+      "updated": "{name} atualizado com sucesso",
+      "failedToUpdate": "Não foi possível atualizar {name}",
+      "repaired": "{name} reparado com sucesso",
+      "failedToRepair": "Não foi possível reparar {name}",
+      "startedDownload": "Download iniciado. {el}Clique aqui{elEnd} para acompanhar o progresso",
+      "startedUpdate": "Atualização de {name} iniciada"
+    },
+    "installConfirmation": {
+      "downloadSize": "Tamanho do Download",
+      "compressed": "Comprimido",
+      "installSize": "Tamanho da Instalação",
+      "afterExtraction": "Após extração",
+      "storage": {
+        "title": "Armazenamento",
+        "current": "Atual",
+        "after": "Após instalar"
+      },
+      "sdl": {
+        "title": "Selecionar componentes opcionais para instalar",
+        "selected": "{count} selecionado(s)",
+        "required": "Obrigatório"
+      },
+      "notEnoughSpace": "Espaço em disco insuficiente",
+      "download": "Baixar"
+    },
+    "uninstallConfirmation": {
+      "title": "Confirmar Desinstalação",
+      "description": "Tem certeza que deseja desinstalar {name}?",
+      "uninstalled": "{name} desinstalado com sucesso",
+      "failedToUninstall": "Não foi possível desinstalar {name}"
+    }
+  },
+  "downloads": {
+    "page": {
+      "title": "Downloads",
+      "description": "Fila de downloads, progresso e histórico de instalações."
+    },
+    "noDownloads": "Nenhum download em andamento",
+    "paused": "Pausado",
+    "queued": "Na Fila",
+    "completed": "Concluído",
+    "clearAll": "Limpar Tudo",
+    "downloadFailed": "Falha no download",
+    "cancelDownloadConfirmation": {
+      "title": "Cancelar Download",
+      "description": "Tem certeza que deseja cancelar o download? Os arquivos já baixados serão mantidos."
+    }
+  },
+  "mcp": {
+    "page": {
+      "title": "MCP",
+      "description": "Execute operações MCP. Este é um recurso avançado."
+    },
+    "operation": {
+      "label": "Operação",
+      "placeholder": "Digite uma operação"
+    },
+    "profileId": {
+      "label": "ID do Perfil",
+      "placeholder": "Selecionar ID do Perfil"
+    },
+    "route": {
+      "label": "Rota",
+      "placeholder": "Selecionar Rota"
+    },
+    "body": {
+      "label": "Corpo (JSON)"
+    },
+    "execute": "Executar",
+    "result": "Resultado",
+    "format": "Formatar",
+    "invalidBody": "JSON inválido no body",
+    "failedToExecute": "Não foi possível executar a operação MCP"
+  },
+  "backgroundNotifications": {
+    "llamas": {
+      "title": "Lhamas Gratuitas",
+      "message": "{count} lhama(s) gratuita(s) disponível(is)",
+      "messageWithAccount": "{count} lhama(s) em {account}"
+    },
+    "dailyQuests": {
+      "title": "Missões Diárias",
+      "message": "As missões diárias do STW resetaram . novas missões disponíveis"
+    },
+    "itemShop": {
+      "title": "Loja de Itens",
+      "message": "A loja de itens do Battle Royale foi atualizada",
+      "messageDetailed": "Loja atualizada: {newCount} novidade(s), {leavingCount} item(ns) saindo em breve."
+    },
+    "wishlistLeavingSoon": {
+      "title": "Lista de desejos",
+      "message": "{count} item(ns) da sua lista sai(em) da loja em breve: {names}"
+    },
+    "wishlist": {
+      "title": "Lista de desejos",
+      "message": "{count} item(ns) da sua lista está(ão) na loja: {names}"
+    },
+    "missionAlerts": {
+      "title": "Alertas de missão STW",
+      "vbucks": "{count} V-Bucks disponíveis hoje",
+      "survivors": "{count} sobrevivente(s) lendário(s)/mítico(s)",
+      "llamas": "{count} ficha(s) de lhama de melhoria",
+      "perkUp": "{count} PERK-UP disponível(is)"
+    },
+    "serverStatus": {
+      "offline": {
+        "title": "Status do Servidor",
+        "message": "Fortnite está offline ou em manutenção"
+      },
+      "changed": {
+        "title": "Status do Servidor",
+        "message": "Status alterado: {status}"
+      }
+    }
+  },
+  "activityLog": {
+    "title": "Atividades",
+    "empty": "Nenhuma atividade ainda",
+    "markAllRead": "Marcar tudo como lido",
+    "clear": "Limpar histórico",
+    "llamasClaimed": "{count} Lhama(s) resgatada(s)",
+    "llamasNone": "Nenhuma Lhama disponível no momento",
+    "llamasError": "Erro ao resgatar lhamas: {detail}",
+    "gameClaimed": "{title} resgatado com sucesso",
+    "gameAlreadyOwned": "{title} . você já possui este jogo",
+    "gameBrowserOnly": "{title} . use o link da Epic Store para resgatar",
+    "gameError": "Erro ao resgatar {title}: {detail}",
+    "questsRerolled": "Missões diárias substituídas automaticamente",
+    "questRerolledDetail": "Missão substituída: {old} → {new}",
+    "questError": "Erro ao substituir missão: {detail}"
+  }
+}
