@@ -1,4 +1,4 @@
-﻿# Regenerates the README banner from the app icon.
+﻿# Regenerates the README banner (transparent PNG: cube icon + wordmark).
 #   powershell -ExecutionPolicy Bypass -File scripts/build-banner.ps1
 
 Add-Type -AssemblyName System.Drawing
@@ -22,40 +22,44 @@ try {
   }
 }
 
-$width = 1280
-$height = 340
+$titleFont = New-Object System.Drawing.Font $family, 78, ([System.Drawing.FontStyle]::Bold)
+$subFont = New-Object System.Drawing.Font $family, 60, ([System.Drawing.FontStyle]::Bold)
+
+$probe = New-Object System.Drawing.Bitmap 1, 1
+$measure = [System.Drawing.Graphics]::FromImage($probe)
+$titleSize = $measure.MeasureString('DOZAMIGOS', $titleFont)
+$subSize = $measure.MeasureString('LAUNCHER', $subFont)
+$measure.Dispose()
+$probe.Dispose()
+
+$pad = 24
+$iconSize = 190
+$gap = 28
+$textWidth = [Math]::Ceiling([Math]::Max($titleSize.Width, $subSize.Width))
+$textHeight = [Math]::Ceiling($titleSize.Height + $subSize.Height)
+$width = $pad * 2 + $iconSize + $gap + $textWidth
+$height = $pad * 2 + [Math]::Max($iconSize, $textHeight)
+
 $bmp = New-Object System.Drawing.Bitmap $width, $height, ([System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
 $g = [System.Drawing.Graphics]::FromImage($bmp)
 $g.SmoothingMode = 'AntiAlias'
 $g.InterpolationMode = 'HighQualityBicubic'
-$g.TextRenderingHint = 'AntiAliasGridFit'
+# Grid-fit hinting bakes the background colour into the glyph edges, so keep it off on transparency.
+$g.TextRenderingHint = 'AntiAlias'
 
-$rect = New-Object System.Drawing.Rectangle 0, 0, $width, $height
-$bg = New-Object System.Drawing.Drawing2D.LinearGradientBrush $rect, ([System.Drawing.Color]::FromArgb(11, 14, 20)), ([System.Drawing.Color]::FromArgb(23, 28, 40)), 45.0
-$g.FillRectangle($bg, $rect)
-$bg.Dispose()
+# ponytail: purple wordmark instead of white so it stays readable on GitHub's light and dark themes.
+$purple = New-Object System.Drawing.SolidBrush ([System.Drawing.Color]::FromArgb(168, 85, 247))
+$lilac = New-Object System.Drawing.SolidBrush ([System.Drawing.Color]::FromArgb(198, 122, 255))
 
-$path = New-Object System.Drawing.Drawing2D.GraphicsPath
-$path.AddEllipse(80, -140, 620, 620)
-$glow = New-Object System.Drawing.Drawing2D.PathGradientBrush $path
-$glow.CenterColor = [System.Drawing.Color]::FromArgb(120, 168, 44, 232)
-$glow.SurroundColors = @([System.Drawing.Color]::FromArgb(0, 168, 44, 232))
-$g.FillPath($glow, $path)
-$glow.Dispose()
-$path.Dispose()
-
-$white = New-Object System.Drawing.SolidBrush ([System.Drawing.Color]::White)
-$purple = New-Object System.Drawing.SolidBrush ([System.Drawing.Color]::FromArgb(198, 122, 255))
-$grey = New-Object System.Drawing.SolidBrush ([System.Drawing.Color]::FromArgb(140, 150, 170))
-
-$g.DrawImage($icon, 110, 86, 168, 168)
-$g.DrawString('DOZAMIGOS', (New-Object System.Drawing.Font $family, 72, ([System.Drawing.FontStyle]::Bold)), $white, 310, 66)
-$g.DrawString('LAUNCHER', (New-Object System.Drawing.Font $family, 56, ([System.Drawing.FontStyle]::Bold)), $purple, 314, 160)
-$g.DrawString('Fortnite Battle Royale, Salve o Mundo e Epic Games em um só lugar', (New-Object System.Drawing.Font $family, 20), $grey, 316, 240)
+$textLeft = $pad + $iconSize + $gap
+$textTop = [Math]::Round(($height - $textHeight) / 2)
+$g.DrawImage($icon, $pad, [int][Math]::Round(($height - $iconSize) / 2), $iconSize, $iconSize)
+$g.DrawString('DOZAMIGOS', $titleFont, $purple, $textLeft, $textTop)
+$g.DrawString('LAUNCHER', $subFont, $lilac, ($textLeft + ($titleSize.Width - $subSize.Width) / 2), ($textTop + $titleSize.Height))
 
 $g.Dispose()
 $bmp.Save($out, [System.Drawing.Imaging.ImageFormat]::Png)
 $bmp.Dispose()
 $icon.Dispose()
 if (-not (Test-Path $out)) { throw "failed to write $out" }
-Write-Host "wrote $out"
+Write-Host "wrote $out ($width x $height)"
