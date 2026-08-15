@@ -5,18 +5,31 @@ import { logger } from '$lib/logger';
 import type { Locale } from '$lib/paraglide/runtime';
 import {
   msUntilNextUtcHour,
-  parseServerTimeMs,
   shouldRunHourlyClaim,
   utcHourBucket
 } from '$lib/modules/epic-server-time';
-import { clientQuestLogin, composeMCP, queryProfile } from '$lib/modules/mcp';
+import { fetchEpicServerTimeMs } from '$lib/modules/epic-server-time-fetch';
+import { mapPool } from '$lib/modules/map-pool';
+import { clientQuestLogin, composeMCP } from '$lib/modules/mcp';
 import { accountStore } from '$lib/storage';
 import { activityLog, notify } from '$lib/stores/activity-log';
 import { getErrorDetail } from '$lib/utils';
 import type { AccountData } from '$types/account';
 import type { FullQueryProfile } from '$types/game/mcp';
+import type { GrantedItem } from '$lib/utils/mcp-loot';
 
 const HOURLY_CLAIM_BUCKET_KEY = 'dozamigos.lastLlamaUtcHour';
+
+/** True while startup/hourly llama claims are hitting MCP — background polls should skip. */
+let mcpBusyUntil = 0;
+
+export function isMcpBusy() {
+  return Date.now() < mcpBusyUntil;
+}
+
+function markMcpBusy(ms = 45_000) {
+  mcpBusyUntil = Math.max(mcpBusyUntil, Date.now() + ms);
+}
 
 function readLocalStorage<T>(key: string, fallback: T): T {
   if (typeof localStorage === 'undefined') return fallback;
@@ -38,49 +51,79 @@ function writeLastHourBucket(bucket: string) {
   localStorage.setItem(HOURLY_CLAIM_BUCKET_KEY, bucket);
 }
 
-/** Pull Epic `serverTime` from any connected account — PC clock is ignored. */
-export async function fetchEpicServerTimeMs(accounts: AccountData[]): Promise<number | null> {
-  for (const account of accounts) {
-    try {
-      const profile = await queryProfile(account, 'common_core');
-      const ms = parseServerTimeMs(profile.serverTime);
-      if (ms != null) return ms;
-    } catch (error) {
-      logger.debug('Failed to read Epic serverTime', { accountId: account.accountId, error });
-    }
-  }
-  return null;
-}
+export { fetchEpicServerTimeMs };
 
 async function claimLlamasForAll(accounts: AccountData[], { logEmpty = true } = {}) {
   let totalOpened = 0;
+  const allReceived: GrantedItem[] = [];
+  let errorCount = 0;
+  let lastErrorDetail = '';
   const { claimFreeAndOptionalSurvivorBuys } = await import('$lib/modules/stw-auto-llama');
 
-  await Promise.allSettled(
-    accounts.map(async (account) => {
+  markMcpBusy();
+
+  // Sequential — parallel PopulatePrerolledOffers across accounts trips Epic MCP 500s.
+  await mapPool(
+    accounts,
+    async (account) => {
       try {
         const result = await claimFreeAndOptionalSurvivorBuys(account);
         const count = result.opened + result.bought;
         totalOpened += count;
+        allReceived.push(...result.received);
+
         if (count > 0) {
           await notify('llama', get(t)('activityLog.llamasClaimed', { count }), {
             title: get(t)('activityLog.llamasTitle'),
             account: account.displayName,
-            items: result.received
+            items: result.received,
+            historyOnly: true
           });
         } else if (logEmpty) {
           await notify('info', get(t)('activityLog.llamasNone'), {
-            account: account.displayName
+            account: account.displayName,
+            historyOnly: true
           });
         }
       } catch (error) {
+        errorCount++;
+        lastErrorDetail = getErrorDetail(error);
         logger.error('Failed to claim llamas', { accountId: account.accountId, error });
-        await notify('error', get(t)('activityLog.llamasError', { detail: getErrorDetail(error) }), {
-          account: account.displayName
+        await notify('error', get(t)('activityLog.llamasError', { detail: lastErrorDetail }), {
+          account: account.displayName,
+          historyOnly: true
         });
       }
-    })
+    },
+    1
   );
+
+  if (totalOpened > 0) {
+    await notify(
+      'llama',
+      get(t)('activityLog.llamasClaimedSummary', {
+        count: totalOpened,
+        accounts: accounts.length
+      }),
+      {
+        title: get(t)('activityLog.llamasTitle'),
+        items: allReceived,
+        skipHistory: true
+      }
+    );
+  } else if (errorCount > 0) {
+    await notify(
+      'error',
+      get(t)('activityLog.llamasErrorSummary', {
+        count: errorCount,
+        detail: lastErrorDetail
+      }),
+      {
+        title: get(t)('activityLog.llamasTitle'),
+        skipHistory: true
+      }
+    );
+  }
 
   return totalOpened;
 }
@@ -98,9 +141,11 @@ async function autoRerollQuestsForAll(accounts: AccountData[]) {
   if (blacklist.size === 0) return;
 
   const locale = get(language);
+  markMcpBusy();
 
-  await Promise.allSettled(
-    accounts.map(async (account) => {
+  await mapPool(
+    accounts,
+    async (account) => {
       try {
         const campaignProfile = await clientQuestLogin(account, 'campaign');
         const initialProfile = campaignProfile.profileChanges[0].profile;
@@ -144,14 +189,16 @@ async function autoRerollQuestsForAll(accounts: AccountData[]) {
             activityLog.add(
               'quest',
               get(t)('activityLog.questRerolledDetail', { old: oldName, new: newName }),
-              account.displayName
+              account.displayName,
+              { historyOnly: true }
             );
           } catch (error) {
             logger.warn('Failed to auto-reroll quest', { accountId: account.accountId, error });
             activityLog.add(
               'error',
               get(t)('activityLog.questError', { detail: getErrorDetail(error) }),
-              account.displayName
+              account.displayName,
+              { historyOnly: true }
             );
             break;
           }
@@ -159,13 +206,15 @@ async function autoRerollQuestsForAll(accounts: AccountData[]) {
 
         if (rerolledCount > 0) {
           await notify('quest', get(t)('dailyQuests.rerollDone'), {
-            title: get(t)('activityLog.questsTitle')
+            title: get(t)('activityLog.questsTitle'),
+            account: account.displayName
           });
         }
       } catch (error) {
         logger.error('Failed to fetch quests for auto-reroll', { accountId: account.accountId, error });
       }
-    })
+    },
+    1
   );
 }
 

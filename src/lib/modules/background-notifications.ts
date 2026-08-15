@@ -15,6 +15,7 @@ import { accountStore, settingsStore } from '$lib/storage';
 import { getShopWishlist, getWishlistedOffersInShop } from '$lib/stores/shop-wishlist';
 import { notify } from '$lib/stores/activity-log';
 import { worldInfoCache } from '$lib/stores';
+import { isMcpBusy } from '$lib/modules/startup-actions';
 import type { AccountData } from '$types/account';
 import type { LightswitchData } from '$types/game/server-status';
 
@@ -132,6 +133,9 @@ async function pushNotification(
 }
 
 async function checkLlamas(state: PersistedState, accounts: AccountData[]) {
+  // Avoid doubling PopulatePrerolledOffers while startup/hourly claims are mid-flight.
+  if (isMcpBusy()) return state.llamasByAccount;
+
   const nextCounts: Record<string, number> = { ...state.llamasByAccount };
 
   await Promise.allSettled(

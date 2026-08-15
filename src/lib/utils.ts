@@ -30,9 +30,12 @@ export function getErrorDetail(error: unknown): string {
         msg.includes('<!DOCTYPE') ||
         msg.includes('is not valid JSON') ||
         msg.includes('ReadableStreamDefaultController') ||
-        msg.includes("Unexpected token '<'")
+        msg.includes('Unexpected token')
       ) {
         return 'unexpected HTML response from server';
+      }
+      if (/status code 5\d\d/i.test(msg) || /\b500 Internal Server Error\b/i.test(msg)) {
+        return 'Epic MCP indisponível (erro 500)';
       }
       return msg.length > 120 ? msg.slice(0, 117) + '…' : msg;
     }

@@ -222,10 +222,14 @@
       setWorldInfoCache(),
       syncAccountNames(),
       autoUpdateApps(),
-      runStartupActions().then(() => sessionStorage.setItem('startupActionsRan', 'true')),
+      runStartupActions()
+        .then(() => sessionStorage.setItem('startupActionsRan', 'true'))
+        .finally(() => {
+          // Start background polls after startup MCP settles — avoids double PopulatePrerolledOffers.
+          startBackgroundNotifications();
+        }),
       Promise.resolve(startLlamaAutoClaimScheduler()),
       Promise.resolve(startDailyQuestRerollScheduler()),
-      Promise.resolve(startBackgroundNotifications()),
       // We could fetch all avatars using a single account
       // However, fetching per account allows invalid accounts to fail independently
       // and be detected and removed from the config.

@@ -1,8 +1,32 @@
 import { EpicAPIError } from '$lib/exceptions/EpicAPIError';
 import { baseGameService } from '$lib/http';
 import { getAuthedKy } from '$lib/modules/auth-session';
+import { isHTTPError } from 'ky';
 import type { AccountData } from '$types/account';
 import type { FullQueryProfile, MCPOperation, MCPProfileId, MCPRoute } from '$types/game/mcp';
+
+async function postMcp<T>(
+  account: AccountData,
+  operation: MCPOperation,
+  profile: MCPProfileId,
+  data: Record<string, any>,
+  route: MCPRoute,
+  retried = false
+): Promise<T> {
+  try {
+    return await getAuthedKy(account, baseGameService)
+      .post<T>(`profile/${account.accountId}/${route}/${operation}?profileId=${profile}&rvn=-1`, { json: data })
+      .json();
+  } catch (error) {
+    // Epic MCP flakes with bare HTTP 500 under load — one quiet retry usually lands.
+    const is500 = isHTTPError(error) && error.response.status === 500;
+    if (!retried && is500) {
+      await new Promise((r) => setTimeout(r, 750));
+      return postMcp<T>(account, operation, profile, data, route, true);
+    }
+    throw error;
+  }
+}
 
 export function composeMCP<T>(
   account: AccountData,
@@ -12,9 +36,7 @@ export function composeMCP<T>(
   route?: MCPRoute
 ): Promise<T> {
   const r = route || (operation === 'QueryPublicProfile' ? 'public' : 'client');
-  return getAuthedKy(account, baseGameService)
-    .post<T>(`profile/${account.accountId}/${r}/${operation}?profileId=${profile}&rvn=-1`, { json: data })
-    .json();
+  return postMcp<T>(account, operation, profile, data, r);
 }
 
 export function queryProfile<T extends MCPProfileId>(account: AccountData, profile: T): Promise<FullQueryProfile<T>> {
