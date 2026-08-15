@@ -1,4 +1,4 @@
-import { derived, get, writable } from 'svelte/store';
+import { derived, writable } from 'svelte/store';
 import type { ActivityType } from '$lib/stores/activity-log';
 import type { GrantedItem } from '$lib/utils/mcp-loot';
 
