@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { toast } from 'svelte-sonner';
   import AlertTriangleIcon from '@lucide/svelte/icons/alert-triangle';
   import RefreshCwIcon from '@lucide/svelte/icons/refresh-cw';
   import Trash2Icon from '@lucide/svelte/icons/trash-2';
@@ -34,8 +35,12 @@
   function addCurrentAccount() {
     if (!$activeAccount || autoKickAccounts.has($activeAccount.accountId)) return;
 
-    addAutoKickAccount($activeAccount, {
-      autoKick: true
+    void addAutoKickAccount($activeAccount, { autoKick: true }).catch((error) => {
+      if (error instanceof Error && error.message === 'TAXI_CONFLICT') {
+        toast.error($t('autoKick.conflictTaxi'));
+        return;
+      }
+      throw error;
     });
   }
 

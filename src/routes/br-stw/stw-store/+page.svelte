@@ -5,7 +5,7 @@
   import RefreshCwIcon from '@lucide/svelte/icons/refresh-cw';
   import ShoppingBagIcon from '@lucide/svelte/icons/shopping-bag';
   import { HUD_PAGE_WIDTH } from '$lib/constants/page-layout';
-  import { t } from '$lib/i18n';
+  import { language, t } from '$lib/i18n';
   import { stwStoreCache } from '$lib/modules/account-data';
   import { getBalanceForOffer, maxPurchasableQuantity } from '$lib/modules/stw-catalog';
   import { accountStore } from '$lib/storage';
@@ -13,6 +13,7 @@
   import type { GrantedItem } from '$lib/utils/mcp-loot';
   import PageActionButton from '$components/layout/PageActionButton.svelte';
   import PageContent from '$components/layout/PageContent.svelte';
+  import PageHeaderChip from '$components/layout/PageHeaderChip.svelte';
   import PageLoading from '$components/layout/PageLoading.svelte';
   import StoreItemGrid from '$components/layout/StoreItemGrid.svelte';
   import StwPurchaseResultDialog from '$components/modules/stw-store/StwPurchaseResultDialog.svelte';
@@ -38,6 +39,8 @@
   const llamaRotationRemaining = $derived(
     store?.expiration ? formatRemainingDuration(Math.max(0, new Date(store.expiration).getTime() - now)) : ''
   );
+  const xrayBalance = $derived(store?.balances?.['currency_xrayllama'] ?? 0);
+  const goldBalance = $derived(store?.balances?.['eventcurrency_scaling'] ?? 0);
 
   async function loadStore(force = true) {
     if (!$activeAccount) return;
@@ -172,6 +175,25 @@
   {:else if isLoading && !store}
     <PageLoading label={$t('loading')} />
   {:else if store?.sections.length}
+    <div class="flex flex-wrap items-center gap-2">
+      <PageHeaderChip class="h-9 gap-1.5 px-2.5 text-sm">
+        <img
+          class="size-5 shrink-0 object-contain"
+          alt={$t('stw.xrayTickets')}
+          src="/resources/currency_xrayllama.png"
+        />
+        <span class="text-sm leading-none font-semibold tabular-nums">
+          {xrayBalance.toLocaleString($language)}
+        </span>
+      </PageHeaderChip>
+      <PageHeaderChip class="h-9 gap-1.5 px-2.5 text-sm">
+        <img class="size-5 shrink-0 object-contain" alt={$t('stw.gold')} src="/resources/eventcurrency_scaling.png" />
+        <span class="text-sm leading-none font-semibold tabular-nums">
+          {goldBalance.toLocaleString($language)}
+        </span>
+      </PageHeaderChip>
+    </div>
+
     <div class="space-y-8 sm:space-y-10">
       {#each store.sections as section (section.id)}
         <section class="flex flex-col gap-3 sm:gap-4">

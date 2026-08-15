@@ -7,6 +7,8 @@ import { fetchAvailableCardPacks } from '$lib/modules/free-llamas';
 import { aggregateMissionAlertsOverview } from '$lib/modules/mission-alerts-buckets';
 import { sendNotificationMessage } from '$lib/modules/notification';
 import { getLightswitch } from '$lib/modules/server-status';
+import { fetchSteamFreeGames } from '$lib/modules/steam-free-games';
+import { findNewSteamFreeAppIds } from '$lib/modules/steam-free-games-notify';
 import { setWorldInfoCache } from '$lib/modules/world-info';
 import { accountStore, settingsStore } from '$lib/storage';
 import { getShopWishlist, getWishlistedOffersInShop } from '$lib/stores/shop-wishlist';
@@ -36,6 +38,7 @@ type PersistedState = {
   serverStatus: ServerStatusKey | null;
   missionAlertsSnapshot: MissionAlertsSnapshot | null;
   wishlistLeavingSoonKeys: string[];
+  steamAppIds: string[] | null;
   initialized: boolean;
 };
 
@@ -51,6 +54,7 @@ function defaultState(): PersistedState {
     serverStatus: null,
     missionAlertsSnapshot: null,
     wishlistLeavingSoonKeys: [],
+    steamAppIds: null,
     initialized: false
   };
 }
@@ -81,6 +85,10 @@ function utcDayString(): string {
 
 function notificationsEnabled(): boolean {
   return get(settingsStore).app?.windowsNotifications !== false;
+}
+
+function steamNotificationsEnabled(): boolean {
+  return notificationsEnabled() && get(settingsStore).app?.steamFreeGamesNotifications === true;
 }
 
 function getStatusFromLightswitch(data: LightswitchData): ServerStatusKey {
@@ -348,15 +356,49 @@ async function checkMissionAlerts(state: PersistedState): Promise<MissionAlertsS
   }
 }
 
+async function checkSteamFreeGames(state: PersistedState): Promise<string[] | null> {
+  if (!steamNotificationsEnabled()) return state.steamAppIds;
+
+  try {
+    const games = await fetchSteamFreeGames();
+    const currentIds = games.map((game) => game.appId);
+    const previous = state.initialized ? state.steamAppIds : null;
+    const newIds = findNewSteamFreeAppIds(currentIds, previous);
+
+    if (newIds.length) {
+      const titles = games
+        .filter((game) => newIds.includes(game.appId))
+        .slice(0, 2)
+        .map((game) => game.title);
+      const names = titles.join(', ');
+
+      await pushNotification(
+        'info',
+        get(t)('backgroundNotifications.steamFreeGames.title'),
+        get(t)('backgroundNotifications.steamFreeGames.message', {
+          count: newIds.length,
+          names
+        })
+      );
+    }
+
+    return currentIds;
+  } catch (error) {
+    logger.debug('Background Steam free games check failed', { error });
+    return state.steamAppIds;
+  }
+}
+
 async function runBackgroundChecks() {
   const { accounts } = accountStore.get();
-  if (!accounts.length) return;
+  if (!accounts.length && !steamNotificationsEnabled()) return;
 
   const state = readState();
-  const llamasByAccount = await checkLlamas(state, accounts);
+  const llamasByAccount = accounts.length ? await checkLlamas(state, accounts) : state.llamasByAccount;
   const { shopHash, shopLocale, wishlistLeavingSoonKeys } = await checkShop(state);
   const serverStatus = await checkServerStatus(state);
   const missionAlertsSnapshot = await checkMissionAlerts(state);
+  const steamAppIds = await checkSteamFreeGames(state);
 
   const nextState: PersistedState = {
     llamasByAccount,
@@ -366,6 +408,7 @@ async function runBackgroundChecks() {
     serverStatus,
     missionAlertsSnapshot,
     wishlistLeavingSoonKeys,
+    steamAppIds,
     initialized: true
   };
 

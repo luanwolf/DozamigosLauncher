@@ -14,6 +14,7 @@
   import { warmAccountData } from '$lib/modules/account-data';
   import { installAvailableUpdate, type AppUpdateStatus } from '$lib/modules/app-updater';
   import { initAutoKick } from '$lib/modules/autokick/base';
+  import { initTaxiService } from '$lib/modules/taxi-service';
   import { fetchAvatars } from '$lib/modules/avatar';
   import { startBackgroundNotifications } from '$lib/modules/background-notifications';
   import { addToQueue, initDownloader } from '$lib/modules/download.svelte';
@@ -237,6 +238,7 @@
       autoUpdateLauncher(),
       setupDiscordRPC(),
       initAutoKick(),
+      initTaxiService(),
       initDownloader(),
       setWorldInfoCache(),
       syncAccountNames(),

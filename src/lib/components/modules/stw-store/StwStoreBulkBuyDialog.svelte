@@ -9,8 +9,8 @@
     removeOfferFromStore
   } from '$lib/modules/stw-catalog';
   import {
-    STW_BULK_CATEGORIES,
     planStwBulkBuys,
+    STW_BULK_CATEGORIES,
     summarizeStwBulkBuys,
     type StwBulkCategory
   } from '$lib/modules/stw-store-bulk';
@@ -53,9 +53,7 @@
   });
   let progress = $state<{ done: number; total: number; title: string } | null>(null);
 
-  const selectedSet = $derived(
-    new Set(STW_BULK_CATEGORIES.filter((category) => selected[category]))
-  );
+  const selectedSet = $derived(new Set(STW_BULK_CATEGORIES.filter((category) => selected[category])));
   const lines = $derived(planStwBulkBuys(store, selectedSet));
   const summary = $derived(summarizeStwBulkBuys(lines));
 
@@ -104,15 +102,9 @@
           const result = await purchaseStwOfferMax($activeAccount, line.offer, line.quantity);
           if (result.quantity < 1) break;
 
-          working = applyPurchaseToStore(
-            working,
-            line.offer,
-            result.spent,
-            result.currencySubType,
-            result.quantity
-          );
+          working = applyPurchaseToStore(working, line.offer, result.spent, result.currencySubType, result.quantity);
           if (!offerStillListed(working, line.offer.offerId)) {
-            rememberExhaustedStwOffer($activeAccount.accountId, working.expiration, line.offer.offerId);
+            rememberExhaustedStwOffer($activeAccount.accountId, working.expiration, line.offer);
           }
           onStoreUpdate(working);
           boughtOffers++;
@@ -123,7 +115,7 @@
             break;
           }
           if (error instanceof EpicAPIError && error.errorCode.includes('purchase_not_allowed')) {
-            rememberExhaustedStwOffer($activeAccount.accountId, working.expiration, line.offer.offerId);
+            rememberExhaustedStwOffer($activeAccount.accountId, working.expiration, line.offer);
             working = removeOfferFromStore(working, line.offer.offerId);
             onStoreUpdate(working);
             continue;
@@ -160,11 +152,7 @@
       {#each STW_BULK_CATEGORIES as category (category)}
         <div class="flex items-center justify-between gap-3 rounded-none border px-3 py-2">
           <Label class="cursor-pointer" for={`stw-bulk-${category}`}>{categoryLabel(category)}</Label>
-          <Switch
-            id={`stw-bulk-${category}`}
-            bind:checked={selected[category]}
-            disabled={isPurchasing}
-          />
+          <Switch id={`stw-bulk-${category}`} bind:checked={selected[category]} disabled={isPurchasing} />
         </div>
       {/each}
     </div>
@@ -172,17 +160,17 @@
     <div class="space-y-1 rounded-none border bg-muted/40 px-3 py-2 text-sm">
       <div class="flex justify-between gap-2">
         <span class="text-muted-foreground">{$t('stwStore.bulkBuy.offers')}</span>
-        <span class="tabular-nums font-medium">{summary.offers}</span>
+        <span class="font-medium tabular-nums">{summary.offers}</span>
       </div>
       <div class="flex justify-between gap-2">
         <span class="text-muted-foreground">{$t('stwStore.bulkBuy.purchases')}</span>
-        <span class="tabular-nums font-medium">{summary.items}</span>
+        <span class="font-medium tabular-nums">{summary.items}</span>
       </div>
       <div class="flex items-center justify-between gap-2">
         <span class="text-muted-foreground">{$t('stwStore.bulkBuy.total')}</span>
         <div class="flex items-center gap-1">
           <img class="size-4" alt={$t('stw.gold')} src="/resources/eventcurrency_scaling.png" />
-          <span class="tabular-nums text-lg font-bold">{summary.gold.toLocaleString($language)}</span>
+          <span class="text-lg font-bold tabular-nums">{summary.gold.toLocaleString($language)}</span>
         </div>
       </div>
     </div>
@@ -201,11 +189,7 @@
       <Dialog.Close class={buttonVariants({ variant: 'outline' })} disabled={isPurchasing}>
         {$t('stwStore.purchaseDialog.cancel')}
       </Dialog.Close>
-      <Button
-        disabled={isPurchasing || summary.offers < 1}
-        loading={isPurchasing}
-        onclick={confirmBulkBuy}
-      >
+      <Button disabled={isPurchasing || summary.offers < 1} loading={isPurchasing} onclick={confirmBulkBuy}>
         {$t('stwStore.bulkBuy.confirm')}
       </Button>
     </Dialog.Footer>

@@ -150,7 +150,7 @@
   }}
 />
 
-<PageContent bare center centerClass={HUD_PAGE_WIDTH} class="gap-6">
+<PageContent class="gap-6" bare center centerClass={HUD_PAGE_WIDTH}>
   {#if showOnboarding}
     <HomeOnboarding />
   {:else}

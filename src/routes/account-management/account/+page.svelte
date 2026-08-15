@@ -51,13 +51,15 @@
   import { redeemCode } from '$lib/modules/code';
   import { generateEpicExchangeUrl } from '$lib/modules/epic-web-url';
   import { accountStore } from '$lib/storage';
-  import { handleError } from '$lib/utils';
+  import { getAccountLabel, handleError } from '$lib/utils';
   import PageContent from '$components/layout/PageContent.svelte';
   import PageLoading from '$components/layout/PageLoading.svelte';
   import SectionHeading from '$components/layout/SectionHeading.svelte';
   import AccountFriendsSection from '$components/modules/account/AccountFriendsSection.svelte';
   import AccountResultCard from '$components/ui/AccountResultCard.svelte';
   import { Button } from '$components/ui/button';
+  import { Input } from '$components/ui/input';
+  import { Label } from '$components/ui/label';
   import { TagInput } from '$components/ui/tag-input';
   import * as Select from '$components/ui/select';
   import type { EpicAccountById } from '$types/game/lookup';
@@ -68,6 +70,9 @@
   const activeAccount = accountStore.getActiveStore();
 
   let showSensitiveData = $state(false);
+  let aliasDraft = $state('');
+  let tagsDraft = $state<string[]>([]);
+  let isOpeningStwNews = $state(false);
 
   const cachedProfile = $derived(accountProfileCache.get($activeAccount));
   const profileData = $derived<EpicAccountById | null>(cachedProfile.data);
@@ -316,6 +321,34 @@
     }
   }
 
+  async function openStwNewsProfile() {
+    if (!$activeAccount) return;
+    isOpeningStwNews = true;
+    try {
+      await openUrl(`https://stw.news/${$activeAccount.accountId}`);
+    } catch (error) {
+      handleError({ error, message: $t('accountHub.customization.stwNews'), account: $activeAccount });
+    } finally {
+      isOpeningStwNews = false;
+    }
+  }
+
+  function saveCustomization() {
+    if (!$activeAccount) return;
+    accountStore.update($activeAccount.accountId, {
+      alias: aliasDraft.trim() || undefined,
+      tags: tagsDraft.map((tag) => tag.trim()).filter(Boolean)
+    });
+    toast.success($t('accountHub.customization.saved'));
+  }
+
+  $effect(() => {
+    const account = $activeAccount;
+    if (!account) return;
+    aliasDraft = account.alias ?? '';
+    tagsDraft = [...(account.tags ?? [])];
+  });
+
   onMount(() => {
     scrollToHash();
   });
@@ -328,14 +361,15 @@
   });
 
   $effect(() => {
-    $activeAccount;
+    const account = $activeAccount;
     untrack(() => {
+      void account;
       codeState = null;
     });
   });
 
   $effect(() => {
-    page.url.hash;
+    void page.url.hash;
     scrollToHash();
   });
 </script>
@@ -390,9 +424,19 @@
         <CopyIcon class="size-4" />
       {/if}
     </Button>
+
+    <Button
+      disabled={isLoggingIn || isCopying || isOpeningSettings || isOpeningStwNews}
+      loading={isOpeningStwNews}
+      onclick={openStwNewsProfile}
+      size="sm"
+      variant="outline"
+    >
+      {$t('accountHub.customization.stwNews')}
+    </Button>
   {/snippet}
 
-  <section class="scroll-mt-6 space-y-4" id="profile">
+  <section id="profile" class="scroll-mt-6 space-y-4">
     <div class="flex flex-wrap items-center justify-between gap-3">
       <SectionHeading title={$t('accountHub.sections.accountDetails')} />
       {#if profileData && !isLoadingProfile && !profileError}
@@ -434,7 +478,7 @@
 
           <div class="min-w-0 rounded-md border border-border/60 bg-muted/20 px-4 py-3">
             <p class="text-xs text-muted-foreground">{$t('accountHub.profile.email')}</p>
-            <p class="mt-1 break-all text-sm font-semibold {secretClass} {profileData.email ? '' : 'text-muted-foreground'}">
+            <p class="mt-1 break-all text-sm font-semibold {secretClass}" class:text-muted-foreground={!profileData.email}>
               {profileData.email || $t('accountHub.profile.emailUnavailable')}
             </p>
           </div>
@@ -491,12 +535,37 @@
     {/if}
   </section>
 
-  <section class="scroll-mt-6 space-y-4" id="friends">
+  <section id="customization" class="scroll-mt-6 space-y-4">
+    <SectionHeading title={$t('accountHub.sections.customization')} />
+    <div class="space-y-3 rounded-none border border-border/70 bg-card p-4">
+      <div class="space-y-1.5">
+        <Label for="account-alias">{$t('accountHub.customization.alias')}</Label>
+        <Input
+          id="account-alias"
+          maxlength={32}
+          placeholder={$t('accountHub.customization.aliasPlaceholder')}
+          bind:value={aliasDraft}
+        />
+        <p class="text-xs text-muted-foreground">{$t('accountHub.customization.aliasHint')}</p>
+      </div>
+      <div class="space-y-1.5">
+        <Label>{$t('accountHub.customization.tags')}</Label>
+        <TagInput placeholder={$t('accountHub.customization.tagsPlaceholder')} bind:items={tagsDraft} />
+        <p class="text-xs text-muted-foreground">{$t('accountHub.customization.tagsHint')}</p>
+      </div>
+      <p class="text-xs text-muted-foreground">
+        Epic: {getAccountLabel({ displayName: $activeAccount.displayName, alias: undefined, accountId: $activeAccount.accountId })}
+      </p>
+      <Button onclick={saveCustomization} size="sm">{$t('accountHub.customization.save')}</Button>
+    </div>
+  </section>
+
+  <section id="friends" class="scroll-mt-6 space-y-4">
     <SectionHeading title={$t('accountHub.sections.friends')} />
     <AccountFriendsSection />
   </section>
 
-  <section class="scroll-mt-6 space-y-4" id="redeem">
+  <section id="redeem" class="scroll-mt-6 space-y-4">
     <SectionHeading title={$t('accountHub.sections.redeem')} />
 
     <div class="space-y-4">
@@ -543,7 +612,7 @@
             {#each state.data as { code, error } (code)}
               <div class="flex items-start gap-2 text-sm">
                 <span class="min-w-0 flex-1 truncate font-medium">{code}</span>
-                <span class="shrink-0 {error ? 'text-destructive' : 'text-green-500'}">
+                <span class="shrink-0" class:text-destructive={error} class:text-green-500={!error}>
                   {error || $t('redeemCodes.redeemed')}
                 </span>
               </div>
@@ -554,7 +623,7 @@
     </div>
   </section>
 
-  <section class="scroll-mt-6 space-y-4" id="authentication">
+  <section id="authentication" class="scroll-mt-6 space-y-4">
     <SectionHeading title={$t('accountHub.sections.authentication')} />
 
     <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">

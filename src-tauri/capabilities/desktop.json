@@ -64,6 +64,9 @@
         },
         {
           "url": "com.epicgames.launcher:*"
+        },
+        {
+          "url": "https://store.steampowered.com/*"
         }
       ]
     },

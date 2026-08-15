@@ -23,33 +23,20 @@ function readLocalStorage<T>(key: string, fallback: T): T {
 
 async function claimLlamasForAll(accounts: AccountData[], { logEmpty = true } = {}) {
   let totalOpened = 0;
+  const { claimFreeAndOptionalSurvivorBuys } = await import('$lib/modules/stw-auto-llama');
 
   await Promise.allSettled(
     accounts.map(async (account) => {
       try {
-        const populateResult = await composeMCP<FullQueryProfile<'campaign'>>(
-          account,
-          'PopulatePrerolledOffers',
-          'campaign',
-          {}
-        );
-
-        const profile = populateResult.profileChanges[0].profile;
-        const cardPackIds = Object.entries(profile.items)
-          .filter(([, item]) => item.templateId.startsWith('CardPack:'))
-          .map(([id]) => id);
-
-        if (cardPackIds.length > 0) {
-          await composeMCP(account, 'OpenCardPackBatch', 'campaign', { cardPackItemIds: cardPackIds });
-          totalOpened += cardPackIds.length;
+        const result = await claimFreeAndOptionalSurvivorBuys(account);
+        totalOpened += result.opened + result.bought;
+        if (result.opened + result.bought > 0) {
           activityLog.add(
             'llama',
-            get(t)('activityLog.llamasClaimed', { count: cardPackIds.length }),
+            get(t)('activityLog.llamasClaimed', { count: result.opened + result.bought }),
             account.displayName
           );
         } else if (logEmpty) {
-          // Only log "none available" on explicit runs to avoid spamming the
-          // activity log on every scheduled hourly check.
           activityLog.add('info', get(t)('activityLog.llamasNone'), account.displayName);
         }
       } catch (error) {

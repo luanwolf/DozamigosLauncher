@@ -162,6 +162,57 @@
         }}
       />
     </SettingItem>
+
+    <SettingItem
+      description={$t('settings.general.showXrayTickets.description')}
+      labelFor="showXrayTickets"
+      orientation="horizontal"
+      title={$t('settings.general.showXrayTickets.title')}
+    >
+      <Switch
+        id="showXrayTickets"
+        checked={$settingsStore.app?.showXrayTickets ?? true}
+        onCheckedChange={(checked) => handleSettingChange(checked, 'showXrayTickets')}
+      />
+    </SettingItem>
+
+    <SettingItem
+      description={$t('settings.general.showStwGold.description')}
+      labelFor="showStwGold"
+      orientation="horizontal"
+      title={$t('settings.general.showStwGold.title')}
+    >
+      <Switch
+        id="showStwGold"
+        checked={$settingsStore.app?.showStwGold ?? true}
+        onCheckedChange={(checked) => handleSettingChange(checked, 'showStwGold')}
+      />
+    </SettingItem>
+
+    <SettingItem
+      description={$t('settings.general.steamFreeGamesNotifications.description')}
+      labelFor="steamFreeGamesNotifications"
+      orientation="horizontal"
+      title={$t('settings.general.steamFreeGamesNotifications.title')}
+    >
+      <Switch
+        id="steamFreeGamesNotifications"
+        checked={$settingsStore.app?.steamFreeGamesNotifications === true}
+        onCheckedChange={async (checked) => {
+          if (checked) {
+            const granted = await requestNotificationPermission();
+            if (!granted) {
+              toast.error($t('settings.general.windowsNotifications.denied'));
+              return;
+            }
+            if ($settingsStore.app?.windowsNotifications === false) {
+              handleSettingChange(true, 'windowsNotifications');
+            }
+          }
+          handleSettingChange(checked, 'steamFreeGamesNotifications');
+        }}
+      />
+    </SettingItem>
   {/if}
 
   <SettingItem

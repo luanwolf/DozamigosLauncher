@@ -8,7 +8,7 @@
   import { t } from '$lib/i18n';
   import { accountStore } from '$lib/storage';
   import { avatarCache } from '$lib/stores';
-  import { cn, handleError } from '$lib/utils';
+  import { accountMatchesSearch, cn, getAccountLabel, handleError } from '$lib/utils';
   import LoginModal from '$components/modules/login/LoginModal.svelte';
   import { Button } from '$components/ui/button';
   import * as DropdownMenu from '$components/ui/dropdown-menu';
@@ -25,9 +25,7 @@
   let dropdownSide: 'top' | 'right' = $derived(isSmall.current ? 'top' : 'right');
 
   const filteredAccounts = $derived(
-    searchTerm
-      ? allAccounts.filter((account) => account.displayName.toLowerCase().includes(searchTerm!.toLowerCase()))
-      : allAccounts
+    searchTerm ? allAccounts.filter((account) => accountMatchesSearch(account, searchTerm!)) : allAccounts
   );
 
   async function changeAccounts(account: AccountData) {
@@ -42,7 +40,7 @@
   async function logout() {
     if (!$activeAccount) return;
 
-    const accountName = $activeAccount.displayName || $activeAccount.accountId;
+    const accountName = getAccountLabel($activeAccount);
     const toastId = toast.loading($t('accountManager.loggingOut', { name: accountName }));
 
     try {
@@ -72,12 +70,12 @@
     <Button class="w-full py-6" variant="ghost">
       <img
         class="size-8 rounded-full"
-        alt={$activeAccount?.displayName}
+        alt={$activeAccount ? getAccountLabel($activeAccount) : undefined}
         src={($activeAccount && avatarCache.get($activeAccount.accountId)) || '/misc/default-outfit-icon.png'}
       />
 
       <span class="truncate text-base font-medium">
-        {$activeAccount?.displayName || $t('accountManager.noAccount')}
+        {$activeAccount ? getAccountLabel($activeAccount) : $t('accountManager.noAccount')}
       </span>
 
       <ChevronDownIcon
@@ -108,11 +106,11 @@
           <DropdownMenu.Item class="duration-0" onclick={() => changeAccounts(account)}>
             <img
               class="size-7 rounded-full"
-              alt={account.displayName}
+              alt={getAccountLabel(account)}
               src={avatarCache.get(account.accountId) || '/misc/default-outfit-icon.png'}
             />
 
-            <span class="truncate">{account.displayName}</span>
+            <span class="truncate">{getAccountLabel(account)}</span>
 
             {#if $activeAccount?.accountId === account.accountId}
               <CheckIcon class="ml-auto size-5" />

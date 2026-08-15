@@ -29,6 +29,7 @@
   import { claimFreeGamesForAccount, type FreeGameClaimResult } from '$lib/modules/free-games-claim';
   import { isFreeGameRedeemed, markFreeGamesRedeemed, redeemedFreeGameIds } from '$lib/modules/free-games-owned';
   import { openExternalUrl } from '$lib/modules/open-external';
+  import { fetchSteamFreeGames, type SteamFreeGame } from '$lib/modules/steam-free-games';
   import { accountStore } from '$lib/storage';
   import { ownedAppsCache } from '$lib/stores';
   import { activityLog } from '$lib/stores/activity-log';
@@ -50,9 +51,26 @@
 
   const unclaimedGames = $derived(freeGames.filter((game) => !isGameRedeemed(game)));
 
+  let steamGames = $state<SteamFreeGame[]>([]);
+  let isFetchingSteamGames = $state(true);
+  let steamLoadFailed = $state(false);
+
   async function loadGames(force = false) {
     const games = await freeGamesCache.ensure($language, { force });
     if (!games) toast.error($t('freeGames.fetchError'));
+  }
+
+  async function loadSteamGames(force = false) {
+    isFetchingSteamGames = true;
+    steamLoadFailed = false;
+    try {
+      steamGames = await fetchSteamFreeGames(force);
+    } catch {
+      steamGames = [];
+      steamLoadFailed = true;
+    } finally {
+      isFetchingSteamGames = false;
+    }
   }
 
   async function openInEpicLauncher(game: FreeGame) {
@@ -189,6 +207,7 @@
 
   onMount(() => {
     void loadGames();
+    void loadSteamGames();
   });
 </script>
 
@@ -213,7 +232,10 @@
       label={$t('freeGames.refresh')}
       loading={isFetchingGames}
       loadingText={$t('freeGames.loading')}
-      onclick={() => loadGames(true)}
+      onclick={() => {
+        void loadGames(true);
+        void loadSteamGames(true);
+      }}
     >
       <RefreshCwIcon class="size-4" />
     </PageActionButton>
@@ -332,4 +354,57 @@
       {/each}
     </div>
   {/if}
+
+  <section class="w-full space-y-3 border-t border-border/60 pt-6">
+    <div>
+      <p class="font-display text-xl leading-none">{$t('freeGames.steam.title')}</p>
+      <p class="mt-1 text-xs text-muted-foreground">{$t('freeGames.steam.description')}</p>
+    </div>
+
+    {#if isFetchingSteamGames}
+      <div class="grid w-full grid-cols-[repeat(auto-fill,minmax(min(100%,17rem),1fr))] gap-5">
+        {#each [1, 2] as n (n)}
+          <div class="hud-panel overflow-hidden">
+            <div class="aspect-[460/215] animate-pulse bg-muted"></div>
+            <div class="flex flex-col gap-2 p-3">
+              <div class="h-3 w-3/4 animate-pulse rounded bg-muted"></div>
+            </div>
+          </div>
+        {/each}
+      </div>
+    {:else if steamLoadFailed}
+      <p class="text-sm text-destructive">{$t('freeGames.steam.loadFailed')}</p>
+    {:else if !steamGames.length}
+      <p class="text-sm text-muted-foreground">{$t('freeGames.steam.empty')}</p>
+    {:else}
+      <div class="grid w-full grid-cols-[repeat(auto-fill,minmax(min(100%,17rem),1fr))] gap-5">
+        {#each steamGames as game (game.appId)}
+          <div class="hud-panel relative overflow-hidden">
+            <img class="aspect-[460/215] w-full object-cover" alt={game.title} loading="lazy" src={game.banner} />
+            <span
+              class="absolute top-2 left-2 rounded-sm bg-emerald-600 px-1.5 py-0.5 text-[10px] font-semibold text-white uppercase"
+            >
+              -100%
+            </span>
+
+            <div class="flex flex-col gap-2 p-3">
+              <p class="line-clamp-2 text-sm leading-snug font-semibold" title={game.title}>{game.title}</p>
+              {#if game.originalPrice}
+                <span class="text-xs text-muted-foreground line-through">{game.originalPrice}</span>
+              {/if}
+              <Button
+                class="mt-1 h-8 w-full text-xs"
+                onclick={() => openExternalUrl(game.storeUrl)}
+                size="sm"
+                variant="outline"
+              >
+                <ExternalLinkIcon class="size-3 shrink-0" />
+                <span class="truncate">{$t('freeGames.steam.open')}</span>
+              </Button>
+            </div>
+          </div>
+        {/each}
+      </div>
+    {/if}
+  </section>
 </PageContent>
