@@ -56,7 +56,27 @@ jobs:
         with:
           tagName: v__VERSION__
           releaseName: 'v__VERSION__'
-          releaseBody: 'Baixe o instalador NSIS abaixo. Versões instaladas recebem as próximas atualizações automaticamente.'
+          releaseBody: |
+            ## Dozamigos Launcher v0.1.11
+
+            Baixe o instalador NSIS abaixo. Versões já instaladas recebem as próximas atualizações automaticamente.
+
+            ### Loja do Salve o Mundo
+            - Rotação de **Lhamas** com Fichas Raio-X na loja STW
+            - Ao comprar uma lhama, o app **abre o pacote** e mostra os **itens recebidos** em um popup
+            - Saldo de **Fichas Raio-X** na barra da conta (entre V-Bucks e Ouro)
+            - Compra de lhama corrigida para usar o perfil certo da Epic (`common_core`)
+
+            ### Temporada
+            - Datas da temporada ao vivo via **api-fortnite.com** quando o calendário da Epic falha ou você não está logado
+            - Removidas as datas fixas de fallback no herói da home
+
+            ### Elementais
+            - Nova página de **Elementais** com nomes em português, variantes e exportação
+
+            ### Outros
+            - Ícones locais de lhama e Fichas Raio-X
+            - Ajustes de copy e limites na loja STW
           releaseDraft: true
           prerelease: false
           uploadUpdaterJson: true
