@@ -78,9 +78,13 @@
       state.data.bought = result.bought;
       state.data.status = result.opened + result.bought > 0 ? 'claimed' : 'none';
 
-      if (result.opened > 0) {
-        activityLog.add('llama', $t('activityLog.llamasClaimed', { count: result.opened }), getAccountLabel(account));
-      } else if (result.bought < 1) {
+      const count = result.opened + result.bought;
+      if (count > 0) {
+        activityLog.add('llama', $t('activityLog.llamasClaimed', { count }), getAccountLabel(account), {
+          title: $t('activityLog.llamasTitle'),
+          items: result.received
+        });
+      } else {
         activityLog.add('info', $t('activityLog.llamasNone'), getAccountLabel(account));
       }
       llamaState = state;

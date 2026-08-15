@@ -12,12 +12,12 @@
   import { language, t } from '$lib/i18n';
   import { logger, setLogLevel } from '$lib/logger';
   import { warmAccountData } from '$lib/modules/account-data';
-  import { installAvailableUpdate, type AppUpdateStatus } from '$lib/modules/app-updater';
   import { initAutoKick } from '$lib/modules/autokick/base';
   import { initTaxiService } from '$lib/modules/taxi-service';
   import { fetchAvatars } from '$lib/modules/avatar';
   import { startBackgroundNotifications } from '$lib/modules/background-notifications';
   import { addToQueue, initDownloader } from '$lib/modules/download.svelte';
+  import { promptLauncherUpdate } from '$lib/modules/launcher-update-prompt';
   import { ensureLibrary, getAppInfo } from '$lib/modules/legendary';
   import { fetchUsersByIds } from '$lib/modules/lookup';
   import {
@@ -37,6 +37,7 @@
     updateDiscordRPC
   } from '$lib/tauri';
   import { handleError } from '$lib/utils';
+  import FloatingNotifications from '$components/layout/FloatingNotifications.svelte';
   import Header from '$components/layout/header/Header.svelte';
   import ScrollToTopButton from '$components/layout/ScrollToTopButton.svelte';
   import Sidebar from '$components/layout/sidebar/Sidebar.svelte';
@@ -49,28 +50,6 @@
   const activeAccount = accountStore.getActiveStore(true);
 
   let mainEl = $state<HTMLElement | undefined>(undefined);
-
-  async function autoUpdateLauncher() {
-    let toastId: string | number | undefined;
-    const notify = (status: AppUpdateStatus) => {
-      const message =
-        status.phase === 'available'
-          ? $t('updater.available', { version: status.version })
-          : status.phase === 'installing'
-            ? $t('updater.installing', { version: status.version })
-            : $t('updater.downloading', { version: status.version, percent: status.percent ?? 0 });
-      toastId = toast.loading(message, { id: toastId, duration: Infinity });
-    };
-
-    try {
-      await installAvailableUpdate(notify);
-    } catch (error) {
-      logger.warn('Automatic launcher update failed', { error });
-      if (toastId !== undefined) {
-        toast.error($t('updater.failed'), { id: toastId });
-      }
-    }
-  }
 
   async function syncAccountNames() {
     const account = accountStore.getActive();
@@ -235,7 +214,7 @@
     });
 
     Promise.allSettled([
-      autoUpdateLauncher(),
+      promptLauncherUpdate(),
       setupDiscordRPC(),
       initAutoKick(),
       initTaxiService(),
@@ -286,6 +265,8 @@
         <LoaderCircleIcon class="size-5 animate-spin" />
       {/snippet}
     </Toaster>
+
+    <FloatingNotifications />
 
     <Sidebar />
 

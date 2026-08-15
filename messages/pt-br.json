@@ -7,10 +7,16 @@
   "confirm": "Confirmar",
   "loading": "Carregando...",
   "updater": {
+    "title": "Atualização disponível",
     "available": "Nova versão {version} encontrada.",
     "downloading": "Baixando atualização {version}… {percent}%",
     "installing": "Instalando atualização {version}…",
-    "failed": "Não foi possível atualizar automaticamente."
+    "ready": "Atualização {version} pronta. Reinicie para aplicar.",
+    "updateNow": "Atualizar agora",
+    "downloadBackground": "Baixar em segundo plano",
+    "restartNow": "Reiniciar agora",
+    "later": "Depois",
+    "failed": "Não foi possível verificar a atualização."
   },
   "scrollToTop": "Voltar ao topo",
   "vbucks": "V-Bucks",
@@ -1553,6 +1559,11 @@
       "title": "Grátis na Steam",
       "message": "{count} jogo(s) com 100% de desconto: {names}"
     },
+    "epicFreeGames": {
+      "title": "Grátis na Epic",
+      "message": "{count} jogo(s) grátis na Epic: {names}"
+    },
+    "viewGame": "Ver jogo",
     "dailyQuests": {
       "title": "Missões Diárias",
       "message": "As missões diárias do STW resetaram . novas missões disponíveis"
@@ -1593,9 +1604,13 @@
     "empty": "Nenhuma atividade ainda",
     "markAllRead": "Marcar tudo como lido",
     "clear": "Limpar histórico",
+    "dismiss": "Dispensar",
+    "moreItems": "+{count} item(ns)",
+    "llamasTitle": "Lhamas",
     "llamasClaimed": "{count} Lhama(s) resgatada(s)",
     "llamasNone": "Nenhuma Lhama disponível no momento",
     "llamasError": "Erro ao resgatar lhamas: {detail}",
+    "questsTitle": "Missões",
     "gameClaimed": "{title} resgatado com sucesso",
     "gameAlreadyOwned": "{title} . você já possui este jogo",
     "gameBrowserOnly": "{title} . use o link da Epic Store para resgatar",

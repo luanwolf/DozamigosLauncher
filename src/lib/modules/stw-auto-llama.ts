@@ -13,6 +13,7 @@ import { fetchStwStore, purchaseStwOffer } from '$lib/modules/stw-catalog';
 import type { AccountData } from '$types/account';
 import type { FullQueryProfile } from '$types/game/mcp';
 import type { StwStoreOffer } from '$types/game/stw-store';
+import type { GrantedItem } from '$lib/utils/mcp-loot';
 
 export type { AutoLlamaCurrency, AutoLlamaPrefs };
 export {
@@ -20,6 +21,12 @@ export {
   extractPrerollGrantTemplates,
   isLegendaryOrMythicSurvivorTemplate,
   llamaContainsLegendaryMythicSurvivor
+};
+
+export type LlamaClaimResult = {
+  opened: number;
+  bought: number;
+  received: GrantedItem[];
 };
 
 export function readAutoLlamaPrefs(): AutoLlamaPrefs {
@@ -41,7 +48,10 @@ export async function populatePrerollProfile(account: AccountData) {
   return composeMCP<FullQueryProfile<'campaign'>>(account, 'PopulatePrerolledOffers', 'campaign', {});
 }
 
-export async function claimFreeAndOptionalSurvivorBuys(account: AccountData, prefs = readAutoLlamaPrefs()) {
+export async function claimFreeAndOptionalSurvivorBuys(
+  account: AccountData,
+  prefs = readAutoLlamaPrefs()
+): Promise<LlamaClaimResult> {
   const populate = await populatePrerollProfile(account);
   const profile = populate.profileChanges[0].profile;
   const freePacks: CardPackOffer[] = Object.entries(profile.items)
@@ -50,17 +60,19 @@ export async function claimFreeAndOptionalSurvivorBuys(account: AccountData, pre
 
   let opened = 0;
   let bought = 0;
+  const received: GrantedItem[] = [];
 
   if (freePacks.length) {
-    await openCardPacks(
+    const loot = await openCardPacks(
       account,
       freePacks.map((pack) => pack.id)
     );
+    received.push(...loot);
     opened = freePacks.length;
   }
 
   if (!prefs.buySurvivorLlamas || prefs.maxBuysPerRun < 1) {
-    return { opened, bought };
+    return { opened, bought, received };
   }
 
   const [campaign, commonCore] = await Promise.all([
@@ -69,7 +81,7 @@ export async function claimFreeAndOptionalSurvivorBuys(account: AccountData, pre
   ]);
   const store = await fetchStwStore(account, campaign.profileChanges[0].profile, commonCore.profileChanges[0].profile);
   const llamaSection = store.sections.find((section) => section.id === 'CardPackStorePreroll');
-  if (!llamaSection) return { opened, bought };
+  if (!llamaSection) return { opened, bought, received };
 
   const candidates = llamaSection.offers.filter((offer) => {
     if (offer.ownedHeroGrant) return false;
@@ -81,11 +93,12 @@ export async function claimFreeAndOptionalSurvivorBuys(account: AccountData, pre
   });
 
   for (const offer of candidates.slice(0, prefs.maxBuysPerRun)) {
-    await purchaseAndOpen(account, offer);
+    const result = await purchaseAndOpen(account, offer);
+    received.push(...result.received);
     bought++;
   }
 
-  return { opened, bought };
+  return { opened, bought, received };
 }
 
 async function purchaseAndOpen(account: AccountData, offer: StwStoreOffer) {

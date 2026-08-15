@@ -1,18 +1,19 @@
 import { get } from 'svelte/store';
+import { openUrl } from '@tauri-apps/plugin-opener';
 import { language, t } from '$lib/i18n';
 import { logger } from '$lib/logger';
 import { fetchShop } from '$lib/modules/fortnite-api';
 import { isLeavingSoon } from '$lib/modules/shop-history';
 import { fetchAvailableCardPacks } from '$lib/modules/free-llamas';
-import { aggregateMissionAlertsOverview } from '$lib/modules/mission-alerts-buckets';
-import { sendNotificationMessage } from '$lib/modules/notification';
+import { fetchFreeGames } from '$lib/modules/free-games';
 import { getLightswitch } from '$lib/modules/server-status';
 import { fetchSteamFreeGames } from '$lib/modules/steam-free-games';
 import { findNewSteamFreeAppIds } from '$lib/modules/steam-free-games-notify';
 import { setWorldInfoCache } from '$lib/modules/world-info';
+import { aggregateMissionAlertsOverview } from '$lib/modules/mission-alerts-buckets';
 import { accountStore, settingsStore } from '$lib/storage';
 import { getShopWishlist, getWishlistedOffersInShop } from '$lib/stores/shop-wishlist';
-import { activityLog } from '$lib/stores/activity-log';
+import { notify } from '$lib/stores/activity-log';
 import { worldInfoCache } from '$lib/stores';
 import type { AccountData } from '$types/account';
 import type { LightswitchData } from '$types/game/server-status';
@@ -39,11 +40,11 @@ type PersistedState = {
   missionAlertsSnapshot: MissionAlertsSnapshot | null;
   wishlistLeavingSoonKeys: string[];
   steamAppIds: string[] | null;
+  epicGameIds: string[] | null;
   initialized: boolean;
 };
 
 let checkInterval: ReturnType<typeof setInterval> | null = null;
-let questDayInterval: ReturnType<typeof setInterval> | null = null;
 
 function defaultState(): PersistedState {
   return {
@@ -55,6 +56,7 @@ function defaultState(): PersistedState {
     missionAlertsSnapshot: null,
     wishlistLeavingSoonKeys: [],
     steamAppIds: null,
+    epicGameIds: null,
     initialized: false
   };
 }
@@ -112,15 +114,21 @@ function serverStatusLabel(status: ServerStatusKey): string {
 }
 
 async function pushNotification(
-  type: 'llama' | 'quest' | 'info',
+  type: 'llama' | 'quest' | 'info' | 'game',
   title: string,
   message: string,
-  account?: string
+  options?: {
+    account?: string;
+    actions?: { id: string; label: string; variant?: 'default' | 'outline' | 'secondary'; onClick: () => void | Promise<void> }[];
+  }
 ) {
   if (!notificationsEnabled()) return;
 
-  await sendNotificationMessage(message, title);
-  activityLog.add(type, message, account, { notify: false });
+  await notify(type, message, {
+    title,
+    account: options?.account,
+    actions: options?.actions
+  });
 }
 
 async function checkLlamas(state: PersistedState, accounts: AccountData[]) {
@@ -145,7 +153,7 @@ async function checkLlamas(state: PersistedState, accounts: AccountData[]) {
                 account: account.displayName
               });
 
-        await pushNotification('llama', title, message, account.displayName);
+        await pushNotification('llama', title, message, { account: account.displayName });
       } catch (error) {
         logger.debug('Background llama check failed', { accountId: account.accountId, error });
       }
@@ -366,19 +374,31 @@ async function checkSteamFreeGames(state: PersistedState): Promise<string[] | nu
     const newIds = findNewSteamFreeAppIds(currentIds, previous);
 
     if (newIds.length) {
-      const titles = games
-        .filter((game) => newIds.includes(game.appId))
+      const fresh = games.filter((game) => newIds.includes(game.appId));
+      const names = fresh
         .slice(0, 2)
-        .map((game) => game.title);
-      const names = titles.join(', ');
+        .map((game) => game.title)
+        .join(', ');
+      const first = fresh[0];
 
       await pushNotification(
-        'info',
+        'game',
         get(t)('backgroundNotifications.steamFreeGames.title'),
         get(t)('backgroundNotifications.steamFreeGames.message', {
           count: newIds.length,
           names
-        })
+        }),
+        first
+          ? {
+              actions: [
+                {
+                  id: 'open-steam',
+                  label: get(t)('backgroundNotifications.viewGame'),
+                  onClick: () => openUrl(first.storeUrl)
+                }
+              ]
+            }
+          : undefined
       );
     }
 
@@ -389,9 +409,54 @@ async function checkSteamFreeGames(state: PersistedState): Promise<string[] | nu
   }
 }
 
+async function checkEpicFreeGames(state: PersistedState): Promise<string[] | null> {
+  if (!notificationsEnabled()) return state.epicGameIds;
+
+  try {
+    const games = await fetchFreeGames();
+    const currentIds = games.map((game) => game.id);
+    const previous = state.initialized ? state.epicGameIds : null;
+    const newIds = findNewSteamFreeAppIds(currentIds, previous);
+
+    if (newIds.length) {
+      const fresh = games.filter((game) => newIds.includes(game.id));
+      const names = fresh
+        .slice(0, 2)
+        .map((game) => game.title)
+        .join(', ');
+      const first = fresh[0];
+
+      await pushNotification(
+        'game',
+        get(t)('backgroundNotifications.epicFreeGames.title'),
+        get(t)('backgroundNotifications.epicFreeGames.message', {
+          count: newIds.length,
+          names
+        }),
+        first
+          ? {
+              actions: [
+                {
+                  id: 'open-epic',
+                  label: get(t)('backgroundNotifications.viewGame'),
+                  onClick: () => openUrl(first.storeUrl)
+                }
+              ]
+            }
+          : undefined
+      );
+    }
+
+    return currentIds;
+  } catch (error) {
+    logger.debug('Background Epic free games check failed', { error });
+    return state.epicGameIds;
+  }
+}
+
 async function runBackgroundChecks() {
   const { accounts } = accountStore.get();
-  if (!accounts.length && !steamNotificationsEnabled()) return;
+  if (!accounts.length && !steamNotificationsEnabled() && !notificationsEnabled()) return;
 
   const state = readState();
   const llamasByAccount = accounts.length ? await checkLlamas(state, accounts) : state.llamasByAccount;
@@ -399,6 +464,7 @@ async function runBackgroundChecks() {
   const serverStatus = await checkServerStatus(state);
   const missionAlertsSnapshot = await checkMissionAlerts(state);
   const steamAppIds = await checkSteamFreeGames(state);
+  const epicGameIds = await checkEpicFreeGames(state);
 
   const nextState: PersistedState = {
     llamasByAccount,
@@ -409,6 +475,7 @@ async function runBackgroundChecks() {
     missionAlertsSnapshot,
     wishlistLeavingSoonKeys,
     steamAppIds,
+    epicGameIds,
     initialized: true
   };
 
@@ -426,8 +493,8 @@ function runQuestDayCheck() {
 }
 
 /**
- * Polls llamas, item shop, and server status in the background and sends
- * Windows notifications when something new is detected.
+ * Polls llamas, item shop, free games, and server status in the background.
+ * Delivers floating in-app cards (or native OS toasts when the window is hidden).
  */
 export function startBackgroundNotifications() {
   if (checkInterval) return;
@@ -439,5 +506,5 @@ export function startBackgroundNotifications() {
     void runBackgroundChecks();
   }, CHECK_INTERVAL_MS);
 
-  questDayInterval = setInterval(runQuestDayCheck, QUEST_DAY_CHECK_MS);
+  setInterval(runQuestDayCheck, QUEST_DAY_CHECK_MS);
 }
