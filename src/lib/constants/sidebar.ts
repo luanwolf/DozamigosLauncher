@@ -30,7 +30,7 @@ import UserXIcon from '@lucide/svelte/icons/user-x';
 import UsersIcon from '@lucide/svelte/icons/users';
 import ZapIcon from '@lucide/svelte/icons/zap';
 import CarTaxiFrontIcon from '@lucide/svelte/icons/car-taxi-front';
-import { platform } from '@tauri-apps/plugin-os';
+import { isWindowsPlatform } from '$lib/modules/safe-platform';
 import type { LucideIcon } from '$types/lucide';
 
 export type NavItem = {
@@ -265,7 +265,7 @@ export const NavZones = Object.freeze([
     id: 'epicLibrary',
     href: '/downloader/library',
     icon: LibraryIcon,
-    hidden: platform() !== 'windows',
+    hidden: !isWindowsPlatform(),
     deck: false,
     items: [
       {

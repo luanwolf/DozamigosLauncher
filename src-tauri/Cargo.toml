@@ -1,6 +1,6 @@
 [package]
 name = "dozamigos-launcher"
-version = "0.1.17"
+version = "0.1.18"
 description = "A cross-platform launcher for Fortnite Battle Royale and Save the World"
 authors = ["Heyash"]
 edition = "2021"

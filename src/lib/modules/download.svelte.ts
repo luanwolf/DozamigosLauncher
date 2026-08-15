@@ -4,7 +4,7 @@ import type { z } from 'zod';
 import { listen, type UnlistenFn } from '@tauri-apps/api/event';
 import { t } from '$lib/i18n';
 import { getChildLogger } from '$lib/logger';
-import { configPath, getLegendaryAccount } from '$lib/modules/legendary';
+import { getConfigPath, getLegendaryAccount } from '$lib/modules/legendary';
 import { sendNotificationMessage } from '$lib/modules/notification';
 import type { queueItemSchema } from '$lib/schemas/settings';
 import { downloaderStore } from '$lib/storage';
@@ -350,7 +350,7 @@ async function start(
     }
   });
 
-  await startLegendaryStream({ configPath, args, streamId });
+  await startLegendaryStream({ configPath: await getConfigPath(), args, streamId });
   activeDownload = { streamId, unlisten, callbacks };
   return streamId;
 }

@@ -3,16 +3,26 @@ import { dev } from '$app/environment';
 import type { ZodType } from 'zod';
 import * as path from '@tauri-apps/api/path';
 import { dataDir } from '@tauri-apps/api/path';
-import { exists, readTextFile, writeTextFile } from '@tauri-apps/plugin-fs';
-import { platform } from '@tauri-apps/plugin-os';
+import { exists, mkdir, readTextFile, writeTextFile } from '@tauri-apps/plugin-fs';
+import { safePlatform } from '$lib/modules/safe-platform';
 import { debounce } from '$lib/debounce';
 import { getChildLogger } from '$lib/logger';
 
 type Subscriber<T> = (value: T) => void;
 
 const logger = getChildLogger('FileStore');
-export const dataDirectory =
-  platform() === 'android' ? await dataDir() : await path.join(await dataDir(), 'dozamigos-launcher');
+
+let cachedDataDirectory: string | null = null;
+
+/** Lazy data dir — avoids top-level-await TDZ cycles with modules that import FileStore. */
+export async function getDataDirectory() {
+  if (cachedDataDirectory) return cachedDataDirectory;
+  cachedDataDirectory =
+    safePlatform() === 'android'
+      ? await dataDir()
+      : await path.join(await dataDir(), 'dozamigos-launcher');
+  return cachedDataDirectory;
+}
 
 export abstract class FileStore<T> implements Readable<T> {
   private path: string;
@@ -32,9 +42,23 @@ export abstract class FileStore<T> implements Readable<T> {
   async init() {
     if (this.state) return;
 
-    this.path = await path.join(dataDirectory, this.path);
+    const dir = await getDataDirectory();
+    this.path = await path.join(dir, this.path);
 
-    if (!(await exists(this.path))) {
+    try {
+      await mkdir(dir, { recursive: true });
+    } catch (error) {
+      logger.debug('mkdir dataDirectory', { error });
+    }
+
+    let fileExists = false;
+    try {
+      fileExists = await exists(this.path);
+    } catch (error) {
+      logger.debug('exists check failed, treating as missing', { file: this.path, error });
+    }
+
+    if (!fileExists) {
       this.state = structuredClone(this.defaults);
       this.notify();
       return;
@@ -52,7 +76,7 @@ export abstract class FileStore<T> implements Readable<T> {
   }
 
   get() {
-    return this.state;
+    return this.state ?? structuredClone(this.defaults);
   }
 
   subscribe(run: Subscriber<T>) {

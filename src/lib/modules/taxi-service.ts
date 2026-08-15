@@ -28,7 +28,6 @@ class TaxiStore extends FileStore<TaxiSetting[]> {
 }
 
 export const taxiStore = new TaxiStore();
-await taxiStore.init();
 
 export type TaxiAccount = {
   account: AccountData;
@@ -90,6 +89,7 @@ function persistTaxi() {
 }
 
 export async function initTaxiService() {
+  await taxiStore.init();
   const saved = taxiStore.get();
   if (!saved?.length) return;
   const accounts = accountStore.get().accounts;

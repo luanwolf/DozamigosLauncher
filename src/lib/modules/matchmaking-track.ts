@@ -3,7 +3,7 @@ import { mkdir, writeTextFile } from '@tauri-apps/plugin-fs';
 import { matchmakingService } from '$lib/http';
 import { getAuthedKy } from '$lib/modules/auth-session';
 import { fetchUserByNameOrId } from '$lib/modules/lookup';
-import { dataDirectory } from '$lib/storage/file-store';
+import { getDataDirectory } from '$lib/storage/file-store';
 import type { AccountData } from '$types/account';
 
 export type MatchmakingSession = Record<string, unknown>;
@@ -22,7 +22,7 @@ export async function trackPlayer(account: AccountData, nameOrId: string) {
 }
 
 export async function saveMatchmakingFile(sessions: MatchmakingSession[], filename = 'matchmaking.json') {
-  const dir = await path.join(dataDirectory, 'matchmaking');
+  const dir = await path.join(await getDataDirectory(), 'matchmaking');
   await mkdir(dir, { recursive: true });
   const filePath = await path.join(dir, filename);
   await writeTextFile(filePath, JSON.stringify(sessions, null, 2));

@@ -1,12 +1,11 @@
 import ky, { isHTTPError } from 'ky';
 import { getVersion } from '@tauri-apps/api/app';
 import { fetch } from '@tauri-apps/plugin-http';
-import { arch, platform } from '@tauri-apps/plugin-os';
+import { arch } from '@tauri-apps/plugin-os';
+import { safePlatform } from '$lib/modules/safe-platform';
 import { defaultClient } from '$lib/constants/clients';
 import { getApiFortniteKey, getFnbrApiKey, getFortniteApiKey } from '$lib/env';
 import { EpicAPIError, isEpicAPIError } from '$lib/exceptions/EpicAPIError';
-import { getFortniteManifest } from '$lib/modules/manifest';
-import { settingsStore } from '$lib/storage';
 
 // Used to avoid CORS issues
 export const tauriKy = ky.create({
@@ -35,16 +34,33 @@ export const tauriKy = ky.create({
   }
 });
 
-const manifest = await getFortniteManifest().catch(() => null);
-const defaultUserAgent = manifest?.appVersionString
-  ? `Fortnite/${manifest.appVersionString.replace('-Windows', '')} Windows/10.0.26100.1.256.64bit`
-  : 'Fortnite/++Fortnite+Release-36.10-CL-59001174 Windows/10.0.26100.1.256.64bit';
+// Sync default — no top-level await (that caused SvelteKit "component" TDZ on boot).
+const defaultUserAgent =
+  'Fortnite/++Fortnite+Release-36.10-CL-59001174 Windows/10.0.26100.1.256.64bit';
 
 let userAgent = defaultUserAgent;
 
-settingsStore.subscribe((settings) => {
-  userAgent = settings.app?.userAgent || defaultUserAgent;
-});
+setTimeout(() => {
+  void (async () => {
+    try {
+      const [{ getFortniteManifest }, { getVersion }, { settingsStore }] = await Promise.all([
+        import('$lib/modules/manifest'),
+        import('@tauri-apps/api/app'),
+        import('$lib/storage')
+      ]);
+      const manifest = await getFortniteManifest().catch(() => null);
+      if (manifest?.appVersionString) {
+        userAgent = `Fortnite/${manifest.appVersionString.replace('-Windows', '')} Windows/10.0.26100.1.256.64bit`;
+      }
+      void getVersion; // kept available if we later stamp launcher UA
+      settingsStore.subscribe((settings) => {
+        userAgent = settings.app?.userAgent || userAgent || defaultUserAgent;
+      });
+    } catch {
+      // Boot may outrun storage/Tauri; keep default UA.
+    }
+  })();
+}, 0);
 
 export const epicService = tauriKy.extend({
   hooks: {
@@ -132,40 +148,61 @@ export const avatarService = epicService.extend({
   prefix: 'https://avatar-service-prod.identity.live.on.epicgames.com/v1/avatar/fortnite'
 });
 
-const launcherUA = `DozamigosLauncher/${await getVersion()} (${platform()}; ${arch()})`;
+// Sync default — getVersion() must not be top-level awaited (SvelteKit component TDZ).
+let launcherUA = `DozamigosLauncher/dev (${safePlatform()}; unknown)`;
+void getVersion()
+  .then((version) => {
+    let cpuArch = 'unknown';
+    try {
+      cpuArch = arch();
+    } catch {
+      /* browser / early boot */
+    }
+    launcherUA = `DozamigosLauncher/${version} (${safePlatform()}; ${cpuArch})`;
+  })
+  .catch(() => {
+    /* keep dev UA */
+  });
+
 const fortniteApiKey = getFortniteApiKey();
 const fnbrApiKey = getFnbrApiKey();
 const apiFortniteKey = getApiFortniteKey();
 
+const launcherUaHook = {
+  beforeRequest: [
+    async ({ request }: { request: Request }) => {
+      request.headers.set('X-User-Agent', launcherUA);
+    }
+  ]
+};
+
 export const fortniteApiService = tauriKy.extend({
   prefix: 'https://fortnite-api.com',
+  hooks: launcherUaHook,
   headers: {
-    'X-User-Agent': launcherUA,
     ...(fortniteApiKey ? { Authorization: fortniteApiKey } : {})
   }
 });
 
 export const fnbrApiService = tauriKy.extend({
   prefix: 'https://fnbr.co/api',
+  hooks: launcherUaHook,
   headers: {
-    'X-User-Agent': launcherUA,
     ...(fnbrApiKey ? { 'x-api-key': fnbrApiKey } : {})
   }
 });
 
 export const apiFortniteService = tauriKy.extend({
   prefix: 'https://prod.api-fortnite.com/api',
+  hooks: launcherUaHook,
   headers: {
-    'X-User-Agent': launcherUA,
     ...(apiFortniteKey ? { 'x-api-key': apiFortniteKey } : {})
   }
 });
 
 export const legendaryService = tauriKy.extend({
   prefix: 'https://api.legendary.gl',
-  headers: {
-    'X-User-Agent': launcherUA
-  }
+  hooks: launcherUaHook
 });
 
 export const egsStoreService = epicService.extend({

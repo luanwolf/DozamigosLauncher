@@ -5,14 +5,13 @@ import { downloaderSettingsSchema } from '$lib/schemas/settings';
 import { FileStore } from '$lib/storage/file-store';
 import type { DownloaderSettings } from '$types/settings';
 
-const downloadPath = await path.join(await homeDir(), 'Games', 'Dozamigos Launcher');
-
 export class DownloaderStore extends FileStore<DownloaderSettings> {
   constructor() {
     super(
       'downloader',
       {
-        downloadPath,
+        // Resolved in init() — no top-level await (breaks SvelteKit boot / component TDZ).
+        downloadPath: '',
         autoUpdate: !dev,
         sendNotifications: true,
         favoriteApps: [],
@@ -22,5 +21,12 @@ export class DownloaderStore extends FileStore<DownloaderSettings> {
       },
       downloaderSettingsSchema
     );
+  }
+
+  override async init() {
+    await super.init();
+    if (this.get().downloadPath) return;
+    const downloadPath = await path.join(await homeDir(), 'Games', 'Dozamigos Launcher');
+    this.set((settings) => ({ ...settings, downloadPath }));
   }
 }

@@ -2,7 +2,7 @@ import * as path from '@tauri-apps/api/path';
 import { mkdir, readDir, readTextFile, remove, rename, writeTextFile } from '@tauri-apps/plugin-fs';
 import { getWorldInfo } from '$lib/modules/world-info';
 import { isWorldInfoPayload } from '$lib/modules/world-info-validate';
-import { dataDirectory } from '$lib/storage/file-store';
+import { getDataDirectory } from '$lib/storage/file-store';
 import type { WorldInfoData } from '$types/game/stw/world-info';
 
 export type WorldInfoSnapshot = {
@@ -13,7 +13,7 @@ export type WorldInfoSnapshot = {
 export { isWorldInfoPayload };
 
 async function vaultDir() {
-  const dir = await path.join(dataDirectory, 'world-info');
+  const dir = await path.join(await getDataDirectory(), 'world-info');
   await mkdir(dir, { recursive: true });
   return dir;
 }

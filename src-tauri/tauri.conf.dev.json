@@ -12,7 +12,7 @@
         "fullscreen": false,
         "decorations": false,
         "center": true,
-        "visible": false,
+        "visible": true,
         "minWidth": 320,
         "backgroundColor": "#1C1A14"
       }

@@ -3,15 +3,15 @@
   import { type } from '@tauri-apps/plugin-os';
   import { t } from '$lib/i18n';
   import { settingsStore } from '$lib/storage';
-  import { dataDirectory } from '$lib/storage/file-store';
+  import { getDataDirectory } from '$lib/storage/file-store';
   import { handleSettingChange } from '$components/modules/settings/categories/GeneralSettings.svelte';
   import SettingItem from '$components/modules/settings/SettingItem.svelte';
   import { Button } from '$components/ui/button';
   import { Input } from '$components/ui/input';
   import { Switch } from '$components/ui/switch';
 
-  function openSettingsFolder() {
-    openPath(dataDirectory);
+  async function openSettingsFolder() {
+    openPath(await getDataDirectory());
   }
 
   function convertToNumber(event: Event) {

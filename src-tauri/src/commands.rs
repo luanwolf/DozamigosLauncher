@@ -5,7 +5,6 @@ use {
     crate::types::{AppState, CommandOutput, DiskSpace, LaunchData, TrackedApp},
     fs2, shlex,
     std::path::Path,
-    tauri::AppHandle,
     tauri_plugin_shell::ShellExt,
 };
 
@@ -13,6 +12,7 @@ use {
 use {
     crate::discord_rpc,
     crate::system_tray,
+    tauri::AppHandle,
 };
 
 use tauri::command;
