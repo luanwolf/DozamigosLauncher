@@ -1,10 +1,12 @@
 import { EpicAPIError } from '$lib/exceptions/EpicAPIError';
 import { storefrontService } from '$lib/http';
 import { getAuthedKy } from '$lib/modules/auth-session';
+import { openCardPacks } from '$lib/modules/free-llamas';
 import { composeMCP } from '$lib/modules/mcp';
-import { currencyDisplay, resolveStwTemplateDisplay } from '$lib/utils/stw-template-display';
-import { localizedOfferTitle } from '$lib/utils/stw-item-locale';
 import type { Locale } from '$lib/paraglide/runtime';
+import { extractGrantedItems, type GrantedItem } from '$lib/utils/mcp-loot';
+import { localizedOfferTitle } from '$lib/utils/stw-item-locale';
+import { currencyDisplay, resolveStwTemplateDisplay } from '$lib/utils/stw-template-display';
 import type { AccountData } from '$types/account';
 import type { CampaignProfile, CommonCoreProfile, CommonCoreProfileAttributes } from '$types/game/mcp';
 import type {
@@ -16,7 +18,7 @@ import type {
   StwStoreSection
 } from '$types/game/stw-store';
 
-const STW_STOREFRONTS = new Set(['STWSpecialEventStorefront', 'STWRotationalEventStorefront']);
+const STW_STOREFRONTS = new Set(['CardPackStorePreroll', 'STWSpecialEventStorefront', 'STWRotationalEventStorefront']);
 
 const LOCALE_HEADER: Record<string, string> = {
   'pt-br': 'pt-BR'
@@ -142,10 +144,7 @@ function buildOwnedState(campaign: CampaignProfile): OwnedCatalogState {
 
   for (const item of Object.values(campaign.items)) {
     templateIds.add(item.templateId);
-    quantities.set(
-      item.templateId,
-      (quantities.get(item.templateId) ?? 0) + (item.quantity ?? 1)
-    );
+    quantities.set(item.templateId, (quantities.get(item.templateId) ?? 0) + (item.quantity ?? 1));
   }
 
   return { templateIds, quantities };
@@ -405,9 +404,7 @@ export async function fetchStwStore(
     const offers = storefront.catalogEntries
       .map((entry) => parseOffer(storefront.name, entry, owned, locale, purchaseContext))
       .filter((offer): offer is StwStoreOffer => !!offer)
-      .map((offer) =>
-        exhausted.has(offer.offerId) ? { ...offer, ownedHeroGrant: true } : offer
-      )
+      .map((offer) => (exhausted.has(offer.offerId) ? { ...offer, ownedHeroGrant: true } : offer))
       .sort((a, b) => Number(!!a.ownedHeroGrant) - Number(!!b.ownedHeroGrant));
 
     if (!offers.length) continue;
@@ -434,59 +431,83 @@ export function getBalanceForOffer(balances: Record<string, number>, price: StwC
 export function priceLabel(price: StwCatalogPrice) {
   const display = currencyDisplay(price.currencySubType);
   const isGold = price.currencySubType.includes('eventcurrency_scaling');
+  const isXrayTicket = price.currencySubType.includes('currency_xrayllama');
+  const isUpgradeLlamaToken = price.currencySubType.includes('voucher_cardpack_bronze');
   return {
     ...display,
-    imageUrl: isGold ? GOLD_ICON : display.imageUrl
+    imageUrl: isGold
+      ? GOLD_ICON
+      : isXrayTicket
+        ? '/resources/currency_xrayllama.png'
+        : isUpgradeLlamaToken
+          ? '/resources/cardpack_bronze.png'
+          : display.imageUrl
   };
 }
 
-export function maxPurchasableQuantity(offer: StwStoreOffer, goldBalance: number) {
+export function maxPurchasableQuantity(offer: StwStoreOffer, balance: number) {
   const unitPrice = offer.price.finalPrice;
-  if (unitPrice <= 0) return 0;
+  if (unitPrice < 0) return 0;
   if (offer.ownedHeroGrant) return 0;
 
-  const byGold = Math.floor(goldBalance / unitPrice);
-  if (byGold < 1) return 0;
+  const byBalance = unitPrice === 0 ? 1 : Math.floor(balance / unitPrice);
+  if (byBalance < 1) return 0;
 
-  if (offer.limit.remaining !== null) return Math.min(byGold, offer.limit.remaining);
-  if (offer.limit.max > 0) return Math.min(byGold, Math.max(0, offer.limit.max - offer.limit.purchased));
+  if (offer.limit.remaining !== null) return Math.min(byBalance, offer.limit.remaining);
+  if (offer.limit.max > 0) return Math.min(byBalance, Math.max(0, offer.limit.max - offer.limit.purchased));
 
-  // No catalog cap — buy as many as gold allows (perk/flux/resources stacks).
-  return byGold;
+  // No catalog cap — buy as many as the current currency balance allows.
+  return byBalance;
+}
+
+async function runPurchase(
+  account: AccountData,
+  offer: StwStoreOffer,
+  quantity: number,
+  expectedTotalPrice: number
+): Promise<GrantedItem[]> {
+  // ponytail: ProfileId meta on preroll llamas is campaign, but PurchaseCatalogEntry only lives on common_core.
+  const response = await composeMCP(account, 'PurchaseCatalogEntry', 'common_core', {
+    offerId: offer.offerId,
+    purchaseQuantity: quantity,
+    currency: offer.price.currency,
+    currencySubType: offer.price.currencySubType,
+    expectedTotalPrice,
+    gameContext: 'GameContext: Frontend.CatabaScreen'
+  });
+
+  const granted = extractGrantedItems(response);
+  const packIds = granted
+    .filter((item) => item.templateId.startsWith('CardPack:') && item.itemGuid)
+    .map((item) => item.itemGuid!);
+
+  if (!packIds.length) return granted;
+
+  try {
+    // Store llamas land in the profile sealed — the loot only exists once they're opened.
+    return await openCardPacks(account, packIds);
+  } catch {
+    return granted;
+  }
 }
 
 export async function purchaseStwOffer(
   account: AccountData,
   offer: StwStoreOffer,
   quantity = 1
-): Promise<{ spent: number; currencySubType: string; quantity: number }> {
+): Promise<{ spent: number; currencySubType: string; quantity: number; received: GrantedItem[] }> {
   const expectedTotalPrice = offer.price.finalPrice * quantity;
 
   try {
-    await composeMCP(account, 'PurchaseCatalogEntry', 'common_core', {
-      offerId: offer.offerId,
-      purchaseQuantity: quantity,
-      currency: offer.price.currency,
-      currencySubType: offer.price.currencySubType,
-      expectedTotalPrice,
-      gameContext: 'GameContext: Frontend.CatabaScreen'
-    });
-
-    return { spent: expectedTotalPrice, currencySubType: offer.price.currencySubType, quantity };
+    const received = await runPurchase(account, offer, quantity, expectedTotalPrice);
+    return { spent: expectedTotalPrice, currencySubType: offer.price.currencySubType, quantity, received };
   } catch (error) {
     if (error instanceof EpicAPIError && error.errorCode.includes('catalog_out_of_date')) {
       const newUnitPrice = Number.parseInt(error.messageVars[1]);
       const newTotal = Number.isNaN(newUnitPrice) ? expectedTotalPrice : newUnitPrice * quantity;
       if (!Number.isNaN(newUnitPrice) && newTotal <= expectedTotalPrice) {
-        await composeMCP(account, 'PurchaseCatalogEntry', 'common_core', {
-          offerId: offer.offerId,
-          purchaseQuantity: quantity,
-          currency: offer.price.currency,
-          currencySubType: offer.price.currencySubType,
-          expectedTotalPrice: newTotal,
-          gameContext: 'GameContext: Frontend.CatabaScreen'
-        });
-        return { spent: newTotal, currencySubType: offer.price.currencySubType, quantity };
+        const received = await runPurchase(account, offer, quantity, newTotal);
+        return { spent: newTotal, currencySubType: offer.price.currencySubType, quantity, received };
       }
     }
 
@@ -507,9 +528,9 @@ export async function purchaseStwOfferMax(
   account: AccountData,
   offer: StwStoreOffer,
   quantity: number
-): Promise<{ spent: number; currencySubType: string; quantity: number }> {
+): Promise<{ spent: number; currencySubType: string; quantity: number; received: GrantedItem[] }> {
   if (quantity < 1) {
-    return { spent: 0, currencySubType: offer.price.currencySubType, quantity: 0 };
+    return { spent: 0, currencySubType: offer.price.currencySubType, quantity: 0, received: [] };
   }
 
   if (quantity === 1 || !isStackableStwGrant(offer)) {
@@ -519,6 +540,7 @@ export async function purchaseStwOfferMax(
   let spent = 0;
   let bought = 0;
   let currencySubType = offer.price.currencySubType;
+  const received: GrantedItem[] = [];
 
   for (let i = 0; i < quantity; i++) {
     try {
@@ -526,13 +548,14 @@ export async function purchaseStwOfferMax(
       spent += result.spent;
       bought += result.quantity;
       currencySubType = result.currencySubType;
+      received.push(...result.received);
     } catch (error) {
       if (bought > 0) break;
       throw error;
     }
   }
 
-  return { spent, currencySubType, quantity: bought };
+  return { spent, currencySubType, quantity: bought, received };
 }
 
 function isOneShotOffer(offer: StwStoreOffer) {

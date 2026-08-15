@@ -106,6 +106,23 @@
       </PageHeaderChip>
 
       <PageHeaderChip class={cn(embedded && 'hidden h-9 gap-1.5 px-2.5 text-sm min-[900px]:flex')}>
+        <img
+          class="size-5 shrink-0 object-contain"
+          alt={$t('stw.xrayTickets')}
+          src="/resources/currency_xrayllama.png"
+        />
+        <span class="text-sm leading-none font-semibold tabular-nums">
+          {#if activeAccountBalances.xrayTickets !== null}
+            {activeAccountBalances.xrayTickets.toLocaleString($language)}
+          {:else if activeAccountBalances.isLoading}
+            …
+          {:else}
+            -
+          {/if}
+        </span>
+      </PageHeaderChip>
+
+      <PageHeaderChip class={cn(embedded && 'hidden h-9 gap-1.5 px-2.5 text-sm min-[900px]:flex')}>
         <img class="size-5 shrink-0 object-contain" alt={$t('stw.gold')} src="/resources/eventcurrency_scaling.png" />
         <span class="text-sm leading-none font-semibold tabular-nums">
           {#if activeAccountBalances.gold !== null}

@@ -36,8 +36,11 @@ const rarityColors: Record<string, string> = {
   ...ItemColors.series
 };
 
+/** Optional second line (e.g. Sprite status) and dimming for entries the account does not own. */
+export type LockerExportItem = LockerOwnedItem & { note?: string; faded?: boolean };
+
 export type LockerExportOptions = {
-  items: LockerOwnedItem[];
+  items: LockerExportItem[];
   categorySlug: string;
   categoryLabel: string;
   accountLabel?: string;
@@ -233,23 +236,32 @@ export async function exportLockerCategoryWebp(options: LockerExportOptions): Pr
       const scale = Math.min(cell / bmp.width, cell / bmp.height);
       const w = bmp.width * scale;
       const h = bmp.height * scale;
+      if (item.faded) ctx.globalAlpha = 0.35;
       ctx.drawImage(bmp, x + (cell - w) / 2, y + (cell - h) / 2, w, h);
+      ctx.globalAlpha = 1;
       bmp.close();
     }
 
-    const bandY = y + cell - NAME_BAND;
+    const band = item.note ? NAME_BAND + 14 : NAME_BAND;
+    const bandY = y + cell - band;
     const fade = ctx.createLinearGradient(x, bandY - 8, x, y + cell);
     fade.addColorStop(0, 'rgba(0,0,0,0)');
     fade.addColorStop(0.35, 'rgba(0,0,0,0.55)');
     fade.addColorStop(1, 'rgba(0,0,0,0.78)');
     ctx.fillStyle = fade;
-    ctx.fillRect(x, bandY - 8, cell, NAME_BAND + 8);
+    ctx.fillRect(x, bandY - 8, cell, band + 8);
 
     ctx.textAlign = 'left';
     ctx.textBaseline = 'alphabetic';
     ctx.fillStyle = '#ffffff';
     ctx.font = `600 14px ${UI_FONT}`;
-    ctx.fillText(fitText(ctx, item.name, cell - 14), x + 7, y + cell - 10);
+    ctx.fillText(fitText(ctx, item.name, cell - 14), x + 7, y + cell - (item.note ? 24 : 10));
+
+    if (item.note) {
+      ctx.fillStyle = 'rgba(255,255,255,0.85)';
+      ctx.font = `700 11px ${UI_FONT}`;
+      ctx.fillText(fitText(ctx, item.note, cell - 14), x + 7, y + cell - 9);
+    }
 
     ctx.restore();
   }

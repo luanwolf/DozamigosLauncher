@@ -1,12 +1,12 @@
 import { get } from 'svelte/store';
 import { Rarities, RarityNames } from '$lib/constants/stw/resources';
 import { heroes, ingredients, resources, survivors, survivorsMythicLeads, traps } from '$lib/data';
-import { localizedStwItemName } from '$lib/utils/stw-item-names';
-import { heroDisplayName, resolveHeroCatalogKey } from '$lib/utils/stw-hero-locale';
+import type { Locale } from '$lib/paraglide/runtime';
 import { resolveGenericTemplateBody } from '$lib/utils/stw-generic-names';
+import { heroDisplayName, resolveHeroCatalogKey } from '$lib/utils/stw-hero-locale';
+import { localizedStwItemName } from '$lib/utils/stw-item-names';
 import { resolveSchematicStoreTitle } from '$lib/utils/stw-schematic-locale';
 import { localizedTokenGrant } from '$lib/utils/stw-store-offers';
-import type { Locale } from '$lib/paraglide/runtime';
 import type { RarityType } from '$types/game/stw/resources';
 
 export type StwTemplateDisplay = {
@@ -43,6 +43,15 @@ export { resolveHeroCatalogKey } from '$lib/utils/stw-hero-locale';
 export function resolveStwTemplateDisplay(templateId: string, locale: Locale = 'pt-br'): StwTemplateDisplay {
   const rarity = parseRarityFromTemplate(templateId);
   const rarityName = get(RarityNames)[rarity];
+
+  if (templateId === 'CardPack:cardpack_bronze' || templateId === 'CardPack:cardpack_bronze_10x') {
+    return {
+      name: templateId.endsWith('_10x') ? 'Pacote com 10 Lhamas de Aprimoramento' : 'Lhama de Aprimoramento',
+      imageUrl: '/resources/cardpack_bronze.png',
+      rarity: Rarities.Rare,
+      kind: 'other'
+    };
+  }
 
   if (templateId.startsWith('Hero:')) {
     const key = resolveHeroCatalogKey(templateId);
@@ -119,7 +128,8 @@ export function resolveStwTemplateDisplay(templateId: string, locale: Locale = '
     if (resourceKey.includes(id)) {
       const isEventCurrency =
         id.startsWith('eventcurrency_') || id === 'campaign_event_currency' || id === 'eventcurrency_scaling';
-      const isUnknown = id === 'campaign_event_currency' || id === 'eventcurrency_spring' || id === 'eventcurrency_summer';
+      const isUnknown =
+        id === 'campaign_event_currency' || id === 'eventcurrency_spring' || id === 'eventcurrency_summer';
       return {
         name: localizedStwItemName(id, locale, resource.name),
         imageUrl: `${isEventCurrency ? '/currency' : '/resources'}/${id}.${isUnknown ? 'gif' : 'png'}`,

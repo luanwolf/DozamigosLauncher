@@ -1,11 +1,12 @@
 import { fetchAvatars } from '$lib/modules/avatar';
 import { queryProfile } from '$lib/modules/mcp';
-import { calculateGold, calculateVbucks } from '$lib/utils';
+import { calculateGold, calculateVbucks, calculateXrayTickets } from '$lib/utils';
 import type { AccountData } from '$types/account';
 
 class ActiveAccountBalances {
   vbucks = $state<number | null>(null);
   gold = $state<number | null>(null);
+  xrayTickets = $state<number | null>(null);
   isLoading = $state(false);
 
   #loadId = 0;
@@ -14,6 +15,7 @@ class ActiveAccountBalances {
     if (!account) {
       this.vbucks = null;
       this.gold = null;
+      this.xrayTickets = null;
       this.isLoading = false;
       return;
     }
@@ -33,11 +35,13 @@ class ActiveAccountBalances {
 
       this.vbucks = calculateVbucks(commonCore);
       this.gold = calculateGold(campaign);
+      this.xrayTickets = calculateXrayTickets(campaign);
     } catch {
       if (loadId !== this.#loadId) return;
 
       this.vbucks = null;
       this.gold = null;
+      this.xrayTickets = null;
     } finally {
       if (loadId === this.#loadId) {
         this.isLoading = false;

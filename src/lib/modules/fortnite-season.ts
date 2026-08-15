@@ -15,6 +15,12 @@ type CalendarTimelineResponse = {
   currentTime?: string;
 };
 
+type PublicSeasonResponse = {
+  seasonDateBegin: string;
+  seasonDateEnd: string;
+  seasonNumber: number;
+};
+
 export type SeasonInfo = {
   seasonNumber: number;
   name: string;
@@ -100,6 +106,24 @@ function parseTimelineResponse(response: CalendarTimelineResponse, seasonNameHin
   };
 }
 
+export function parsePublicSeasonResponse(response: PublicSeasonResponse, seasonNameHint?: string): SeasonInfo | null {
+  const begin = parseDate(response.seasonDateBegin);
+  const end = parseDate(response.seasonDateEnd);
+  const seasonNumber = Number(response.seasonNumber);
+  if (!seasonNumber || !begin || !end) return null;
+
+  return {
+    seasonNumber,
+    name: seasonNameHint?.trim() || `Temporada ${seasonNumber}`,
+    begin,
+    end,
+    displayedEnd: end,
+    progressPercent: seasonProgress(begin, end),
+    daysRemaining: daysUntil(end),
+    hasTimeline: true
+  };
+}
+
 function buildNameOnlySeason(name: string, keyArt?: string): SeasonInfo {
   return {
     seasonNumber: 0,
@@ -131,11 +155,13 @@ export async function fetchSeasonInfo(options: FetchSeasonInfoOptions = {}): Pro
   const { seasonNameHint, account, locale } = options;
 
   // Keeps the pure name helpers runnable in Bun selfchecks without a Tauri runtime.
-  const [{ calendarService }, { getAuthedKy }, { fetchBrNews }] = await Promise.all([
-    import('$lib/http'),
-    import('$lib/modules/auth-session'),
-    import('$lib/modules/fortnite-api')
-  ]);
+  const [{ apiFortniteService, calendarService }, { getAuthedKy }, { fetchBrNews }, { getApiFortniteKey }] =
+    await Promise.all([
+      import('$lib/http'),
+      import('$lib/modules/auth-session'),
+      import('$lib/modules/fortnite-api'),
+      import('$lib/env')
+    ]);
 
   const newsPromise = fetchBrNews(locale).catch(() => []);
   const calendarPromise = account
@@ -159,6 +185,17 @@ export async function fetchSeasonInfo(options: FetchSeasonInfoOptions = {}): Pro
         name: hint || season.name,
         keyArt
       };
+    }
+  }
+
+  if (getApiFortniteKey()) {
+    const publicSeason = await apiFortniteService
+      .get<PublicSeasonResponse>('v1/season')
+      .json()
+      .catch(() => null);
+    if (publicSeason) {
+      const season = parsePublicSeasonResponse(publicSeason, hint);
+      if (season) return { ...season, keyArt };
     }
   }
 

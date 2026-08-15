@@ -27,8 +27,6 @@
   };
 
   const ROTATE_MS = 9000;
-  const FALLBACK_BEGIN = new Date('2026-06-06T00:00:00.000Z');
-  const FALLBACK_END = new Date('2026-08-19T23:59:59.999Z');
 
   const { season, battlePass, loading = false, requiresLogin = false }: Props = $props();
 
@@ -54,18 +52,19 @@
     current.kind === 'free' ? isFreeGameRedeemed(current.game, $ownedAppsCache, $redeemedFreeGameIds) : false
   );
 
-  const timelineBegin = $derived(season?.begin ?? FALLBACK_BEGIN);
-  const timelineEnd = $derived(season?.displayedEnd ?? season?.end ?? FALLBACK_END);
-  const hasLiveTimeline = $derived(Boolean(season?.hasTimeline));
+  const timelineBegin = $derived(season?.begin);
+  const timelineEnd = $derived(season?.displayedEnd ?? season?.end);
+  const hasLiveTimeline = $derived(Boolean(season?.hasTimeline && timelineBegin && timelineEnd));
 
   const daysRemaining = $derived.by(() => {
     if (season?.daysRemaining != null && hasLiveTimeline) return season.daysRemaining;
-    return Math.max(0, Math.ceil((timelineEnd.getTime() - Date.now()) / 86_400_000));
+    return timelineEnd ? Math.max(0, Math.ceil((timelineEnd.getTime() - Date.now()) / 86_400_000)) : 0;
   });
 
   const progressPercent = $derived.by(() => {
     if (season?.progressPercent != null && hasLiveTimeline) return season.progressPercent;
 
+    if (!timelineBegin || !timelineEnd) return 0;
     const total = timelineEnd.getTime() - timelineBegin.getTime();
     if (total <= 0) return 0;
 
@@ -150,8 +149,12 @@
                 <h1 class="font-display text-3xl leading-none text-foreground sm:text-4xl md:text-5xl">
                   {seasonTitle}
                 </h1>
-                <p class="text-sm text-foreground/85 sm:text-base">{endsInLabel}</p>
-                <Progress class="h-1.5 max-w-xs bg-background/50" value={progressPercent} />
+                <p class="text-sm text-foreground/85 sm:text-base">
+                  {hasLiveTimeline ? endsInLabel : $t('home.season.datesUnavailable')}
+                </p>
+                {#if hasLiveTimeline}
+                  <Progress class="h-1.5 max-w-xs bg-background/50" value={progressPercent} />
+                {/if}
                 <div class="pt-2">
                   <Button href="/br-stw/item-shop" size="lg">
                     <ShoppingBagIcon class="size-4" />

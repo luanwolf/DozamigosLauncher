@@ -88,10 +88,18 @@ export function parseVbucksBreakdown(queryProfile: FullQueryProfile<'common_core
 }
 
 export function calculateGold(queryProfile: FullQueryProfile<'campaign'>) {
+  return sumCampaignResource(queryProfile, 'eventcurrency_scaling');
+}
+
+export function calculateXrayTickets(queryProfile: FullQueryProfile<'campaign'>) {
+  return sumCampaignResource(queryProfile, 'currency_xrayllama');
+}
+
+function sumCampaignResource(queryProfile: FullQueryProfile<'campaign'>, resourceId: string) {
   const profile = queryProfile.profileChanges[0].profile;
 
   return Object.values(profile.items)
-    .filter((item) => item.templateId.includes('eventcurrency_scaling'))
+    .filter((item) => item.templateId.includes(resourceId))
     .reduce((acc, item) => acc + (item.quantity ?? 0), 0);
 }
 

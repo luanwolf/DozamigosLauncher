@@ -3,8 +3,8 @@ import { getVersion } from '@tauri-apps/api/app';
 import { fetch } from '@tauri-apps/plugin-http';
 import { arch, platform } from '@tauri-apps/plugin-os';
 import { defaultClient } from '$lib/constants/clients';
+import { getApiFortniteKey, getFnbrApiKey, getFortniteApiKey } from '$lib/env';
 import { EpicAPIError, isEpicAPIError } from '$lib/exceptions/EpicAPIError';
-import { getFnbrApiKey, getFortniteApiKey } from '$lib/env';
 import { getFortniteManifest } from '$lib/modules/manifest';
 import { settingsStore } from '$lib/storage';
 
@@ -131,6 +131,7 @@ export const avatarService = epicService.extend({
 const launcherUA = `DozamigosLauncher/${await getVersion()} (${platform()}; ${arch()})`;
 const fortniteApiKey = getFortniteApiKey();
 const fnbrApiKey = getFnbrApiKey();
+const apiFortniteKey = getApiFortniteKey();
 
 export const fortniteApiService = tauriKy.extend({
   prefix: 'https://fortnite-api.com',
@@ -145,6 +146,14 @@ export const fnbrApiService = tauriKy.extend({
   headers: {
     'X-User-Agent': launcherUA,
     ...(fnbrApiKey ? { 'x-api-key': fnbrApiKey } : {})
+  }
+});
+
+export const apiFortniteService = tauriKy.extend({
+  prefix: 'https://prod.api-fortnite.com/api',
+  headers: {
+    'X-User-Agent': launcherUA,
+    ...(apiFortniteKey ? { 'x-api-key': apiFortniteKey } : {})
   }
 });
 

@@ -50,7 +50,9 @@ export function lockerSortRank(item: Pick<LockerOwnedItem, 'rarity' | 'series'>)
   return 200;
 }
 
-export function sortLockerItemsForExport(items: LockerOwnedItem[]): LockerOwnedItem[] {
+export function sortLockerItemsForExport<T extends Pick<LockerOwnedItem, 'rarity' | 'series' | 'name'>>(
+  items: T[]
+): T[] {
   return [...items].sort((a, b) => {
     const rank = lockerSortRank(a) - lockerSortRank(b);
     if (rank !== 0) return rank;

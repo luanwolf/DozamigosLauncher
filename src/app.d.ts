@@ -1,6 +1,7 @@
 interface ImportMetaEnv {
   readonly VITE_FORTNITE_API_KEY?: string;
   readonly VITE_FNBR_API_KEY?: string;
+  readonly VITE_API_FORTNITE_KEY?: string;
 }
 
 interface ImportMeta {

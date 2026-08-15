@@ -1,8 +1,9 @@
 <script lang="ts">
   import CheckIcon from '@lucide/svelte/icons/check';
   import ShoppingBagIcon from '@lucide/svelte/icons/shopping-bag';
-  import { language, t } from '$lib/i18n';
   import { RarityColors } from '$lib/constants/stw/resources';
+  import { language, t } from '$lib/i18n';
+  import { priceLabel } from '$lib/modules/stw-catalog';
   import { cn } from '$lib/utils';
   import { Button } from '$components/ui/button';
   import type { StwStoreOffer } from '$types/game/stw-store';
@@ -25,6 +26,7 @@
   const showQuantity = $derived(grant.quantity > 1);
   const extraGrants = $derived(offer.grants.length - 1);
   const owned = $derived(!!offer.ownedHeroGrant);
+  const currency = $derived(priceLabel(offer.price));
 </script>
 
 <article
@@ -34,10 +36,7 @@
   )}
   aria-label={offer.title}
 >
-  <div
-    class="flex h-24 shrink-0 items-center justify-center border-b p-2"
-    style="background-color: {rarityColor}12"
-  >
+  <div class="flex h-24 shrink-0 items-center justify-center border-b p-2" style="background-color: {rarityColor}12">
     <img
       class={cn('max-h-full max-w-full object-contain select-none', owned && 'saturate-50')}
       alt=""
@@ -48,7 +47,7 @@
   </div>
 
   <div class="flex min-h-0 flex-1 flex-col gap-0.5 px-2.5 py-2">
-    <h3 class="line-clamp-2 text-xs font-semibold leading-snug sm:text-sm">{offer.title}</h3>
+    <h3 class="line-clamp-2 text-xs leading-snug font-semibold sm:text-sm">{offer.title}</h3>
 
     <p class="text-[11px] text-muted-foreground">
       {#if showQuantity}
@@ -73,14 +72,16 @@
       {#if owned}
         <CheckIcon class="size-4 shrink-0 text-emerald-500" />
         <span class="text-sm font-bold text-emerald-500">{$t('stwStore.owned')}</span>
+      {:else if offer.price.finalPrice === 0}
+        <span class="text-base font-bold text-primary">{$t('stwStore.free')}</span>
       {:else}
-        <img class="size-4 shrink-0" alt={$t('stw.gold')} src="/resources/eventcurrency_scaling.png" />
+        <img class="size-4 shrink-0" alt={currency.name} src={currency.imageUrl} />
         <span class="text-base font-bold tabular-nums">{offer.price.finalPrice.toLocaleString($language)}</span>
       {/if}
     </div>
 
     <Button
-      class="mt-2 h-8 shrink-0 w-full text-xs"
+      class="mt-2 h-8 w-full shrink-0 text-xs"
       disabled={isPurchasing || !canAfford || atLimit || owned}
       loading={isPurchasing}
       onclick={onPurchase}
@@ -96,7 +97,7 @@
         <ShoppingBagIcon class="size-3.5 shrink-0" />
         {$t('stwStore.buy')}
       {:else}
-        {$t('stwStore.notEnoughGold')}
+        {$t('stwStore.notEnoughCurrency')}
       {/if}
     </Button>
   </div>

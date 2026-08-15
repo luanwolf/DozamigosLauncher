@@ -406,6 +406,48 @@
     "lastAddition": "Última adição: {date}",
     "itemCount": "{count} cosméticos"
   },
+  "sprites": {
+    "page": {
+      "title": "Elementais",
+      "description": "Todos os Elementais e variantes da temporada atual."
+    },
+    "summary": "{count} Elementais e variantes no catálogo",
+    "extractedSummary": "{count} extraído(s)",
+    "masteredSummary": "{count} dominado(s)",
+    "extracted": "Extraído",
+    "search": "Buscar Elemental ou variante…",
+    "results": "{count} resultado(s)",
+    "source": "Imagens do jogo armazenadas localmente no launcher.",
+    "filters": {
+      "allRarities": "Todas as raridades",
+      "allVariants": "Todas as variantes",
+      "allStatuses": "Todos os Elementais",
+      "onlyExtracted": "Só os extraídos",
+      "onlyMastered": "Só os dominados",
+      "onlyMissing": "Só os que faltam"
+    },
+    "collection": {
+      "title": "Sua coleção",
+      "perAccount": "As marcações ficam salvas para a conta atual e trocam junto com ela. A Epic só entrega os Elementais dominados, então só eles aparecem marcados sozinhos aqui.",
+      "noAccount": "Entre em uma conta para separar as marcações por perfil.",
+      "explanation": "Elementais abaixo do nível 4, que ainda não foram dominados, precisam ser controlados manualmente pelos botões de cada card.",
+      "dontShowAgain": "Não mostrar novamente"
+    },
+    "mastery": {
+      "mastered": "Dominado",
+      "detected": "{count} dominado(s) detectado(s)",
+      "failed": "Não foi possível consultar os Elementais dominados da conta."
+    },
+    "export": {
+      "button": "Exportar Elementais",
+      "open": "Abrir imagem",
+      "empty": "Nenhum Elemental no filtro atual para exportar.",
+      "pending": "Pendente",
+      "done": "{count} Elemental(is) exportado(s).",
+      "failed": "Não foi possível exportar os Elementais.",
+      "progress": "Baixando imagens… {percent}%"
+    }
+  },
   "itemShop": {
     "page": {
       "title": "Loja de Itens",
@@ -821,7 +863,7 @@
   "stwStore": {
     "page": {
       "title": "Loja do Salve o Mundo",
-      "description": "Compre itens da loja STW com ouro."
+      "description": "Compre itens, recursos e Lhamas da loja STW."
     },
     "refresh": "Atualizar loja",
     "loading": "Carregando loja...",
@@ -832,10 +874,21 @@
     "buy": "Comprar",
     "purchased": "Compra concluída!",
     "notEnoughGold": "Ouro insuficiente",
+    "notEnoughCurrency": "Saldo insuficiente",
+    "free": "Grátis",
     "items": "itens",
     "sections": {
+      "llamas": "Rotação de Lhamas",
       "event": "Loja de Evento",
       "weekly": "Loja Semanal"
+    },
+    "llamas": {
+      "rotation": "Atualiza em {time}"
+    },
+    "received": {
+      "title": "Itens recebidos",
+      "description": "{count} tipos de item caíram nessa compra.",
+      "close": "Beleza"
     },
     "limitUnlimited": "Sem limite de compras",
     "limitMax": "Máximo: {max} por {period}",

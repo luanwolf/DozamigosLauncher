@@ -36,6 +36,12 @@
 					"url": "https://fortnite-api.com/*"
 				},
 				{
+					"url": "https://prod.api-fortnite.com"
+				},
+				{
+					"url": "https://prod.api-fortnite.com/*"
+				},
+				{
 					"url": "https://fnbr.co"
 				},
 				{

@@ -1,19 +1,21 @@
 <script lang="ts">
+  import { toast } from 'svelte-sonner';
   import MinusIcon from '@lucide/svelte/icons/minus';
   import PlusIcon from '@lucide/svelte/icons/plus';
-  import { toast } from 'svelte-sonner';
   import { EpicAPIError } from '$lib/exceptions/EpicAPIError';
   import { language, t } from '$lib/i18n';
   import {
     applyPurchaseToStore,
     getBalanceForOffer,
     maxPurchasableQuantity,
+    priceLabel,
     purchaseStwOffer,
     rememberExhaustedStwOffer,
     removeOfferFromStore
   } from '$lib/modules/stw-catalog';
   import { accountStore } from '$lib/storage';
   import { handleError } from '$lib/utils';
+  import type { GrantedItem } from '$lib/utils/mcp-loot';
   import { Button, buttonVariants } from '$components/ui/button';
   import * as Dialog from '$components/ui/dialog';
   import { Input } from '$components/ui/input';
@@ -27,6 +29,7 @@
     isPurchasing: boolean;
     onStoreUpdate: (store: StwStoreData) => void;
     onPurchasingChange: (value: boolean) => void;
+    onReceived: (items: GrantedItem[]) => void;
     onRefresh: () => void | Promise<void>;
     onClose: () => void;
   };
@@ -38,6 +41,7 @@
     isPurchasing,
     onStoreUpdate,
     onPurchasingChange,
+    onReceived,
     onRefresh,
     onClose
   }: Props = $props();
@@ -46,12 +50,13 @@
 
   let quantity = $state(1);
 
-  const goldBalance = $derived(store.balances['eventcurrency_scaling'] ?? 0);
-  const maxQuantity = $derived(offer ? maxPurchasableQuantity(offer, goldBalance) : 0);
+  const balance = $derived(offer ? getBalanceForOffer(store.balances, offer.price) : 0);
+  const maxQuantity = $derived(offer ? maxPurchasableQuantity(offer, balance) : 0);
   const singlePurchase = $derived(maxQuantity === 1);
   const unitPrice = $derived(offer?.price.finalPrice ?? 0);
   const totalPrice = $derived(unitPrice * quantity);
   const grant = $derived(offer?.grants[0]);
+  const currency = $derived(offer ? priceLabel(offer.price) : null);
 
   $effect(() => {
     if (open && offer) quantity = 1;
@@ -71,7 +76,7 @@
     if (!$activeAccount || !offer || !store) return;
 
     if (getBalanceForOffer(store.balances, offer.price) < totalPrice) {
-      toast.error($t('stwStore.notEnoughGold'));
+      toast.error($t('stwStore.notEnoughCurrency'));
       return;
     }
 
@@ -79,15 +84,22 @@
 
     try {
       const result = await purchaseStwOffer($activeAccount, offer, quantity);
-      rememberExhaustedStwOffer($activeAccount.accountId, store.expiration, offer.offerId);
-      onStoreUpdate(applyPurchaseToStore(store, offer, result.spent, result.currencySubType, result.quantity));
+      const nextStore = applyPurchaseToStore(store, offer, result.spent, result.currencySubType, result.quantity);
+      const nextOffer = nextStore.sections
+        .flatMap((section) => section.offers)
+        .find((candidate) => candidate.offerId === offer.offerId);
+      if (nextOffer?.ownedHeroGrant || nextOffer?.limit.remaining === 0) {
+        rememberExhaustedStwOffer($activeAccount.accountId, store.expiration, offer.offerId);
+      }
+      onStoreUpdate(nextStore);
       toast.success($t('stwStore.purchased'));
       open = false;
       onClose();
+      if (result.received.length) onReceived(result.received);
       await onRefresh();
     } catch (error) {
       if (error instanceof EpicAPIError && error.errorCode.includes('not_enough')) {
-        toast.error($t('stwStore.notEnoughGold'));
+        toast.error($t('stwStore.notEnoughCurrency'));
         return;
       }
       if (error instanceof EpicAPIError && error.errorCode.includes('purchase_not_allowed')) {
@@ -117,8 +129,7 @@
             {@html $t('stwStore.purchaseDialog.confirmSingle', {
               name: `<span class="font-semibold">${offer.title}</span>`,
               price: `<span class="font-semibold">${unitPrice.toLocaleString($language)}</span>`,
-              goldIcon:
-                '<img class="size-5 inline-block" alt="" src="/resources/eventcurrency_scaling.png"/>'
+              goldIcon: `<img class="size-5 inline-block" alt="" src="${currency?.imageUrl ?? ''}"/>`
             })}
           {:else}
             {$t('stwStore.purchaseDialog.description')}
@@ -134,7 +145,7 @@
           src={grant.display.imageUrl}
         />
         <div class="min-w-0 flex-1">
-          <p class="font-medium leading-snug">{offer.title}</p>
+          <p class="leading-snug font-medium">{offer.title}</p>
           {#if grant.quantity > 1}
             <p class="text-xs text-muted-foreground">
               {$t('stwStore.purchaseDialog.perPurchase', { count: grant.quantity })}
@@ -182,7 +193,9 @@
         <div class="flex items-center justify-between rounded-none border bg-muted/40 px-3 py-2">
           <span class="text-sm text-muted-foreground">{$t('stwStore.purchaseDialog.total')}</span>
           <div class="flex items-center gap-1">
-            <img class="size-4" alt={$t('stw.gold')} src="/resources/eventcurrency_scaling.png" />
+            {#if currency}
+              <img class="size-4" alt={currency.name} src={currency.imageUrl} />
+            {/if}
             <span class="text-lg font-bold tabular-nums">{totalPrice.toLocaleString($language)}</span>
           </div>
         </div>

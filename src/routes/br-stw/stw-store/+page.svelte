@@ -1,18 +1,21 @@
 <script lang="ts">
-  import { afterNavigate } from '$app/navigation';
-  import ShoppingBagIcon from '@lucide/svelte/icons/shopping-bag';
-  import RefreshCwIcon from '@lucide/svelte/icons/refresh-cw';
+  import { onMount } from 'svelte';
   import { toast } from 'svelte-sonner';
+  import { afterNavigate } from '$app/navigation';
+  import RefreshCwIcon from '@lucide/svelte/icons/refresh-cw';
+  import ShoppingBagIcon from '@lucide/svelte/icons/shopping-bag';
+  import { HUD_PAGE_WIDTH } from '$lib/constants/page-layout';
   import { t } from '$lib/i18n';
   import { stwStoreCache } from '$lib/modules/account-data';
   import { getBalanceForOffer, maxPurchasableQuantity } from '$lib/modules/stw-catalog';
   import { accountStore } from '$lib/storage';
-  import { handleError } from '$lib/utils';
-  import { HUD_PAGE_WIDTH } from '$lib/constants/page-layout';
+  import { formatRemainingDuration, handleError } from '$lib/utils';
+  import type { GrantedItem } from '$lib/utils/mcp-loot';
   import PageActionButton from '$components/layout/PageActionButton.svelte';
   import PageContent from '$components/layout/PageContent.svelte';
   import PageLoading from '$components/layout/PageLoading.svelte';
   import StoreItemGrid from '$components/layout/StoreItemGrid.svelte';
+  import StwPurchaseResultDialog from '$components/modules/stw-store/StwPurchaseResultDialog.svelte';
   import StwStoreBulkBuyDialog from '$components/modules/stw-store/StwStoreBulkBuyDialog.svelte';
   import StwStoreOfferCard from '$components/modules/stw-store/StwStoreOfferCard.svelte';
   import StwStorePurchaseDialog from '$components/modules/stw-store/StwStorePurchaseDialog.svelte';
@@ -24,10 +27,17 @@
   let purchaseOffer = $state<StwStoreOffer | null>(null);
   let purchaseDialogOpen = $state(false);
   let bulkDialogOpen = $state(false);
+  let receivedItems = $state<GrantedItem[]>([]);
+  let receivedDialogOpen = $state(false);
+  let now = $state(Date.now());
+  let refreshedExpiration = '';
 
   const cached = $derived(stwStoreCache.get($activeAccount));
   const store = $derived<StwStoreData | null>(cached.data);
   const isLoading = $derived(cached.loading || cached.refreshing);
+  const llamaRotationRemaining = $derived(
+    store?.expiration ? formatRemainingDuration(Math.max(0, new Date(store.expiration).getTime() - now)) : ''
+  );
 
   async function loadStore(force = true) {
     if (!$activeAccount) return;
@@ -47,7 +57,7 @@
 
     const balance = getBalanceForOffer(store.balances, offer.price);
     if (balance < offer.price.finalPrice) {
-      toast.error($t('stwStore.notEnoughGold'));
+      toast.error($t('stwStore.notEnoughCurrency'));
       return;
     }
 
@@ -92,6 +102,7 @@
   }
 
   function sectionTitle(id: string) {
+    if (id === 'CardPackStorePreroll') return $t('stwStore.sections.llamas');
     if (id === 'STWSpecialEventStorefront') return $t('stwStore.sections.event');
     if (id === 'STWRotationalEventStorefront') return $t('stwStore.sections.weekly');
     return id;
@@ -109,6 +120,22 @@
 
   $effect(() => {
     if ($activeAccount?.accountId) void stwStoreCache.ensure($activeAccount);
+  });
+
+  onMount(() => {
+    const intervalId = setInterval(() => {
+      now = Date.now();
+      if (
+        store?.expiration &&
+        now >= new Date(store.expiration).getTime() &&
+        refreshedExpiration !== store.expiration
+      ) {
+        refreshedExpiration = store.expiration;
+        void loadStore();
+      }
+    }, 1000);
+
+    return () => clearInterval(intervalId);
   });
 </script>
 
@@ -148,9 +175,16 @@
     <div class="space-y-8 sm:space-y-10">
       {#each store.sections as section (section.id)}
         <section class="flex flex-col gap-3 sm:gap-4">
-          <h2 class="text-base font-semibold tracking-tight text-foreground sm:text-lg">
-            {sectionTitle(section.id)}
-          </h2>
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <h2 class="text-base font-semibold tracking-tight text-foreground sm:text-lg">
+              {sectionTitle(section.id)}
+            </h2>
+            {#if section.id === 'CardPackStorePreroll'}
+              <span class="border border-border/70 bg-card px-2.5 py-1.5 text-xs text-muted-foreground">
+                {$t('stwStore.llamas.rotation', { time: llamaRotationRemaining })}
+              </span>
+            {/if}
+          </div>
           <StoreItemGrid variant="stw">
             {#each section.offers as offer (offer.offerId)}
               {@const balance = getBalanceForOffer(store.balances, offer.price)}
@@ -188,8 +222,22 @@
     onPurchasingChange={(value) => {
       isPurchasing = value;
     }}
+    onReceived={(items) => {
+      receivedItems = items;
+      receivedDialogOpen = true;
+    }}
     onRefresh={loadStore}
     onStoreUpdate={updateStore}
+  />
+{/if}
+
+{#if receivedItems.length}
+  <StwPurchaseResultDialog
+    bind:open={receivedDialogOpen}
+    items={receivedItems}
+    onClose={() => {
+      receivedItems = [];
+    }}
   />
 {/if}
 

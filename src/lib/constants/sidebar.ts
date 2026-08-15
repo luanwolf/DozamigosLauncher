@@ -19,6 +19,7 @@ import ServerIcon from '@lucide/svelte/icons/server';
 import SettingsIcon from '@lucide/svelte/icons/settings';
 import ShirtIcon from '@lucide/svelte/icons/shirt';
 import ShoppingBagIcon from '@lucide/svelte/icons/shopping-bag';
+import SparklesIcon from '@lucide/svelte/icons/sparkles';
 import TagIcon from '@lucide/svelte/icons/tag';
 import TrendingUpIcon from '@lucide/svelte/icons/trending-up';
 import UserXIcon from '@lucide/svelte/icons/user-x';
@@ -75,6 +76,12 @@ export const NavZones = Object.freeze([
         id: 'specialOffers',
         href: '/br-stw/special-offers',
         icon: BadgeDollarSignIcon,
+        requiresLogin: false
+      },
+      {
+        id: 'sprites',
+        href: '/br-stw/sprites',
+        icon: SparklesIcon,
         requiresLogin: false
       },
       {

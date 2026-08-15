@@ -1,4 +1,5 @@
 import { composeMCP } from '$lib/modules/mcp';
+import { extractGrantedItems, type GrantedItem } from '$lib/utils/mcp-loot';
 import type { AccountData } from '$types/account';
 import type { FullQueryProfile } from '$types/game/mcp';
 
@@ -22,8 +23,8 @@ export async function fetchAvailableCardPacks(account: AccountData): Promise<Car
     .map(([id, item]) => ({ id, templateId: item.templateId }));
 }
 
-export async function claimCardPacks(account: AccountData, cardPackItemIds: string[]): Promise<number> {
-  if (!cardPackItemIds.length) return 0;
-  await composeMCP(account, 'OpenCardPackBatch', 'campaign', { cardPackItemIds });
-  return cardPackItemIds.length;
+/** Opens card packs and returns what came out of them. */
+export async function openCardPacks(account: AccountData, cardPackItemIds: string[]): Promise<GrantedItem[]> {
+  if (!cardPackItemIds.length) return [];
+  return extractGrantedItems(await composeMCP(account, 'OpenCardPackBatch', 'campaign', { cardPackItemIds }));
 }
