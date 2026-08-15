@@ -79,6 +79,13 @@ export class AccountStore extends FileStore<AccountDataFile> {
     this.set((state) => ({ ...state, activeAccountId: id }));
   }
 
+  update(id: string, patch: Partial<Pick<AccountData, 'alias' | 'tags' | 'displayName'>>) {
+    this.set((state) => ({
+      ...state,
+      accounts: state.accounts.map((account) => (account.accountId === id ? { ...account, ...patch } : account))
+    }));
+  }
+
   private async cleanupAccount(account: AccountData) {
     const [{ removeAutoKickAccount }, { XMPPManager }, { deleteDeviceAuth }, { getLegendaryAccount, logoutLegendary }] =
       await Promise.all([

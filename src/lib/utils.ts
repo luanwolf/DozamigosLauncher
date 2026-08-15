@@ -30,9 +30,12 @@ export function getErrorDetail(error: unknown): string {
         msg.includes('<!DOCTYPE') ||
         msg.includes('is not valid JSON') ||
         msg.includes('ReadableStreamDefaultController') ||
-        msg.includes("Unexpected token '<'")
+        msg.includes('Unexpected token')
       ) {
         return 'unexpected HTML response from server';
+      }
+      if (/status code 5\d\d/i.test(msg) || /\b500 Internal Server Error\b/i.test(msg)) {
+        return 'Epic MCP indisponível (erro 500)';
       }
       return msg.length > 120 ? msg.slice(0, 117) + '…' : msg;
     }
@@ -195,6 +198,32 @@ export async function processChunks<T, R>(
 export function getAccountsFromSelection(selection: string[]): AccountData[] {
   const { accounts } = accountStore.get();
   return selection.map((id) => accounts.find((account) => account.accountId === id)).filter((x) => !!x);
+}
+
+/** Prefer launcher alias when set; falls back to Epic display name. */
+export function getAccountLabel(account: Pick<AccountData, 'displayName' | 'alias' | 'accountId'>) {
+  const alias = account.alias?.trim();
+  return alias || account.displayName || account.accountId;
+}
+
+export function accountMatchesSearch(
+  account: Pick<AccountData, 'displayName' | 'alias' | 'accountId' | 'tags'>,
+  term: string
+) {
+  const needle = term.trim().toLowerCase();
+  if (!needle) return true;
+  if (account.displayName.toLowerCase().includes(needle)) return true;
+  if (account.alias?.toLowerCase().includes(needle)) return true;
+  if (account.accountId.toLowerCase().includes(needle)) return true;
+  return (account.tags ?? []).some((tag) => tag.toLowerCase().includes(needle));
+}
+
+export function getAccountsByTag(tag: string): AccountData[] {
+  const needle = tag.trim().toLowerCase();
+  if (!needle) return [];
+  return accountStore.get().accounts.filter((account) =>
+    (account.tags ?? []).some((entry) => entry.toLowerCase() === needle)
+  );
 }
 
 export function bytesToSize(bytes: number, decimals = 2, unit = 1000) {

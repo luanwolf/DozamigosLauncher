@@ -5,6 +5,7 @@
   import { t } from '$lib/i18n';
   import { accountStore } from '$lib/storage';
   import { avatarCache } from '$lib/stores';
+  import { accountMatchesSearch, getAccountLabel } from '$lib/utils';
   import LoginModal from '$components/modules/login/LoginModal.svelte';
   import { Button } from '$components/ui/button';
   import * as Dialog from '$components/ui/dialog';
@@ -24,9 +25,7 @@
   const activeAccount = accountStore.getActiveStore(true);
 
   const filteredAccounts = $derived(
-    searchTerm
-      ? allAccounts.filter((account) => account.displayName.toLowerCase().includes(searchTerm!.toLowerCase()))
-      : allAccounts
+    searchTerm ? allAccounts.filter((account) => accountMatchesSearch(account, searchTerm!)) : allAccounts
   );
 
   function changeAccount(account: AccountData) {
@@ -79,10 +78,10 @@
         >
           <img
             class="size-8 rounded-full"
-            alt={account.displayName}
+            alt={getAccountLabel(account)}
             src={avatarCache.get(account.accountId) || '/misc/default-outfit-icon.png'}
           />
-          <span class="min-w-0 flex-1 truncate font-medium">{account.displayName}</span>
+          <span class="min-w-0 flex-1 truncate font-medium">{getAccountLabel(account)}</span>
           {#if $activeAccount?.accountId === account.accountId}
             <CheckIcon class="size-4 shrink-0 text-primary" />
           {/if}

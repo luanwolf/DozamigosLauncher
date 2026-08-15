@@ -1,15 +1,35 @@
 import { get } from 'svelte/store';
-import { toast } from 'svelte-sonner';
 import { dailyQuests } from '$lib/data';
 import { language, t } from '$lib/i18n';
 import { logger } from '$lib/logger';
 import type { Locale } from '$lib/paraglide/runtime';
+import {
+  msUntilNextUtcHour,
+  shouldRunHourlyClaim,
+  utcHourBucket
+} from '$lib/modules/epic-server-time';
+import { fetchEpicServerTimeMs } from '$lib/modules/epic-server-time-fetch';
+import { mapPool } from '$lib/modules/map-pool';
 import { clientQuestLogin, composeMCP } from '$lib/modules/mcp';
 import { accountStore } from '$lib/storage';
-import { activityLog } from '$lib/stores/activity-log';
+import { activityLog, notify } from '$lib/stores/activity-log';
 import { getErrorDetail } from '$lib/utils';
 import type { AccountData } from '$types/account';
 import type { FullQueryProfile } from '$types/game/mcp';
+import type { GrantedItem } from '$lib/utils/mcp-loot';
+
+const HOURLY_CLAIM_BUCKET_KEY = 'dozamigos.lastLlamaUtcHour';
+
+/** True while startup/hourly llama claims are hitting MCP — background polls should skip. */
+let mcpBusyUntil = 0;
+
+export function isMcpBusy() {
+  return Date.now() < mcpBusyUntil;
+}
+
+function markMcpBusy(ms = 45_000) {
+  mcpBusyUntil = Math.max(mcpBusyUntil, Date.now() + ms);
+}
 
 function readLocalStorage<T>(key: string, fallback: T): T {
   if (typeof localStorage === 'undefined') return fallback;
@@ -21,51 +41,91 @@ function readLocalStorage<T>(key: string, fallback: T): T {
   }
 }
 
+function readLastHourBucket(): string | null {
+  if (typeof localStorage === 'undefined') return null;
+  return localStorage.getItem(HOURLY_CLAIM_BUCKET_KEY);
+}
+
+function writeLastHourBucket(bucket: string) {
+  if (typeof localStorage === 'undefined') return;
+  localStorage.setItem(HOURLY_CLAIM_BUCKET_KEY, bucket);
+}
+
+export { fetchEpicServerTimeMs };
+
 async function claimLlamasForAll(accounts: AccountData[], { logEmpty = true } = {}) {
   let totalOpened = 0;
+  const allReceived: GrantedItem[] = [];
+  let errorCount = 0;
+  let lastErrorDetail = '';
+  const { claimFreeAndOptionalSurvivorBuys } = await import('$lib/modules/stw-auto-llama');
 
-  await Promise.allSettled(
-    accounts.map(async (account) => {
+  markMcpBusy();
+
+  // Sequential — parallel PopulatePrerolledOffers across accounts trips Epic MCP 500s.
+  await mapPool(
+    accounts,
+    async (account) => {
       try {
-        const populateResult = await composeMCP<FullQueryProfile<'campaign'>>(
-          account,
-          'PopulatePrerolledOffers',
-          'campaign',
-          {}
-        );
+        const result = await claimFreeAndOptionalSurvivorBuys(account);
+        const count = result.opened + result.bought;
+        totalOpened += count;
+        allReceived.push(...result.received);
 
-        const profile = populateResult.profileChanges[0].profile;
-        const cardPackIds = Object.entries(profile.items)
-          .filter(([, item]) => item.templateId.startsWith('CardPack:'))
-          .map(([id]) => id);
-
-        if (cardPackIds.length > 0) {
-          await composeMCP(account, 'OpenCardPackBatch', 'campaign', { cardPackItemIds: cardPackIds });
-          totalOpened += cardPackIds.length;
-          activityLog.add(
-            'llama',
-            get(t)('activityLog.llamasClaimed', { count: cardPackIds.length }),
-            account.displayName
-          );
+        if (count > 0) {
+          await notify('llama', get(t)('activityLog.llamasClaimed', { count }), {
+            title: get(t)('activityLog.llamasTitle'),
+            account: account.displayName,
+            items: result.received,
+            historyOnly: true
+          });
         } else if (logEmpty) {
-          // Only log "none available" on explicit runs to avoid spamming the
-          // activity log on every scheduled hourly check.
-          activityLog.add('info', get(t)('activityLog.llamasNone'), account.displayName);
+          await notify('info', get(t)('activityLog.llamasNone'), {
+            account: account.displayName,
+            historyOnly: true
+          });
         }
       } catch (error) {
+        errorCount++;
+        lastErrorDetail = getErrorDetail(error);
         logger.error('Failed to claim llamas', { accountId: account.accountId, error });
-        activityLog.add(
-          'error',
-          get(t)('activityLog.llamasError', { detail: getErrorDetail(error) }),
-          account.displayName
-        );
+        await notify('error', get(t)('activityLog.llamasError', { detail: lastErrorDetail }), {
+          account: account.displayName,
+          historyOnly: true
+        });
       }
-    })
+    },
+    1
   );
 
   if (totalOpened > 0) {
-    toast.success(get(t)('freeLlamas.claimed', { count: totalOpened }));
+    await notify(
+      'llama',
+      get(t)('activityLog.llamasClaimedSummary', {
+        count: totalOpened,
+        accounts: accounts.length
+      }),
+      {
+        title: get(t)('activityLog.llamasTitle'),
+        items: allReceived,
+        skipHistory: true
+      }
+    );
+  } else if (errorCount > 0) {
+    await notify(
+      'error',
+      get(t)('activityLog.llamasErrorSummary', {
+        count: errorCount,
+        detail: lastErrorDetail
+      }),
+      {
+        title: get(t)('activityLog.llamasTitle'),
+        skipHistory: true
+      }
+    );
   }
+
+  return totalOpened;
 }
 
 function questName(templateKey: string, locale: Locale): string {
@@ -81,9 +141,11 @@ async function autoRerollQuestsForAll(accounts: AccountData[]) {
   if (blacklist.size === 0) return;
 
   const locale = get(language);
+  markMcpBusy();
 
-  await Promise.allSettled(
-    accounts.map(async (account) => {
+  await mapPool(
+    accounts,
+    async (account) => {
       try {
         const campaignProfile = await clientQuestLogin(account, 'campaign');
         const initialProfile = campaignProfile.profileChanges[0].profile;
@@ -127,26 +189,32 @@ async function autoRerollQuestsForAll(accounts: AccountData[]) {
             activityLog.add(
               'quest',
               get(t)('activityLog.questRerolledDetail', { old: oldName, new: newName }),
-              account.displayName
+              account.displayName,
+              { historyOnly: true }
             );
           } catch (error) {
             logger.warn('Failed to auto-reroll quest', { accountId: account.accountId, error });
             activityLog.add(
               'error',
               get(t)('activityLog.questError', { detail: getErrorDetail(error) }),
-              account.displayName
+              account.displayName,
+              { historyOnly: true }
             );
             break;
           }
         }
 
         if (rerolledCount > 0) {
-          toast.success(get(t)('dailyQuests.rerollDone'));
+          await notify('quest', get(t)('dailyQuests.rerollDone'), {
+            title: get(t)('activityLog.questsTitle'),
+            account: account.displayName
+          });
         }
       } catch (error) {
         logger.error('Failed to fetch quests for auto-reroll', { accountId: account.accountId, error });
       }
-    })
+    },
+    1
   );
 }
 
@@ -160,22 +228,20 @@ export async function runStartupActions() {
 
   const actions: Promise<void>[] = [];
 
-  if (shouldClaimLlamas) actions.push(claimLlamasForAll(accounts));
+  if (shouldClaimLlamas) {
+    actions.push(
+      claimLlamasForAll(accounts).then(async () => {
+        const serverMs = await fetchEpicServerTimeMs(accounts);
+        if (serverMs != null) writeLastHourBucket(utcHourBucket(serverMs));
+      })
+    );
+  }
   if (shouldAutoReroll) actions.push(autoRerollQuestsForAll(accounts));
 
   await Promise.allSettled(actions);
 }
 
 let llamaHourlyTimeout: ReturnType<typeof setTimeout> | null = null;
-
-/** Milliseconds from now until the next UTC hour boundary (:00). */
-function msUntilNextUtcHour(): number {
-  const now = new Date();
-  const next = new Date(
-    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours() + 1, 0, 0, 0)
-  );
-  return next.getTime() - now.getTime();
-}
 
 /**
  * Runs the hourly background pass across every connected account: claims free
@@ -190,41 +256,52 @@ async function runScheduledHourlyTasks() {
   if (!accounts.length) return;
 
   try {
+    const serverMs = await fetchEpicServerTimeMs(accounts);
+    if (serverMs == null) {
+      logger.warn('Skipping hourly llama claim — no Epic serverTime available');
+      return;
+    }
+
+    const bucket = utcHourBucket(serverMs);
+    if (!shouldRunHourlyClaim(readLastHourBucket(), bucket)) return;
+
     await claimLlamasForAll(accounts, { logEmpty: false });
+    writeLastHourBucket(bucket);
   } catch (error) {
     logger.error('Scheduled hourly tasks failed', { error });
   }
 }
 
 /**
- * Schedules free-llama auto-claim on each UTC hour (:00), for every connected
- * account when `autoClaimLlamas` is enabled. Safe to call multiple times; only
- * one timeout chain is ever active.
+ * Schedules free-llama auto-claim on each Epic UTC hour (:00), using MCP
+ * `serverTime` — not the PC clock. Safe to call multiple times; only one
+ * timeout chain is ever active.
  */
 export function startLlamaAutoClaimScheduler() {
   if (llamaHourlyTimeout) return;
 
-  const scheduleNext = () => {
-    // Small buffer after the hour so Epic's prerolls are already live.
-    const delay = msUntilNextUtcHour() + 5_000;
+  const scheduleNext = async () => {
+    const { accounts } = accountStore.get();
+    const serverMs = accounts.length ? await fetchEpicServerTimeMs(accounts) : null;
+    // Fallback delay only used when no account can answer — still ~1h, not "local hour".
+    const delay = serverMs != null ? msUntilNextUtcHour(serverMs) : 60 * 60_000;
+
     llamaHourlyTimeout = setTimeout(async () => {
       await runScheduledHourlyTasks();
-      scheduleNext();
+      void scheduleNext();
     }, delay);
   };
 
-  scheduleNext();
+  void scheduleNext();
 }
 
 let questRerollTimeout: ReturnType<typeof setTimeout> | null = null;
 
-/** Milliseconds from now until the next 00:00 UTC (the STW daily quest reset). */
-function msUntilNextUtcMidnight(): number {
-  const now = new Date();
-  const next = new Date(
-    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1, 0, 0, 0, 0)
-  );
-  return next.getTime() - now.getTime();
+/** Milliseconds from Epic server time until the next 00:00 UTC (STW daily reset). */
+function msUntilNextUtcMidnightFromServer(serverMs: number): number {
+  const d = new Date(serverMs);
+  const next = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + 1, 0, 0, 0, 0);
+  return Math.max(1_000, next - serverMs + 60_000);
 }
 
 async function runScheduledQuestReroll() {
@@ -241,21 +318,24 @@ async function runScheduledQuestReroll() {
 }
 
 /**
- * Schedules the daily quest auto-reroll to run right after the STW daily reset
- * (00:00 UTC), then every 24 hours. Only quests the user marked for replacement
+ * Schedules the daily quest auto-reroll right after the STW daily reset
+ * (00:00 UTC on Epic server time). Only quests the user marked for replacement
  * are rerolled. Safe to call multiple times; only one timer chain is active.
  */
 export function startDailyQuestRerollScheduler() {
   if (questRerollTimeout) return;
 
-  const scheduleNext = () => {
-    // A small buffer after midnight so the new daily quests are already live.
-    const delay = msUntilNextUtcMidnight() + 60_000;
+  const scheduleNext = async () => {
+    const { accounts } = accountStore.get();
+    const serverMs = accounts.length ? await fetchEpicServerTimeMs(accounts) : null;
+    const delay =
+      serverMs != null ? msUntilNextUtcMidnightFromServer(serverMs) : 24 * 60 * 60_000;
+
     questRerollTimeout = setTimeout(async () => {
       await runScheduledQuestReroll();
-      scheduleNext();
+      void scheduleNext();
     }, delay);
   };
 
-  scheduleNext();
+  void scheduleNext();
 }

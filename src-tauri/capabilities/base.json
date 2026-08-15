@@ -8,6 +8,7 @@
 		"opener:default",
 		"fs:default",
 		"fs:allow-remove",
+		"fs:allow-mkdir",
 		{
 			"identifier": "http:default",
 			"allow": [
@@ -64,6 +65,12 @@
 				},
 				{
 					"url": "https://ucs-images.fortnite.com/*"
+				},
+				{
+					"url": "https://store.steampowered.com"
+				},
+				{
+					"url": "https://store.steampowered.com/*"
 				}
 			]
 		},

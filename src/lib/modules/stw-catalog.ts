@@ -3,6 +3,7 @@ import { storefrontService } from '$lib/http';
 import { getAuthedKy } from '$lib/modules/auth-session';
 import { openCardPacks } from '$lib/modules/free-llamas';
 import { composeMCP } from '$lib/modules/mcp';
+import { exhaustedUntil, pruneExhausted } from '$lib/modules/stw-purchase-window';
 import type { Locale } from '$lib/paraglide/runtime';
 import { extractGrantedItems, type GrantedItem } from '$lib/utils/mcp-loot';
 import { localizedOfferTitle } from '$lib/utils/stw-item-locale';
@@ -344,35 +345,32 @@ function readCurrencyBalances(profile: CampaignProfile) {
   return balances;
 }
 
-// ponytail: bridge Epic fulfillment key-drift until profile match is solid; wiped on catalog rotation
-type ExhaustedBucket = { expiration: string; ids: string[] };
-
+// ponytail: bridge Epic fulfillment key-drift until profile match is solid; offerId -> hide until (epoch ms)
 function exhaustedStorageKey(accountId: string) {
   return `dozamigos.stwExhausted.${accountId}`;
 }
 
-function readExhaustedOffers(accountId: string, expiration: string): Set<string> {
+function readExhaustedBucket(accountId: string): Record<string, number> {
   try {
     const raw = localStorage.getItem(exhaustedStorageKey(accountId));
-    if (!raw) return new Set();
-    const bucket = JSON.parse(raw) as ExhaustedBucket;
-    if (bucket.expiration !== expiration) return new Set();
-    return new Set(bucket.ids);
+    return raw ? pruneExhausted(JSON.parse(raw), Date.now()) : {};
   } catch {
-    return new Set();
+    return {};
   }
 }
 
-/** Remember an offer as bought for this catalog rotation (survives refresh). */
-export function rememberExhaustedStwOffer(accountId: string, expiration: string, offerId: string) {
-  if (!accountId || !expiration || !offerId) return;
+/** Remember an offer as bought until its purchase limit resets (survives refresh and llama rotation). */
+export function rememberExhaustedStwOffer(accountId: string, expiration: string, offer: StwStoreOffer) {
+  if (!accountId || !offer.offerId) return;
+
+  const now = Date.now();
+  const until = exhaustedUntil(offer.limit.period, expiration, now);
+  if (until <= now) return;
+
   try {
-    const key = exhaustedStorageKey(accountId);
-    const raw = localStorage.getItem(key);
-    let bucket: ExhaustedBucket = raw ? (JSON.parse(raw) as ExhaustedBucket) : { expiration, ids: [] };
-    if (bucket.expiration !== expiration) bucket = { expiration, ids: [] };
-    if (!bucket.ids.includes(offerId)) bucket.ids.push(offerId);
-    localStorage.setItem(key, JSON.stringify(bucket));
+    const bucket = readExhaustedBucket(accountId);
+    bucket[offer.offerId] = until;
+    localStorage.setItem(exhaustedStorageKey(accountId), JSON.stringify(bucket));
   } catch {
     // ignore quota / private mode
   }
@@ -394,7 +392,7 @@ export async function fetchStwStore(
     .json();
 
   const owned = buildOwnedState(campaign);
-  const exhausted = readExhaustedOffers(account.accountId, catalog.expiration);
+  const exhausted = new Set(Object.keys(readExhaustedBucket(account.accountId)));
 
   const sections: StwStoreSection[] = [];
 

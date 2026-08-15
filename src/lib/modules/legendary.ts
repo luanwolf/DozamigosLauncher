@@ -7,7 +7,7 @@ import { legendaryService } from '$lib/http';
 import { getChildLogger } from '$lib/logger';
 import { getCachedToken } from '$lib/modules/auth-session';
 import { getExchangeCodeUsingAccessToken } from '$lib/modules/authentication';
-import { dataDirectory } from '$lib/storage/file-store';
+import { getDataDirectory } from '$lib/storage/file-store';
 import { ownedAppsCache } from '$lib/stores';
 import { runLegendary, launchApp as tauriLaunchApp } from '$lib/tauri';
 import type { AccountData } from '$types/account';
@@ -22,7 +22,17 @@ import type {
 } from '$types/legendary';
 
 const logger = getChildLogger('Legendary');
-export const configPath = await path.join(dataDirectory, dev ? 'legendary-dev' : 'legendary');
+let cachedConfigPath: string | null = null;
+
+async function getConfigPath() {
+  if (!cachedConfigPath) {
+    cachedConfigPath = await path.join(await getDataDirectory(), dev ? 'legendary-dev' : 'legendary');
+  }
+  return cachedConfigPath;
+}
+
+export { getConfigPath };
+
 let legendaryAccountId: string | undefined;
 
 type ExecuteResult<T = any> = {
@@ -34,7 +44,7 @@ type ExecuteResult<T = any> = {
 
 async function executeLegendary<T>(args: string[]): Promise<ExecuteResult<T>> {
   try {
-    const result = await runLegendary({ configPath, args });
+    const result = await runLegendary({ configPath: await getConfigPath(), args });
 
     logger.debug('Command executed', {
       args,
@@ -87,10 +97,11 @@ export async function logoutLegendary(): Promise<void> {
  */
 export async function clearCatalogCache(): Promise<void> {
   const targets = ['assets.json', 'user.json', 'metadata', 'tmp'];
+  const base = await getConfigPath();
 
   await Promise.all(
     targets.map(async (name) => {
-      const target = await path.join(configPath, name);
+      const target = await path.join(base, name);
       try {
         if (await exists(target)) {
           await remove(target, { recursive: true });
@@ -123,7 +134,7 @@ export async function getLegendaryAccount(): Promise<string | null> {
   }
 
   try {
-    const userConfig = await path.join(configPath, 'user.json');
+    const userConfig = await path.join(await getConfigPath(), 'user.json');
     const file = await readTextFile(userConfig);
     const data: EpicOAuthData = JSON.parse(file);
     if (!data.account_id) return null;

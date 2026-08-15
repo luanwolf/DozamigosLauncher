@@ -7,10 +7,16 @@
   "confirm": "Confirmar",
   "loading": "Carregando...",
   "updater": {
+    "title": "Atualização disponível",
     "available": "Nova versão {version} encontrada.",
     "downloading": "Baixando atualização {version}… {percent}%",
     "installing": "Instalando atualização {version}…",
-    "failed": "Não foi possível atualizar automaticamente."
+    "ready": "Atualização {version} pronta. Reinicie para aplicar.",
+    "updateNow": "Atualizar agora",
+    "downloadBackground": "Baixar em segundo plano",
+    "restartNow": "Reiniciar agora",
+    "later": "Depois",
+    "failed": "Não foi possível verificar a atualização."
   },
   "scrollToTop": "Voltar ao topo",
   "vbucks": "V-Bucks",
@@ -131,10 +137,22 @@
     "sections": {
       "accountDetails": "Detalhes da conta",
       "profile": "Perfil",
+      "customization": "Apelido e tags",
       "redeem": "Resgatar códigos",
       "authentication": "Autenticação",
       "epic": "Acesso Epic",
       "friends": "Amigos"
+    },
+    "customization": {
+      "alias": "Apelido no launcher",
+      "aliasPlaceholder": "Ex.: Main, Alt 1",
+      "aliasHint": "Só aparece no launcher — não muda o nome na Epic.",
+      "tags": "Tags",
+      "tagsPlaceholder": "Digite e aperte Enter",
+      "tagsHint": "Use tags para agrupar contas nas ferramentas em massa.",
+      "saved": "Apelido e tags salvos",
+      "save": "Salvar",
+      "stwNews": "Abrir perfil no STW News"
     },
     "profile": {
       "accountId": "ID da conta",
@@ -224,6 +242,9 @@
     "total": "Total",
     "refresh": "Atualizar",
     "noAccounts": "Nenhuma conta conectada.",
+    "purchased": "Comprados",
+    "earned": "Ganhos",
+    "other": "Outros",
     "loginExpired": "Sessão expirada. Faça login novamente.",
     "unknownError": "Erro desconhecido"
   },
@@ -296,12 +317,121 @@
       "transferMaterials": "Transferir Materiais",
       "invite": "Convidar"
     },
+    "conflictTaxi": "Desligue o Taxi Service nesta conta antes de ativar o Auto-kick.",
     "notifications": {
       "leftBase": {
         "title": "Saiu da base STW",
         "message": "{name}: você saiu automaticamente da base. Volte ao jogo para entrar em uma nova base."
       }
     }
+  },
+  "stwParty": {
+    "page": {
+      "title": "Party",
+      "description": "Expulsar, sair, resgatar e convidar nas contas selecionadas."
+    },
+    "actions": {
+      "kickAll": "Expulsar todos",
+      "leave": "Sair da party",
+      "claim": "Resgatar recompensas",
+      "invite": "Convidar",
+      "promote": "Promover membro"
+    },
+    "inviteLabel": "Jogador para convidar",
+    "invitePlaceholder": "Nome ou ID da conta",
+    "inviteRequired": "Informe um jogador",
+    "playerNotFound": "Jogador não encontrado",
+    "noParty": "Sem party ativa",
+    "notCaptain": "Você não é o capitão",
+    "noMembers": "Nenhum outro membro na party",
+    "kicked": "Expulsou {count} jogador(es)",
+    "left": "Saiu da party",
+    "claimed": "Recompensas resgatadas",
+    "invited": "Convite enviado para {name}",
+    "promoted": "Promoveu {name}",
+    "promoteHint": "Promove o primeiro membro antes de você sair."
+  },
+  "xpBoosts": {
+    "page": {
+      "title": "Boosts de XP",
+      "description": "Gaste boosts pessoais ou envie boosts de teammate."
+    },
+    "amount": "Quantidade",
+    "target": "Alvo (teammate)",
+    "targetPlaceholder": "Nome ou ID",
+    "load": "Carregar boosts",
+    "usePersonal": "Usar pessoais",
+    "useTeammate": "Enviar teammate",
+    "personal": "Pessoais",
+    "teammate": "Teammate",
+    "noneAvailable": "Sem boosts desse tipo",
+    "playerNotFound": "Jogador não encontrado",
+    "used": "Usou {count} boost(s)"
+  },
+  "saveQuests": {
+    "page": {
+      "title": "Missões da campanha",
+      "description": "Veja o progresso das missões da história e resgate as concluídas."
+    },
+    "load": "Carregar missões",
+    "claimCompleted": "Resgatar concluídas",
+    "empty": "Nenhuma missão de campanha ativa",
+    "claimed": "Resgatou {count} missão(ões)",
+    "autoPin": "Fixar Urnas / Mini-Boss automaticamente",
+    "pinned": "Missões fixadas"
+  },
+  "ssdUnlock": {
+    "page": {
+      "title": "Desbloquear SSD",
+      "description": "Resgata recompensas de Storm Shield que já estão prontas no perfil — sem completar a defesa no jogo."
+    },
+    "load": "Procurar recompensas",
+    "unlock": "Desbloquear selecionadas",
+    "empty": "Nenhuma recompensa de SSD pendente encontrada",
+    "warningTitle": "Ação irreversível",
+    "warning": "Isso resgata as recompensas listadas sem você ter feito a defesa. V-Bucks de SSD não entram aqui. Confirme só se souber o que está fazendo.",
+    "confirm": "Entendi, desbloquear",
+    "done": "Desbloqueou {count} recompensa(s)"
+  },
+  "taxiService": {
+    "page": {
+      "title": "Taxi Service",
+      "description": "Contas que aceitam convite de party e saem sozinhas no lobby."
+    },
+    "addCurrent": "Adicionar conta atual",
+    "autoAcceptFriends": "Aceitar pedidos de amizade",
+    "active": "Ativo",
+    "busy": "Ocupado",
+    "conflictAutoKick": "Desligue o Auto-kick nesta conta antes de ativar o Taxi.",
+    "removed": "Taxi removido",
+    "started": "Taxi iniciado"
+  },
+  "matchmakingTrack": {
+    "page": {
+      "title": "Matchmaking Track",
+      "description": "Procura a sessão de um jogador e salva o JSON de matchmaking."
+    },
+    "player": "Jogador",
+    "placeholder": "Nome ou ID",
+    "search": "Buscar sessão",
+    "save": "Salvar arquivo",
+    "notInMission": "Jogador provavelmente não está em missão",
+    "saved": "Arquivo salvo em {path}",
+    "openStwNews": "Abrir no STW News"
+  },
+  "worldInfoVault": {
+    "page": {
+      "title": "World Info",
+      "description": "Salve e importe snapshots da rotação. A tela de alertas continua usando a rotação ao vivo."
+    },
+    "saveCurrent": "Salvar rotação atual",
+    "import": "Importar JSON",
+    "empty": "Nenhum snapshot ainda",
+    "saved": "Snapshot salvo",
+    "deleted": "Snapshot apagado",
+    "delete": "Excluir",
+    "exported": "Snapshot exportado",
+    "invalid": "JSON inválido de World Info"
   },
   "supportCreator": {
     "page": {
@@ -348,9 +478,16 @@
     "claiming": "Resgatando...",
     "claimed": "{count} Lhama(s) resgatada(s)!",
     "openedCount": "{count} Lhama(s) aberta(s)",
+    "boughtCount": "{count} compra(s) seletiva(s)",
     "noneAvailable": "Nenhuma Lhama gratuita disponível no momento",
     "autoClaim": "Resgatar automaticamente",
     "autoClaimDescription": "A cada hora (UTC), varre as contas e resgata o que tiver.",
+    "buySurvivor": "Comprar lhama com survivor lendário/mítico",
+    "buySurvivorDescription": "Só compra se a oferta parecer survivor SR/UR. Nunca gasta V-Bucks.",
+    "currency": "Moeda da compra",
+    "currencyXray": "Fichas Raio-X",
+    "currencyToken": "Token de lhama",
+    "maxBuys": "Máximo de compras por rodada",
     "claimError": "Falha ao resgatar lhamas para esta conta",
     "summaryAccounts": "{count} conta(s)",
     "summaryClaimed": "{count} lhama(s) resgatada(s)"
@@ -819,6 +956,11 @@
       "viewAll": "Ver jogos gratuitos",
       "endsAt": "Termina em {date}"
     },
+    "steamFreeGames": {
+      "kicker": "Grátis na Steam",
+      "free": "Grátis agora",
+      "claim": "Abrir na Steam"
+    },
     "buyVbucks": {
       "open": "Comprar V-Bucks"
     },
@@ -1090,6 +1232,18 @@
         "description": "Mostrar alertas nativos como Dozamigos Launcher (lhamas, missões diárias, loja, status do servidor e outras automações).",
         "denied": "O Windows bloqueou as notificações. Ative nas configurações do sistema."
       },
+      "showXrayTickets": {
+        "title": "Tickets de Raio-X na barra",
+        "description": "Mostra o saldo de Tickets de Raio-X ao lado dos V-Bucks. Na loja STW o saldo continua visível."
+      },
+      "showStwGold": {
+        "title": "Ouro na barra",
+        "description": "Mostra o saldo de Ouro ao lado dos V-Bucks. Na loja STW o saldo continua visível."
+      },
+      "steamFreeGamesNotifications": {
+        "title": "Jogos grátis da Steam",
+        "description": "Avisa quando surgir uma promoção com 100% de desconto na Steam."
+      },
       "checkForUpdates": {
         "title": "Verificar Atualizações"
       },
@@ -1142,7 +1296,16 @@
     "failedToLaunch": "Não foi possível iniciar o Fortnite",
     "stopping": "Encerrando o Fortnite...",
     "stopped": "Fortnite encerrado com sucesso",
-    "failedToStop": "Não foi possível encerrar o Fortnite"
+    "failedToStop": "Não foi possível encerrar o Fortnite",
+    "profile": {
+      "title": "Iniciar Fortnite",
+      "description": "Escolha a conta, ajuste o perfil visual e o que aparece na barra.",
+      "account": "Conta",
+      "headerBalances": "Mostrar na barra",
+      "steamNotifications": "Avisar jogos grátis da Steam",
+      "steamNotificationsHint": "Notifica quando aparecer promoção com 100% de desconto.",
+      "confirm": "Iniciar"
+    }
   },
   "accountManager": {
     "noAccount": "Sem conta",
@@ -1175,14 +1338,14 @@
         "openWebsite": "Abrir Site da Epic Games"
       },
       "exchangeCode": {
-        "title": "Código de Autenticação",
-        "description": "Entre com um código único da Epic Games.",
+        "title": "Código de Autorização",
+        "description": "Entre com um authorization code da Epic Games.",
         "instructions": "Abra a página da Epic, faça login e copie o código exibido (32 caracteres). Cole aqui em poucos minutos.",
         "inputPlaceholder": "Cole o código da Epic aqui",
         "openLink": "Abrir página de login da Epic",
         "copyLink": "Copiar link pro amigo",
         "linkCopied": "Link de login copiado",
-        "shareHint": "Pode enviar o link: cada pessoa faz login na própria conta Epic e cola o código dela aqui. Não envie o seu código . ele só funciona uma vez e entra na sua conta."
+        "shareHint": "Pode enviar o link: cada pessoa faz login na própria conta Epic e cola o código dela aqui. Não envie o seu código — ele só funciona uma vez e entra na sua conta."
       }
     },
     "failedToLogin": "Não foi possível fazer login",
@@ -1252,7 +1415,14 @@
     "statusBrowserOnly": "Resgatar na Epic (link)",
     "statusError": "Erro",
     "autoClaim": "Resgatar automaticamente ao abrir",
-    "autoClaimDescription": "Resgata jogos gratuitos automaticamente ao carregar a página"
+    "autoClaimDescription": "Resgata jogos gratuitos automaticamente ao carregar a página",
+    "steam": {
+      "title": "Grátis na Steam",
+      "description": "Promoções com 100% de desconto. O resgate é feito na própria Steam.",
+      "empty": "Nenhum jogo com 100% de desconto agora.",
+      "loadFailed": "Não foi possível consultar as promoções da Steam.",
+      "open": "Abrir na Steam"
+    }
   },
   "library": {
     "page": {
@@ -1385,6 +1555,15 @@
       "message": "{count} lhama(s) gratuita(s) disponível(is)",
       "messageWithAccount": "{count} lhama(s) em {account}"
     },
+    "steamFreeGames": {
+      "title": "Grátis na Steam",
+      "message": "{count} jogo(s) com 100% de desconto: {names}"
+    },
+    "epicFreeGames": {
+      "title": "Grátis na Epic",
+      "message": "{count} jogo(s) grátis na Epic: {names}"
+    },
+    "viewGame": "Ver jogo",
     "dailyQuests": {
       "title": "Missões Diárias",
       "message": "As missões diárias do STW resetaram . novas missões disponíveis"
@@ -1425,9 +1604,15 @@
     "empty": "Nenhuma atividade ainda",
     "markAllRead": "Marcar tudo como lido",
     "clear": "Limpar histórico",
+    "dismiss": "Dispensar",
+    "moreItems": "+{count} item(ns)",
+    "llamasTitle": "Lhamas",
     "llamasClaimed": "{count} Lhama(s) resgatada(s)",
+    "llamasClaimedSummary": "{count} lhama(s) resgatada(s) em {accounts} conta(s)",
     "llamasNone": "Nenhuma Lhama disponível no momento",
     "llamasError": "Erro ao resgatar lhamas: {detail}",
+    "llamasErrorSummary": "Falha ao resgatar lhamas em {count} conta(s): {detail}",
+    "questsTitle": "Missões",
     "gameClaimed": "{title} resgatado com sucesso",
     "gameAlreadyOwned": "{title} . você já possui este jogo",
     "gameBrowserOnly": "{title} . use o link da Epic Store para resgatar",

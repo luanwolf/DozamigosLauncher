@@ -1,14 +1,17 @@
 <script lang="ts">
   import BellIcon from '@lucide/svelte/icons/bell';
   import CheckCheckIcon from '@lucide/svelte/icons/check-check';
+  import DownloadIcon from '@lucide/svelte/icons/download';
   import GiftIcon from '@lucide/svelte/icons/gift';
   import RefreshCwIcon from '@lucide/svelte/icons/refresh-cw';
   import TagIcon from '@lucide/svelte/icons/tag';
   import TrashIcon from '@lucide/svelte/icons/trash-2';
   import TriangleAlertIcon from '@lucide/svelte/icons/triangle-alert';
   import { Popover } from 'bits-ui';
+  import { RarityColors } from '$lib/constants/stw/resources';
   import { language, t } from '$lib/i18n';
-  import { activityLog, unreadCount, type ActivityType } from '$lib/stores/activity-log';
+  import { activityLog, unreadCount, type ActivityEntry, type ActivityType } from '$lib/stores/activity-log';
+  import { resolveStwTemplateDisplay } from '$lib/utils/stw-template-display';
   import { Button } from '$components/ui/button';
 
   let open = $state(false);
@@ -17,8 +20,8 @@
     if (open) activityLog.markAllRead();
   });
 
-  function formatTime(date: Date): string {
-    return date.toLocaleTimeString($language, { hour: '2-digit', minute: '2-digit' });
+  function formatTime(iso: string): string {
+    return new Date(iso).toLocaleTimeString($language, { hour: '2-digit', minute: '2-digit' });
   }
 
   function entryIcon(type: ActivityType) {
@@ -29,11 +32,28 @@
         return { Icon: TagIcon, class: 'bg-green-500/15 text-green-500' };
       case 'quest':
         return { Icon: RefreshCwIcon, class: 'bg-blue-500/15 text-blue-500' };
+      case 'update':
+        return { Icon: DownloadIcon, class: 'bg-primary/15 text-primary' };
       case 'error':
         return { Icon: TriangleAlertIcon, class: 'bg-destructive/15 text-destructive' };
       default:
         return { Icon: BellIcon, class: 'bg-muted text-muted-foreground' };
     }
+  }
+
+  function previewItems(entry: ActivityEntry) {
+    if (!entry.items?.length) return [];
+    const totals: Record<string, number> = {};
+    for (const item of entry.items) {
+      totals[item.templateId] = (totals[item.templateId] ?? 0) + item.quantity;
+    }
+    return Object.entries(totals)
+      .slice(0, 4)
+      .map(([templateId, quantity]) => ({
+        templateId,
+        quantity,
+        display: resolveStwTemplateDisplay(templateId, $language)
+      }));
   }
 </script>
 
@@ -57,8 +77,8 @@
 
   <Popover.Portal>
     <Popover.Content
-      align="end"
       class="hud-panel z-[100] flex w-[min(22rem,calc(100vw-1.5rem))] flex-col overflow-hidden p-0 outline-none data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95"
+      align="end"
       side="bottom"
       sideOffset={8}
     >
@@ -104,7 +124,8 @@
           <ul class="hud-list">
             {#each $activityLog as entry (entry.id)}
               {@const icon = entryIcon(entry.type)}
-              <li class="hud-list-item {entry.read ? '' : 'hud-list-item-active'}">
+              {@const items = previewItems(entry)}
+              <li class="hud-list-item" class:hud-list-item-active={!entry.read}>
                 <div
                   class="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full {icon.class}"
                 >
@@ -112,11 +133,31 @@
                 </div>
 
                 <div class="min-w-0 flex-1">
-                  <p class="leading-snug {entry.read ? 'text-muted-foreground' : 'text-foreground'}">
+                  {#if entry.title}
+                    <p class="text-[10px] tracking-wide text-primary uppercase">{entry.title}</p>
+                  {/if}
+                  <p class="leading-snug" class:text-foreground={!entry.read} class:text-muted-foreground={entry.read}>
                     {entry.message}
                   </p>
                   {#if entry.account}
                     <p class="mt-0.5 truncate text-xs text-muted-foreground">{entry.account}</p>
+                  {/if}
+                  {#if items.length}
+                    <div class="mt-1.5 flex flex-wrap gap-1">
+                      {#each items as item (item.templateId)}
+                        {@const rarityColor = RarityColors[item.display.rarity] ?? RarityColors.c}
+                        <div
+                          style="background-color: {rarityColor}18"
+                          class="flex size-8 items-center justify-center border border-border/50"
+                          title="{item.display.name}{item.quantity > 1 ? ` ×${item.quantity}` : ''}"
+                        >
+                          <img class="max-h-6 max-w-6 object-contain" alt="" loading="lazy" src={item.display.imageUrl} />
+                        </div>
+                      {/each}
+                      {#if entry.items && entry.items.length > 4}
+                        <span class="self-center text-[10px] text-muted-foreground">+{entry.items.length - 4}</span>
+                      {/if}
+                    </div>
                   {/if}
                   <p class="mt-1 text-[10px] text-muted-foreground/70 tabular-nums">{formatTime(entry.timestamp)}</p>
                 </div>

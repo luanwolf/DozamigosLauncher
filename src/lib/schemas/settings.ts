@@ -16,6 +16,12 @@ export const appSettingsSchema = z
     debugLogs: z.boolean(),
     /** Native OS toast notifications (Windows, macOS, Linux). */
     windowsNotifications: z.boolean(),
+    /** Show STW X-ray ticket balance next to V-Bucks in the header. */
+    showXrayTickets: z.boolean(),
+    /** Show STW gold balance next to V-Bucks in the header. */
+    showStwGold: z.boolean(),
+    /** Notify when new Steam 100%-off games appear. Off by default. */
+    steamFreeGamesNotifications: z.boolean(),
     /** First-run setup finished (or skipped) — hides the welcome screen. */
     onboardingDone: z.boolean()
   })

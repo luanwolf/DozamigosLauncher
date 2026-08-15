@@ -3,10 +3,10 @@
   import LogOutIcon from '@lucide/svelte/icons/log-out';
   import PlusIcon from '@lucide/svelte/icons/plus';
   import { language, t } from '$lib/i18n';
-  import { accountStore } from '$lib/storage';
+  import { accountStore, settingsStore } from '$lib/storage';
   import { avatarCache } from '$lib/stores';
   import { activeAccountBalances } from '$lib/stores/active-account-balances.svelte';
-  import { cn, handleError } from '$lib/utils';
+  import { cn, getAccountLabel, handleError } from '$lib/utils';
   import PageHeaderChip from '$components/layout/PageHeaderChip.svelte';
   import AccountSwitcherDialog from '$components/modules/account/AccountSwitcherDialog.svelte';
   import LoginModal from '$components/modules/login/LoginModal.svelte';
@@ -20,11 +20,15 @@
 
   const activeAccount = accountStore.getActiveStore(true);
   const hasAccounts = $derived($accountStore.accounts.length > 0);
+  const showXrayTickets = $derived($settingsStore.app?.showXrayTickets !== false);
+  const showStwGold = $derived($settingsStore.app?.showStwGold !== false);
 
   let showLoginModal = $state(false);
 
   const greeting = $derived(
-    $activeAccount ? $t('home.greeting', { name: $activeAccount.displayName }) : $t('home.guestGreeting')
+    $activeAccount
+      ? $t('home.greeting', { name: getAccountLabel($activeAccount) })
+      : $t('home.guestGreeting')
   );
 
   $effect(() => {
@@ -105,35 +109,39 @@
         </span>
       </PageHeaderChip>
 
-      <PageHeaderChip class={cn(embedded && 'hidden h-9 gap-1.5 px-2.5 text-sm min-[900px]:flex')}>
-        <img
-          class="size-5 shrink-0 object-contain"
-          alt={$t('stw.xrayTickets')}
-          src="/resources/currency_xrayllama.png"
-        />
-        <span class="text-sm leading-none font-semibold tabular-nums">
-          {#if activeAccountBalances.xrayTickets !== null}
-            {activeAccountBalances.xrayTickets.toLocaleString($language)}
-          {:else if activeAccountBalances.isLoading}
-            …
-          {:else}
-            -
-          {/if}
-        </span>
-      </PageHeaderChip>
+      {#if showXrayTickets}
+        <PageHeaderChip class={cn(embedded && 'hidden h-9 gap-1.5 px-2.5 text-sm min-[900px]:flex')}>
+          <img
+            class="size-5 shrink-0 object-contain"
+            alt={$t('stw.xrayTickets')}
+            src="/resources/currency_xrayllama.png"
+          />
+          <span class="text-sm leading-none font-semibold tabular-nums">
+            {#if activeAccountBalances.xrayTickets !== null}
+              {activeAccountBalances.xrayTickets.toLocaleString($language)}
+            {:else if activeAccountBalances.isLoading}
+              …
+            {:else}
+              -
+            {/if}
+          </span>
+        </PageHeaderChip>
+      {/if}
 
-      <PageHeaderChip class={cn(embedded && 'hidden h-9 gap-1.5 px-2.5 text-sm min-[900px]:flex')}>
-        <img class="size-5 shrink-0 object-contain" alt={$t('stw.gold')} src="/resources/eventcurrency_scaling.png" />
-        <span class="text-sm leading-none font-semibold tabular-nums">
-          {#if activeAccountBalances.gold !== null}
-            {activeAccountBalances.gold.toLocaleString($language)}
-          {:else if activeAccountBalances.isLoading}
-            …
-          {:else}
-            -
-          {/if}
-        </span>
-      </PageHeaderChip>
+      {#if showStwGold}
+        <PageHeaderChip class={cn(embedded && 'hidden h-9 gap-1.5 px-2.5 text-sm min-[900px]:flex')}>
+          <img class="size-5 shrink-0 object-contain" alt={$t('stw.gold')} src="/resources/eventcurrency_scaling.png" />
+          <span class="text-sm leading-none font-semibold tabular-nums">
+            {#if activeAccountBalances.gold !== null}
+              {activeAccountBalances.gold.toLocaleString($language)}
+            {:else if activeAccountBalances.isLoading}
+              …
+            {:else}
+              -
+            {/if}
+          </span>
+        </PageHeaderChip>
+      {/if}
     {/if}
 
     {#if hasAccounts}

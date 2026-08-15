@@ -5,11 +5,13 @@
   import LoaderCircleIcon from '@lucide/svelte/icons/loader-circle';
   import ShoppingBagIcon from '@lucide/svelte/icons/shopping-bag';
   import TagIcon from '@lucide/svelte/icons/tag';
+  import { openUrl } from '@tauri-apps/plugin-opener';
   import { t } from '$lib/i18n';
   import { BOOK_XP_PER_LEVEL } from '$lib/modules/br-challenges';
   import type { SeasonInfo } from '$lib/modules/fortnite-season';
   import { fetchFreeGames, type FreeGame } from '$lib/modules/free-games';
   import { isFreeGameRedeemed, redeemedFreeGameIds } from '$lib/modules/free-games-owned';
+  import { fetchSteamFreeGames, type SteamFreeGame } from '$lib/modules/steam-free-games';
   import { ownedAppsCache } from '$lib/stores';
   import { Button } from '$components/ui/button';
   import { Progress } from '$components/ui/progress';
@@ -31,6 +33,7 @@
   const { season, battlePass, loading = false, requiresLogin = false }: Props = $props();
 
   let freeGames = $state<FreeGame[]>([]);
+  let steamGames = $state<SteamFreeGame[]>([]);
   let slideIndex = $state(0);
 
   const seasonBanner = $derived(season?.keyArt || null);
@@ -38,11 +41,12 @@
     season?.name || (requiresLogin ? $t('home.season.loginForTimeline') : $t('home.season.title'))
   );
 
-  type Slide = { kind: 'season' } | { kind: 'free'; game: FreeGame };
+  type Slide = { kind: 'season' } | { kind: 'free'; game: FreeGame } | { kind: 'steam'; game: SteamFreeGame };
 
   const slides = $derived.by((): Slide[] => {
     const list: Slide[] = [{ kind: 'season' }];
     for (const game of freeGames) list.push({ kind: 'free', game });
+    for (const game of steamGames) list.push({ kind: 'steam', game });
     return list;
   });
 
@@ -102,6 +106,14 @@
       .catch(() => {
         freeGames = [];
       });
+
+    void fetchSteamFreeGames()
+      .then((games) => {
+        steamGames = games;
+      })
+      .catch(() => {
+        steamGames = [];
+      });
   });
 
   $effect(() => {
@@ -117,8 +129,13 @@
 </script>
 
 <section class="storm-hero border border-border/60">
-  {#each slides as slide, i (slide.kind === 'season' ? 'season' : slide.game.id)}
-    {@const src = slide.kind === 'free' ? slide.game.banner || slide.game.thumbnail || seasonBanner : seasonBanner}
+  {#each slides as slide, i (slide.kind === 'season' ? 'season' : `${slide.kind}-${slide.kind === 'steam' ? slide.game.appId : slide.game.id}`)}
+    {@const src =
+      slide.kind === 'free'
+        ? slide.game.banner || slide.game.thumbnail || seasonBanner
+        : slide.kind === 'steam'
+          ? slide.game.banner || slide.game.image || seasonBanner
+          : seasonBanner}
     {#if src}
       <img
         alt=""
@@ -179,6 +196,25 @@
               {/if}
             </div>
           {/if}
+        {:else if current.kind === 'steam'}
+          <div class="max-w-xl space-y-2">
+            <p class="label-kicker text-primary">{$t('home.steamFreeGames.kicker')}</p>
+            <h1 class="font-display text-3xl leading-none text-foreground sm:text-4xl md:text-5xl">
+              {current.game.title}
+            </h1>
+            <p class="text-sm text-foreground/85 sm:text-base">
+              {#if current.game.originalPrice}
+                <span class="line-through opacity-70">{current.game.originalPrice}</span>
+              {/if}
+              <span class="ml-2 font-semibold text-emerald-400">{$t('home.steamFreeGames.free')}</span>
+            </p>
+            <div class="flex flex-wrap gap-2 pt-2">
+              <Button onclick={() => openUrl(current.kind === 'steam' ? current.game.storeUrl : '')} size="lg">
+                <GiftIcon class="size-4" />
+                {$t('home.steamFreeGames.claim')}
+              </Button>
+            </div>
+          </div>
         {:else}
           <div class="max-w-xl space-y-2">
             <p class="label-kicker text-primary">{$t('home.freeGames.kicker')}</p>

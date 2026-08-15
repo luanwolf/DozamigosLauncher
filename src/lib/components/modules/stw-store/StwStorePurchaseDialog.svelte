@@ -89,7 +89,7 @@
         .flatMap((section) => section.offers)
         .find((candidate) => candidate.offerId === offer.offerId);
       if (nextOffer?.ownedHeroGrant || nextOffer?.limit.remaining === 0) {
-        rememberExhaustedStwOffer($activeAccount.accountId, store.expiration, offer.offerId);
+        rememberExhaustedStwOffer($activeAccount.accountId, store.expiration, offer);
       }
       onStoreUpdate(nextStore);
       toast.success($t('stwStore.purchased'));
@@ -104,7 +104,7 @@
       }
       if (error instanceof EpicAPIError && error.errorCode.includes('purchase_not_allowed')) {
         // Epic already spent the limit — hide immediately even if profile key matching lags.
-        rememberExhaustedStwOffer($activeAccount.accountId, store.expiration, offer.offerId);
+        rememberExhaustedStwOffer($activeAccount.accountId, store.expiration, offer);
         onStoreUpdate(removeOfferFromStore(store, offer.offerId));
         toast.error($t('stwStore.alreadyPurchased'));
         open = false;

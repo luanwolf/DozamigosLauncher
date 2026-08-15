@@ -17,7 +17,10 @@ export class SettingsStore extends FileStore<AllSettings> {
           hideToTray: false,
           openAtStartup: false,
           debugLogs: dev,
-          windowsNotifications: true
+          windowsNotifications: true,
+          showXrayTickets: true,
+          showStwGold: true,
+          steamFreeGamesNotifications: false
         }
       },
       allSettingsSchema

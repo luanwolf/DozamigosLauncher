@@ -5,12 +5,13 @@
   import UserIcon from '@lucide/svelte/icons/user';
   import { t } from '$lib/i18n';
   import { accountStore } from '$lib/storage';
+  import { accountMatchesSearch, getAccountLabel } from '$lib/utils';
   import * as Combobox from '$components/ui/combobox';
   import { Input } from '$components/ui/input';
 
   type Props = {
     autoSelect?: boolean;
-    customList?: { accountId: string; displayName: string }[];
+    customList?: { accountId: string; displayName: string; alias?: string; tags?: string[] }[];
   } & ComboboxRootProps;
 
   let {
@@ -37,12 +38,16 @@
   const items = $derived(
     accountList.map((account) => ({
       value: account.accountId,
-      label: account.displayName
+      label: getAccountLabel(account)
     }))
   );
 
   const filteredItems = $derived(
-    searchValue ? items.filter((item) => item.label.toLowerCase().includes(searchValue.toLowerCase())) : items
+    searchValue
+      ? accountList
+          .filter((account) => accountMatchesSearch(account, searchValue))
+          .map((account) => ({ value: account.accountId, label: getAccountLabel(account) }))
+      : items
   );
 
   const placeholder = $derived.by(() => {
@@ -58,7 +63,8 @@
   });
 
   function getAccountName(accountId: string) {
-    return accountList.find((account) => account.accountId === accountId)?.displayName;
+    const account = accountList.find((entry) => entry.accountId === accountId);
+    return account ? getAccountLabel(account) : accountId;
   }
 
   onMount(() => {

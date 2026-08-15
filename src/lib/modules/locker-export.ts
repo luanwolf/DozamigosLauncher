@@ -13,7 +13,7 @@ import {
 } from '$lib/modules/locker-export-layout';
 import { sortLockerItemsForExport } from '$lib/modules/locker-export-sort';
 import type { LockerOwnedItem } from '$lib/modules/locker-parse';
-import { dataDirectory } from '$lib/storage/file-store';
+import { getDataDirectory } from '$lib/storage/file-store';
 
 export const WEBP_QUALITY = 0.88;
 const NAME_BAND = 34;
@@ -158,7 +158,7 @@ export async function ensureDisplayFont() {
 }
 
 export async function saveExportBlob(blob: Blob, filename: string): Promise<string> {
-  const dir = await path.join(dataDirectory, 'exports');
+  const dir = await path.join(await getDataDirectory(), 'exports');
   await mkdir(dir, { recursive: true });
   const filePath = await path.join(dir, filename);
   await writeFile(filePath, new Uint8Array(await blob.arrayBuffer()));

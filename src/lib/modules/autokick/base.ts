@@ -38,6 +38,11 @@ export async function initAutoKick() {
 export async function addAutoKickAccount(account: AccountData, settings: AutomationAccount['settings'] = {}) {
   if (autoKickAccounts.has(account.accountId)) return;
 
+  const { isTaxiActive } = await import('$lib/modules/taxi-service');
+  if (isTaxiActive(account.accountId)) {
+    throw new Error('TAXI_CONFLICT');
+  }
+
   const data: AutomationAccount = {
     status: 'LOADING',
     account,

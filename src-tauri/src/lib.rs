@@ -84,6 +84,13 @@ pub fn run() {
             .setup(|app| {
                 apply_startup_window_size(app);
 
+                // Show immediately — don't wait for JS. If the webview crashes
+                // before layout onMount, visible:false would leave a blank/InputOnly window.
+                if let Some(window) = app.get_webview_window("main") {
+                    let _ = window.show();
+                    let _ = window.set_focus();
+                }
+
                 #[cfg(windows)]
                 {
                     windows_notifications::init(app.handle());
