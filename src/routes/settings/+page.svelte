@@ -4,6 +4,7 @@
   import { page } from '$app/state';
   import CodeXmlIcon from '@lucide/svelte/icons/code-xml';
   import DownloadIcon from '@lucide/svelte/icons/download';
+  import GlobeIcon from '@lucide/svelte/icons/globe';
   import PaletteIcon from '@lucide/svelte/icons/palette';
   import SettingsIcon from '@lucide/svelte/icons/settings';
   import SlidersVertical from '@lucide/svelte/icons/sliders-vertical';
@@ -19,6 +20,7 @@
   import CustomizationSettings from '$components/modules/settings/categories/CustomizationSettings.svelte';
   import DownloaderSettings from '$components/modules/settings/categories/DownloaderSettings.svelte';
   import GeneralSettings from '$components/modules/settings/categories/GeneralSettings.svelte';
+  import IntegrationsSettings from '$components/modules/settings/categories/IntegrationsSettings.svelte';
   import HudPanel from '$components/ui/hud/HudPanel.svelte';
   import { Separator } from '$components/ui/separator';
   import * as Tabs from '$components/ui/tabs';
@@ -71,6 +73,12 @@
         name: $t('settings.tabs.advanced'),
         icon: CodeXmlIcon,
         component: AdvancedSettings
+      },
+      {
+        id: 'integrations',
+        name: $t('settings.tabs.integrations'),
+        icon: GlobeIcon,
+        component: IntegrationsSettings
       }
     ].filter((x) => !!x)
   );

@@ -30,7 +30,6 @@ import UserXIcon from '@lucide/svelte/icons/user-x';
 import UsersIcon from '@lucide/svelte/icons/users';
 import ZapIcon from '@lucide/svelte/icons/zap';
 import CarTaxiFrontIcon from '@lucide/svelte/icons/car-taxi-front';
-import FlaskConicalIcon from '@lucide/svelte/icons/flask-conical';
 import { platform } from '@tauri-apps/plugin-os';
 import type { LucideIcon } from '$types/lucide';
 
@@ -258,21 +257,6 @@ export const NavZones = Object.freeze([
         id: 'settings',
         href: '/settings',
         icon: SettingsIcon,
-        requiresLogin: false
-      }
-    ]
-  },
-  {
-    id: 'dev',
-    href: '/dev',
-    icon: FlaskConicalIcon,
-    hidden: !import.meta.env.DEV,
-    deck: false,
-    items: [
-      {
-        id: 'devTools',
-        href: '/dev',
-        icon: FlaskConicalIcon,
         requiresLogin: false
       }
     ]

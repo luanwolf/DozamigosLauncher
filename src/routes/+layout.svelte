@@ -17,7 +17,7 @@
   import { fetchAvatars } from '$lib/modules/avatar';
   import { addToQueue, initDownloader } from '$lib/modules/download.svelte';
   import { ensureLibrary, getAppInfo } from '$lib/modules/legendary';
-  import { promptLauncherUpdate, simulateLauncherUpdate } from '$lib/modules/launcher-update-prompt';
+  import { promptLauncherUpdate } from '$lib/modules/launcher-update-prompt';
   import { fetchUsersByIds } from '$lib/modules/lookup';
   import {
     runStartupActions,
@@ -238,18 +238,7 @@
       )
     ]);
 
-    if (import.meta.env.DEV) {
-      // Preview the toast states once per dev session; replay from devtools.
-      (window as unknown as { previewUpdateToast: typeof simulateLauncherUpdate }).previewUpdateToast =
-        simulateLauncherUpdate;
-
-      if (!sessionStorage.getItem('updateToastPreviewed-v6')) {
-        sessionStorage.setItem('updateToastPreviewed-v6', 'true');
-        setTimeout(() => simulateLauncherUpdate('0.1.12'), 800);
-      }
-    } else {
-      void promptLauncherUpdate();
-    }
+    void promptLauncherUpdate();
 
     // Window is hidden by default to prevent white flash on startup
     getCurrentWindow()

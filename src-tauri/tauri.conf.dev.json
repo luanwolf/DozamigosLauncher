@@ -17,10 +17,5 @@
         "backgroundColor": "#1C1A14"
       }
     ]
-  },
-  "bundle": {
-    "icon": [
-      "icons/icon-dev.ico"
-    ]
   }
 }

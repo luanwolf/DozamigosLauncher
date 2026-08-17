@@ -57,7 +57,7 @@ jobs:
           tagName: v__VERSION__
           releaseName: 'v__VERSION__'
           releaseBody: |
-            ## Dozamigos Launcher v0.1.12
+            ## Dozamigos Launcher v0.1.2
 
             Baixe o instalador NSIS abaixo. Versões já instaladas recebem as próximas atualizações automaticamente.
 

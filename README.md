@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/luanwolf/DozamigosLauncher/releases/latest"><img alt="Versão" src="https://img.shields.io/badge/vers%C3%A3o-0.1.12-a855f7"></a>
+  <a href="https://github.com/luanwolf/DozamigosLauncher/releases/latest"><img alt="Versão" src="https://img.shields.io/badge/vers%C3%A3o-0.1.2-a855f7"></a>
   <img alt="Plataforma" src="https://img.shields.io/badge/plataforma-Windows-2b3140">
   <a href="LICENSE"><img alt="Licença" src="https://img.shields.io/badge/licen%C3%A7a-GPL--3.0-2b3140"></a>
 </p>
