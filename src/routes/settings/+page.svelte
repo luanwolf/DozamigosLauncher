@@ -4,7 +4,7 @@
   import { page } from '$app/state';
   import CodeXmlIcon from '@lucide/svelte/icons/code-xml';
   import DownloadIcon from '@lucide/svelte/icons/download';
-  import GlobeIcon from '@lucide/svelte/icons/globe';
+  import PaletteIcon from '@lucide/svelte/icons/palette';
   import SettingsIcon from '@lucide/svelte/icons/settings';
   import SlidersVertical from '@lucide/svelte/icons/sliders-vertical';
   import UsersIcon from '@lucide/svelte/icons/users';
@@ -16,9 +16,9 @@
   import AccountSettings from '$components/modules/settings/categories/AccountSettings.svelte';
   import AdvancedSettings from '$components/modules/settings/categories/AdvancedSettings.svelte';
   import CustomizableMenu from '$components/modules/settings/categories/CustomizableMenu.svelte';
+  import CustomizationSettings from '$components/modules/settings/categories/CustomizationSettings.svelte';
   import DownloaderSettings from '$components/modules/settings/categories/DownloaderSettings.svelte';
   import GeneralSettings from '$components/modules/settings/categories/GeneralSettings.svelte';
-  import IntegrationsSettings from '$components/modules/settings/categories/IntegrationsSettings.svelte';
   import HudPanel from '$components/ui/hud/HudPanel.svelte';
   import { Separator } from '$components/ui/separator';
   import * as Tabs from '$components/ui/tabs';
@@ -29,7 +29,6 @@
     name: string;
     icon: LucideIcon;
     disabled?: boolean;
-    bare?: boolean;
     component: Component;
   };
 
@@ -40,6 +39,13 @@
         name: $t('settings.tabs.general'),
         icon: SettingsIcon,
         component: GeneralSettings
+      },
+      {
+        id: 'customization',
+        name: $t('settings.tabs.customization'),
+        icon: PaletteIcon,
+        disabled: !$accountStore.accounts.length,
+        component: CustomizationSettings
       },
       {
         id: 'accounts',
@@ -65,13 +71,6 @@
         name: $t('settings.tabs.advanced'),
         icon: CodeXmlIcon,
         component: AdvancedSettings
-      },
-      import.meta.env.DEV && {
-        id: 'integrations',
-        name: $t('settings.tabs.integrations'),
-        icon: GlobeIcon,
-        bare: true,
-        component: IntegrationsSettings
       }
     ].filter((x) => !!x)
   );
@@ -88,7 +87,11 @@
   <Tabs.Root class="flex flex-col gap-4" bind:value={tab}>
     <Tabs.List>
       {#each categories as category (category.id)}
-        <Tabs.Trigger class="flex items-center justify-center gap-2" disabled={category.disabled} value={category.id}>
+        <Tabs.Trigger
+          class="font-tagline flex items-center justify-center gap-2 text-sm font-semibold tracking-wide"
+          disabled={category.disabled}
+          value={category.id}
+        >
           <category.icon class="size-4 not-sm:size-5" />
           <span class="not-sm:hidden">
             {category.name}
@@ -101,13 +104,9 @@
 
     {#each categories as category (category.id)}
       <Tabs.Content class="flex-1 overflow-y-auto" value={category.id}>
-        {#if category.bare}
+        <HudPanel>
           <category.component />
-        {:else}
-          <HudPanel>
-            <category.component />
-          </HudPanel>
-        {/if}
+        </HudPanel>
       </Tabs.Content>
     {/each}
   </Tabs.Root>

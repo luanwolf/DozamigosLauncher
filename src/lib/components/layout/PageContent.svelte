@@ -62,7 +62,7 @@
 
       {#if description}
         {#if typeof description === 'string'}
-          <p class="max-w-2xl text-sm text-muted-foreground">{description}</p>
+          <p class="font-tagline max-w-2xl text-sm text-muted-foreground">{description}</p>
         {:else}
           {@render description()}
         {/if}

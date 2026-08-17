@@ -11,6 +11,7 @@ import {
   ZoneModifiers
 } from '$lib/constants/stw/world-info';
 import { ingredients, resources, survivors, survivorsMythicLeads, traps } from '$lib/data';
+import { resolveGenericTemplateBody } from '$lib/utils/stw-generic-names';
 import { baseGameService } from '$lib/http';
 import { getAccessTokenUsingClientCredentials } from '$lib/modules/authentication';
 import { aggregateMissionAlerts } from '$lib/modules/mission-alerts-buckets';
@@ -280,7 +281,9 @@ function parseResource(key: string, quantity: number): ParsedResourceData {
     if (!newKey.includes(id)) continue;
 
     data.imageUrl = `/survivors/unique-leads/${id}.png`;
-    data.name = `${get(RarityNames)[Rarities.Mythic]} Lead`;
+    data.name =
+      resolveGenericTemplateBody(`manager_${id}`, 'pt-br', Rarities.Mythic) ??
+      `${get(RarityNames)[Rarities.Mythic]} Lead Survivor`;
     data.type = 'worker';
 
     return data;

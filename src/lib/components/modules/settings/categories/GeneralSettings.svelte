@@ -164,32 +164,6 @@
     </SettingItem>
 
     <SettingItem
-      description={$t('settings.general.showXrayTickets.description')}
-      labelFor="showXrayTickets"
-      orientation="horizontal"
-      title={$t('settings.general.showXrayTickets.title')}
-    >
-      <Switch
-        id="showXrayTickets"
-        checked={$settingsStore.app?.showXrayTickets ?? true}
-        onCheckedChange={(checked) => handleSettingChange(checked, 'showXrayTickets')}
-      />
-    </SettingItem>
-
-    <SettingItem
-      description={$t('settings.general.showStwGold.description')}
-      labelFor="showStwGold"
-      orientation="horizontal"
-      title={$t('settings.general.showStwGold.title')}
-    >
-      <Switch
-        id="showStwGold"
-        checked={$settingsStore.app?.showStwGold ?? true}
-        onCheckedChange={(checked) => handleSettingChange(checked, 'showStwGold')}
-      />
-    </SettingItem>
-
-    <SettingItem
       description={$t('settings.general.steamFreeGamesNotifications.description')}
       labelFor="steamFreeGamesNotifications"
       orientation="horizontal"

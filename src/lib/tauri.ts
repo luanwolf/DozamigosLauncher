@@ -68,8 +68,8 @@ export type StopAppOptions = {
   appId: string;
 };
 
-// PID
-export type StopAppResult = number;
+/** True when at least one tracked process was actually killed. */
+export type StopAppResult = boolean;
 
 export type UpdateDiscordRPCOptions = {
   details: string;

@@ -17,6 +17,13 @@ const APP_USER_MODEL_ID: &str = if cfg!(debug_assertions) {
     "com.dozamigos-launcher.app"
 };
 
+/// Taskbar grouping follows the AppUserModelID shortcut, so dev must point at its own icon.
+const ICON_FILE: &str = if cfg!(debug_assertions) {
+    "icon-dev.ico"
+} else {
+    "icon.ico"
+};
+
 pub fn init(app: &AppHandle) {
     let _ = register_process_app_id();
     let _ = ensure_start_menu_shortcut(app);
@@ -102,7 +109,7 @@ fn create_shell_link(target: &Path, shortcut: &Path, icon: Option<&Path>) -> win
 
 fn resolve_icon_path(app: &AppHandle) -> Option<PathBuf> {
     if let Ok(resource_dir) = app.path().resource_dir() {
-        let icon = resource_dir.join("icons").join("icon.ico");
+        let icon = resource_dir.join("icons").join(ICON_FILE);
         if icon.is_file() {
             return Some(icon);
         }
@@ -112,15 +119,15 @@ fn resolve_icon_path(app: &AppHandle) -> Option<PathBuf> {
     let exe_dir = exe.parent()?;
 
     for candidate in [
-        exe_dir.join("icons").join("icon.ico"),
-        exe_dir.join("..").join("icons").join("icon.ico"),
+        exe_dir.join("icons").join(ICON_FILE),
+        exe_dir.join("..").join("icons").join(ICON_FILE),
         exe_dir
             .join("..")
             .join("..")
             .join("..")
             .join("icons")
-            .join("icon.ico"),
-        PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("icons").join("icon.ico"),
+            .join(ICON_FILE),
+        PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("icons").join(ICON_FILE),
     ] {
         if candidate.is_file() {
             return Some(candidate);

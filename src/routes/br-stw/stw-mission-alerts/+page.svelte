@@ -298,8 +298,8 @@
   >
     {#snippet description()}
       <div class="flex flex-col gap-1">
-        <p class="text-muted-foreground">{$t('stwMissionAlerts.page.description')}</p>
-        <p class="text-sm text-muted-foreground/80">
+        <p class="font-tagline text-sm text-muted-foreground">{$t('stwMissionAlerts.page.description')}</p>
+        <p class="font-tagline text-sm text-muted-foreground">
           {$t('stwMissionAlerts.page.rotation', { time: formatRemainingDuration(remainingTime) })}
         </p>
       </div>

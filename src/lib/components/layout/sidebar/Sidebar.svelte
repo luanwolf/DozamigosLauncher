@@ -3,10 +3,12 @@
   import { on } from 'svelte/events';
   import { page } from '$app/state';
   import { openUrl } from '@tauri-apps/plugin-opener';
+  import DownloadIcon from '@lucide/svelte/icons/download';
   import appIcon from '$lib/assets/app-icon.png';
   import { NavZones, zoneForPath, type NavZone } from '$lib/constants/sidebar';
   import { t } from '$lib/i18n';
   import { accountStore, settingsStore } from '$lib/storage';
+  import { pendingLauncherUpdate } from '$lib/stores/pending-launcher-update';
   import { cn } from '$lib/utils';
   import { Button } from '$components/ui/button';
   import * as Sidebar from '$components/ui/sidebar';
@@ -70,7 +72,7 @@
               <Tooltip.Trigger>
                 <a
                   class={cn(
-                    'zone-rail-btn flex size-11 items-center justify-center transition-colors',
+                    'zone-rail-btn glitch-target flex size-11 items-center justify-center transition-colors',
                     isActive
                       ? 'bg-primary text-primary-foreground'
                       : 'text-muted-foreground hover:bg-sidebar-accent hover:text-foreground'
@@ -89,11 +91,30 @@
         {/each}
       </nav>
 
-      <div class="border-t border-sidebar-border p-1.5">
+      <div class="flex flex-col gap-1.5 border-t border-sidebar-border p-1.5">
+        {#if $pendingLauncherUpdate}
+          {@const pending = $pendingLauncherUpdate}
+          <Tooltip.Root>
+            <Tooltip.Trigger>
+              <button
+                class="update-pill zone-rail-btn glitch-target flex size-11 items-center justify-center text-[var(--glow-magenta)] transition-colors hover:bg-sidebar-accent"
+                aria-label={$t('updater.pending', { version: pending.version })}
+                onclick={() => pending.reopen()}
+                type="button"
+              >
+                <DownloadIcon class="size-5" />
+              </button>
+            </Tooltip.Trigger>
+            <Tooltip.Content side="right">
+              {$t('updater.pending', { version: pending.version })}
+            </Tooltip.Content>
+          </Tooltip.Root>
+        {/if}
+
         <Tooltip.Root>
           <Tooltip.Trigger>
             <a
-              class="zone-rail-btn flex size-11 items-center justify-center text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-foreground"
+              class="zone-rail-btn glitch-target flex size-11 items-center justify-center text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-foreground"
               aria-label={$t('sidebar.externalLinks.repository')}
               href="https://github.com/luanwolf/DozamigosLauncher"
               onclick={(event) => {
@@ -164,3 +185,29 @@
     {/if}
   </div>
 </Sidebar.Root>
+
+<style>
+  /* Slow breathing so it reads as "pending", not as an error blink. */
+  .update-pill {
+    animation: update-pill-breathe 2.4s ease-in-out infinite;
+  }
+
+  @keyframes update-pill-breathe {
+    0%,
+    100% {
+      opacity: 0.7;
+      filter: drop-shadow(0 0 0 transparent);
+    }
+    50% {
+      opacity: 1;
+      filter: drop-shadow(0 0 6px var(--glow-magenta));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .update-pill {
+      animation: none;
+      opacity: 1;
+    }
+  }
+</style>

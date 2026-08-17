@@ -4,127 +4,163 @@ import { logger } from '$lib/logger';
 import {
   checkForAvailableUpdate,
   downloadAndInstallUpdate,
+  hasPendingRelaunch,
   isUpdateDownloadInProgress,
-  relaunchApp,
-  type AppUpdateStatus
+  relaunchApp
 } from '$lib/modules/app-updater';
-import { floatingNotifications } from '$lib/stores/floating-notifications';
+import { dismissAchievement, pushAchievement, updateAchievement } from '$lib/stores/achievement-toasts';
 import { notify } from '$lib/stores/activity-log';
+import { pendingLauncherUpdate } from '$lib/stores/pending-launcher-update';
 
-const UPDATE_CARD_ID = 'launcher-update';
+const TOAST_ID = 'launcher-update';
 
-function statusMessage(status: AppUpdateStatus) {
-  if (status.phase === 'downloading') {
-    return get(t)('updater.downloading', { version: status.version, percent: status.percent ?? 0 });
-  }
-  if (status.phase === 'installing') {
-    return get(t)('updater.installing', { version: status.version });
-  }
-  if (status.phase === 'ready') {
-    return get(t)('updater.ready', { version: status.version });
-  }
-  return get(t)('updater.available', { version: status.version });
+type UpdateHandle = NonNullable<Awaited<ReturnType<typeof checkForAvailableUpdate>>>;
+
+/** Postponing hides the card but keeps the update reachable from the sidebar. */
+function postpone(version: string, reopen: () => void) {
+  dismissAchievement(TOAST_ID);
+  pendingLauncherUpdate.set({ version, reopen });
 }
 
-function showReadyCard(version: string) {
-  floatingNotifications.push({
-    id: UPDATE_CARD_ID,
-    type: 'update',
-    title: get(t)('updater.title'),
+function showDownloading(version: string, percent = 0) {
+  updateAchievement(TOAST_ID, {
+    title: get(t)('updater.toastTitle'),
+    message: get(t)('updater.downloading', { version, percent }),
+    progress: percent,
+    sticky: true,
+    actions: []
+  });
+}
+
+function showReadyToRestart(version: string, onRestart: () => void | Promise<void>) {
+  pendingLauncherUpdate.set(null);
+
+  pushAchievement({
+    id: TOAST_ID,
+    title: get(t)('updater.toastTitle'),
     message: get(t)('updater.ready', { version }),
     sticky: true,
     actions: [
       {
-        id: 'keep:relaunch',
+        id: 'restart',
         label: get(t)('updater.restartNow'),
-        variant: 'default',
-        onClick: async () => {
-          await relaunchApp();
+        primary: true,
+        onClick: () => {
+          pendingLauncherUpdate.set(null);
+          return onRestart();
         }
       },
       {
         id: 'later',
         label: get(t)('updater.later'),
-        variant: 'outline',
-        onClick: () => {
-          floatingNotifications.dismiss(UPDATE_CARD_ID);
-        }
+        onClick: () => postpone(version, () => showReadyToRestart(version, onRestart))
       }
     ]
   });
 }
 
-async function runDownload(update: NonNullable<Awaited<ReturnType<typeof checkForAvailableUpdate>>>, relaunchWhenDone: boolean) {
-  if (isUpdateDownloadInProgress()) return;
+/** Announces the update with now / background / later. */
+function showAvailable(
+  version: string,
+  onUpdateNow: () => void,
+  onBackground: () => void
+) {
+  const title = get(t)('updater.toastTitle');
+  const message = get(t)('updater.available', { version });
 
-  await downloadAndInstallUpdate(update, (status) => {
-    floatingNotifications.push({
-      id: UPDATE_CARD_ID,
-      type: 'update',
-      title: get(t)('updater.title'),
-      message: statusMessage(status),
-      sticky: true,
-      actions: []
-    });
+  pendingLauncherUpdate.set(null);
+
+  pushAchievement({
+    id: TOAST_ID,
+    title,
+    message,
+    sticky: true,
+    actions: [
+      { id: 'now', label: get(t)('updater.updateNow'), primary: true, onClick: onUpdateNow },
+      { id: 'background', label: get(t)('updater.downloadBackground'), onClick: onBackground },
+      {
+        id: 'later',
+        label: get(t)('updater.later'),
+        onClick: () => postpone(version, () => showAvailable(version, onUpdateNow, onBackground))
+      }
+    ]
   });
 
-  if (relaunchWhenDone) {
-    await relaunchApp();
-    return;
-  }
+  void notify('update', message, { title, id: TOAST_ID, skipNative: true });
+}
 
-  showReadyCard(update.version);
+async function runDownload(update: UpdateHandle, opts: { quiet?: boolean } = {}) {
+  if (!opts.quiet) showDownloading(update.version);
+
+  try {
+    await downloadAndInstallUpdate(update, (status) => {
+      if (opts.quiet) return;
+      if (status.phase === 'downloading') {
+        showDownloading(update.version, status.percent ?? 0);
+      } else if (status.phase === 'installing') {
+        updateAchievement(TOAST_ID, {
+          message: get(t)('updater.installing', { version: update.version }),
+          progress: 100
+        });
+      }
+    });
+
+    showReadyToRestart(update.version, relaunchApp);
+  } catch (error) {
+    logger.error('Launcher update download failed', { error });
+    pushAchievement({
+      id: TOAST_ID,
+      title: get(t)('updater.toastTitle'),
+      message: get(t)('updater.failed'),
+      sticky: false
+    });
+  }
+}
+
+/** Checks for a newer signed build and offers it. Never installs on its own. */
+export async function promptLauncherUpdate() {
+  if (isUpdateDownloadInProgress() || hasPendingRelaunch()) return;
+
+  try {
+    const update = await checkForAvailableUpdate();
+    if (!update) return;
+
+    showAvailable(
+      update.version,
+      () => void runDownload(update),
+      () => {
+        dismissAchievement(TOAST_ID);
+        void runDownload(update, { quiet: true });
+      }
+    );
+  } catch (error) {
+    logger.debug('Launcher update check failed', { error });
+  }
 }
 
 /**
- * Checks for a launcher update and shows a sticky floating prompt.
- * Never downloads until the user picks an action.
+ * Dev-only walkthrough of the same toast states with a fake download, so the UI
+ * can be reviewed without publishing a signed release. Restart is a no-op here.
  */
-export async function promptLauncherUpdate() {
-  try {
-    const update = await checkForAvailableUpdate();
-    if (!update) return false;
+export function simulateLauncherUpdate(version = '9.9.9') {
+  const fakeDownload = (quiet: boolean) => {
+    if (quiet) dismissAchievement(TOAST_ID);
+    else showDownloading(version, 0);
 
-    await notify('update', get(t)('updater.available', { version: update.version }), {
-      id: UPDATE_CARD_ID,
-      title: get(t)('updater.title'),
-      sticky: true,
-      skipNative: false,
-      actions: [
-        {
-          id: 'keep:now',
-          label: get(t)('updater.updateNow'),
-          variant: 'default',
-          onClick: async () => {
-            await runDownload(update, true);
-          }
-        },
-        {
-          id: 'keep:background',
-          label: get(t)('updater.downloadBackground'),
-          variant: 'secondary',
-          onClick: async () => {
-            await runDownload(update, false);
-          }
-        },
-        {
-          id: 'later',
-          label: get(t)('updater.later'),
-          variant: 'outline',
-          onClick: () => {
-            floatingNotifications.dismiss(UPDATE_CARD_ID);
-          }
-        }
-      ]
-    });
+    let percent = 0;
+    const timer = setInterval(() => {
+      percent = Math.min(100, percent + 7);
+      if (!quiet) showDownloading(version, percent);
 
-    return true;
-  } catch (error) {
-    logger.warn('Launcher update check failed', { error });
-    await notify('error', get(t)('updater.failed'), {
-      title: get(t)('updater.title'),
-      skipNative: true
-    });
-    return false;
-  }
+      if (percent < 100) return;
+
+      clearInterval(timer);
+      if (!quiet) {
+        updateAchievement(TOAST_ID, { message: get(t)('updater.installing', { version }) });
+      }
+      setTimeout(() => showReadyToRestart(version, () => dismissAchievement(TOAST_ID)), quiet ? 400 : 700);
+    }, 160);
+  };
+
+  showAvailable(version, () => fakeDownload(false), () => fakeDownload(true));
 }

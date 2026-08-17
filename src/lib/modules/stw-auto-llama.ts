@@ -1,106 +1,33 @@
 import { openCardPacks, type CardPackOffer } from '$lib/modules/free-llamas';
-import { composeMCP, queryProfile } from '$lib/modules/mcp';
-import {
-  currencyMatchesPreference,
-  DEFAULT_AUTO_LLAMA_PREFS,
-  extractPrerollGrantTemplates,
-  isLegendaryOrMythicSurvivorTemplate,
-  llamaContainsLegendaryMythicSurvivor,
-  type AutoLlamaCurrency,
-  type AutoLlamaPrefs
-} from '$lib/modules/stw-auto-llama-parse';
-import { fetchStwStore, purchaseStwOffer } from '$lib/modules/stw-catalog';
+import { composeMCP } from '$lib/modules/mcp';
 import type { AccountData } from '$types/account';
 import type { FullQueryProfile } from '$types/game/mcp';
-import type { StwStoreOffer } from '$types/game/stw-store';
 import type { GrantedItem } from '$lib/utils/mcp-loot';
-
-export type { AutoLlamaCurrency, AutoLlamaPrefs };
-export {
-  currencyMatchesPreference,
-  extractPrerollGrantTemplates,
-  isLegendaryOrMythicSurvivorTemplate,
-  llamaContainsLegendaryMythicSurvivor
-};
 
 export type LlamaClaimResult = {
   opened: number;
-  bought: number;
   received: GrantedItem[];
 };
-
-export function readAutoLlamaPrefs(): AutoLlamaPrefs {
-  if (typeof localStorage === 'undefined') return { ...DEFAULT_AUTO_LLAMA_PREFS };
-  try {
-    const raw = localStorage.getItem('autoLlamaPrefs');
-    if (!raw) return { ...DEFAULT_AUTO_LLAMA_PREFS };
-    return { ...DEFAULT_AUTO_LLAMA_PREFS, ...(JSON.parse(raw) as Partial<AutoLlamaPrefs>) };
-  } catch {
-    return { ...DEFAULT_AUTO_LLAMA_PREFS };
-  }
-}
-
-export function writeAutoLlamaPrefs(prefs: AutoLlamaPrefs) {
-  localStorage.setItem('autoLlamaPrefs', JSON.stringify(prefs));
-}
 
 export async function populatePrerollProfile(account: AccountData) {
   return composeMCP<FullQueryProfile<'campaign'>>(account, 'PopulatePrerolledOffers', 'campaign', {});
 }
 
-export async function claimFreeAndOptionalSurvivorBuys(
-  account: AccountData,
-  prefs = readAutoLlamaPrefs()
-): Promise<LlamaClaimResult> {
+/** Opens only card packs already granted for free. Never purchases store offers. */
+export async function claimFreeLlamas(account: AccountData): Promise<LlamaClaimResult> {
   const populate = await populatePrerollProfile(account);
   const profile = populate.profileChanges[0].profile;
   const freePacks: CardPackOffer[] = Object.entries(profile.items)
     .filter(([, item]) => item.templateId.startsWith('CardPack:'))
     .map(([id, item]) => ({ id, templateId: item.templateId }));
 
-  let opened = 0;
-  let bought = 0;
-  const received: GrantedItem[] = [];
+  if (!freePacks.length) return { opened: 0, received: [] };
 
-  if (freePacks.length) {
-    const loot = await openCardPacks(
+  return {
+    opened: freePacks.length,
+    received: await openCardPacks(
       account,
       freePacks.map((pack) => pack.id)
-    );
-    received.push(...loot);
-    opened = freePacks.length;
-  }
-
-  if (!prefs.buySurvivorLlamas || prefs.maxBuysPerRun < 1) {
-    return { opened, bought, received };
-  }
-
-  const [campaign, commonCore] = await Promise.all([
-    queryProfile(account, 'campaign'),
-    queryProfile(account, 'common_core')
-  ]);
-  const store = await fetchStwStore(account, campaign.profileChanges[0].profile, commonCore.profileChanges[0].profile);
-  const llamaSection = store.sections.find((section) => section.id === 'CardPackStorePreroll');
-  if (!llamaSection) return { opened, bought, received };
-
-  const candidates = llamaSection.offers.filter((offer) => {
-    if (offer.ownedHeroGrant) return false;
-    if (offer.price.finalPrice <= 0) return false;
-    if (!currencyMatchesPreference(offer.price.currencySubType, prefs.currency)) return false;
-    const grants = offer.grants.map((grant) => grant.templateId);
-    // Paid preroll cards often grant the CardPack itself; inspect attributes via store title/grants when possible.
-    return llamaContainsLegendaryMythicSurvivor(grants) || /survivor|worker/i.test(offer.title);
-  });
-
-  for (const offer of candidates.slice(0, prefs.maxBuysPerRun)) {
-    const result = await purchaseAndOpen(account, offer);
-    received.push(...result.received);
-    bought++;
-  }
-
-  return { opened, bought, received };
-}
-
-async function purchaseAndOpen(account: AccountData, offer: StwStoreOffer) {
-  return purchaseStwOffer(account, offer, 1);
+    )
+  };
 }

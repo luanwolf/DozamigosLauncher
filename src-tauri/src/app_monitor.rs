@@ -38,25 +38,37 @@ pub fn emit_app_state_changed(app: &AppHandle, pid: u32, app_id: &str, state: Ap
 }
 
 pub fn stop_app(app_id: &str) -> Result<bool, String> {
-    let mut apps = TRACKED_APPS.lock().unwrap();
-    if let Some(tracked_app) = apps.values_mut().find(|a| a.app_id == app_id) {
-        let pid = tracked_app.pid;
-        let mut system = System::new();
+    let pids: Vec<Pid> = {
+        let apps = TRACKED_APPS
+            .lock()
+            .map_err(|e| format!("Failed to acquire lock: {}", e))?;
 
-        system.refresh_processes_specifics(
-            ProcessesToUpdate::Some(&[Pid::from_u32(pid)]),
-            true,
-            ProcessRefreshKind::nothing(),
-        );
+        apps.values()
+            .filter(|a| a.app_id == app_id)
+            .map(|a| Pid::from_u32(a.pid))
+            .collect()
+    };
 
-        if let Some(process) = system.process(Pid::from_u32(pid)) {
-            process.kill();
-        }
-
-        Ok(true)
-    } else {
-        Err(format!("App with ID '{}' not found", app_id))
+    if pids.is_empty() {
+        return Err(format!("App with ID '{}' not found", app_id));
     }
+
+    let mut system = System::new();
+    system.refresh_processes_specifics(
+        ProcessesToUpdate::Some(&pids),
+        true,
+        ProcessRefreshKind::nothing(),
+    );
+
+    // Fortnite registers twice under one id: the launcher shim from `launch_app`
+    // and the real client the monitor picks up. Killing only the first match
+    // (HashMap order) usually hit the dead shim and left the game running.
+    let killed = pids
+        .iter()
+        .filter_map(|pid| system.process(*pid))
+        .fold(false, |killed, process| process.kill() || killed);
+
+    Ok(killed)
 }
 
 pub fn start_monitoring(app: AppHandle) {

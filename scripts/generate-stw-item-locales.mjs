@@ -344,6 +344,41 @@ const byEnglish = {
     'pt-br': 'Ficha de Lhama do Baú do Troll Lendário',
     tr: 'Efsanevi Trol Stash Laması Jetonu'
   },
+  'Legendary Troll Stash Llama': {
+    de: 'Legendäres Troll-Stash-Lama',
+    es: 'Llama del alijo del trol legendario',
+    fr: 'Lama du butin du troll légendaire',
+    'pt-br': 'Lhama de Esconderijo Lendário dos Trolls',
+    tr: 'Efsanevi Trol Stash Laması'
+  },
+  'Legendary Troll Loot Truck... Llama': {
+    de: 'Legendäres Troll-Loot-Truck-Lama',
+    es: 'Llama camión de botín del trol legendario',
+    fr: 'Lama camion de butin du troll légendaire',
+    'pt-br': 'Lhama-caminhão Lendária de Saque de Trolls',
+    tr: 'Efsanevi Trol Yağma Kamyonu Laması'
+  },
+  'Legendary Troll Loot Truck Llama': {
+    de: 'Legendäres Troll-Loot-Truck-Lama',
+    es: 'Llama camión de botín del trol legendario',
+    fr: 'Lama camion de butin du troll légendaire',
+    'pt-br': 'Lhama-caminhão Lendária de Saque de Trolls',
+    tr: 'Efsanevi Trol Yağma Kamyonu Laması'
+  },
+  'Epic Lead': {
+    de: 'Epischer Anführer',
+    es: 'Líder épico',
+    fr: 'Chef épique',
+    'pt-br': 'Líder Épico',
+    tr: 'Destansı Lider'
+  },
+  'Lead Survivor': {
+    de: 'Anführer-Überlebender',
+    es: 'Superviviente líder',
+    fr: 'Survivant chef',
+    'pt-br': 'Líder Sobrevivente',
+    tr: 'Lider Hayatta Kalan'
+  },
   'Rare Defender Token': {
     de: 'Seltener Verteidiger-Token',
     es: 'Ficha de defensor raro',
@@ -838,6 +873,43 @@ for (const [id, data] of Object.entries(resources)) {
 
 for (const [id, data] of Object.entries(ingredients)) {
   addEntry(id, data.name);
+}
+
+for (const [englishName, loc] of Object.entries(byEnglish)) {
+  locales[`name:${englishName}`] ??= { en: englishName, ...loc };
+}
+
+const GAME_STRINGS_URL =
+  'https://raw.githubusercontent.com/PRO100KatYT/SaveTheWorldClaimer/main/stringlist.json';
+
+function mergeGameName(key, en, pt) {
+  if (!key || !en || !pt) return;
+  const existing = locales[key];
+  if (!existing) locales[key] = { en, 'pt-br': pt };
+  else if (!existing['pt-br']) existing['pt-br'] = pt;
+
+  const nameKey = `name:${en}`;
+  const named = locales[nameKey];
+  if (!named) locales[nameKey] = { en, 'pt-br': pt };
+  else if (!named['pt-br']) named['pt-br'] = pt;
+}
+
+try {
+  const response = await fetch(GAME_STRINGS_URL);
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  const dump = await response.json();
+  const items = dump.Items ?? {};
+  for (const [templateId, item] of Object.entries(items)) {
+    const prefix = String(templateId).split(':')[0];
+    if (!['CardPack', 'Worker', 'Hero', 'Defender', 'AccountResource'].includes(prefix)) continue;
+    const en = item?.name?.en;
+    const pt = item?.name?.['pt-BR'];
+    mergeGameName(String(templateId).replace(/^[^:]+:/, ''), en, pt);
+    mergeGameName(String(templateId), en, pt);
+  }
+  console.log(`Merged game strings from ${GAME_STRINGS_URL}`);
+} catch (error) {
+  console.warn(`Skipped live STW string dump: ${error instanceof Error ? error.message : error}`);
 }
 
 writeFileSync(join(root, 'src/lib/data/stw-item-locales.json'), `${JSON.stringify(locales, null, 2)}\n`);

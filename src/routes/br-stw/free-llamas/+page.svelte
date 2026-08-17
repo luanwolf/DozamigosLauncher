@@ -1,15 +1,8 @@
 <script lang="ts" module>
   import type { BulkState } from '$types/account';
-  import {
-    readAutoLlamaPrefs,
-    writeAutoLlamaPrefs,
-    type AutoLlamaCurrency,
-    type AutoLlamaPrefs
-  } from '$lib/modules/stw-auto-llama';
 
   type LlamaState = BulkState<{
     opened: number;
-    bought: number;
     status: 'claimed' | 'none' | 'error';
   }>;
 
@@ -26,37 +19,32 @@
   let isClaiming = $state(false);
   let llamaState = $state<LlamaState | null>(null);
   let autoClaim = $state(loadFromStorage<boolean>('autoClaimLlamas', false));
-  let prefs = $state<AutoLlamaPrefs>(readAutoLlamaPrefs());
 </script>
 
 <script lang="ts">
   import { untrack } from 'svelte';
   import { toast } from 'svelte-sonner';
   import { HUD_PAGE_WIDTH } from '$lib/constants/page-layout';
-  import { t } from '$lib/i18n';
+  import { language, t } from '$lib/i18n';
   import { logger } from '$lib/logger';
-  import { claimFreeAndOptionalSurvivorBuys } from '$lib/modules/stw-auto-llama';
+  import { claimFreeLlamas } from '$lib/modules/stw-auto-llama';
   import { accountStore } from '$lib/storage';
   import { activityLog } from '$lib/stores/activity-log';
   import { getAccountLabel, getErrorDetail, handleError } from '$lib/utils';
+  import { resolveStwTemplateDisplay } from '$lib/utils/stw-template-display';
   import PageContent from '$components/layout/PageContent.svelte';
   import AccountResultCard from '$components/ui/AccountResultCard.svelte';
   import { Button } from '$components/ui/button';
   import HudPanel from '$components/ui/hud/HudPanel.svelte';
-  import { Input } from '$components/ui/input';
   import { Label } from '$components/ui/label';
   import { Switch } from '$components/ui/switch';
 
   const activeAccount = accountStore.getActiveStore();
+  const llamaHistory = $derived($activityLog.filter((entry) => entry.type === 'llama' && entry.items?.length));
 
   function toggleAutoClaim() {
     autoClaim = !autoClaim;
     localStorage.setItem('autoClaimLlamas', JSON.stringify(autoClaim));
-  }
-
-  function persistPrefs(patch: Partial<AutoLlamaPrefs>) {
-    prefs = { ...prefs, ...patch };
-    writeAutoLlamaPrefs(prefs);
   }
 
   async function claimLlamas() {
@@ -69,16 +57,15 @@
     const state: LlamaState = {
       accountId: account.accountId,
       displayName: getAccountLabel(account),
-      data: { opened: 0, bought: 0, status: 'none' }
+      data: { opened: 0, status: 'none' }
     };
 
     try {
-      const result = await claimFreeAndOptionalSurvivorBuys(account, prefs);
+      const result = await claimFreeLlamas(account);
       state.data.opened = result.opened;
-      state.data.bought = result.bought;
-      state.data.status = result.opened + result.bought > 0 ? 'claimed' : 'none';
+      state.data.status = result.opened > 0 ? 'claimed' : 'none';
 
-      const count = result.opened + result.bought;
+      const count = result.opened;
       if (count > 0) {
         activityLog.add('llama', $t('activityLog.llamasClaimed', { count }), getAccountLabel(account), {
           title: $t('activityLog.llamasTitle'),
@@ -102,8 +89,8 @@
 
     isClaiming = false;
 
-    if (state.data.opened + state.data.bought > 0) {
-      toast.success($t('freeLlamas.claimed', { count: state.data.opened + state.data.bought }));
+    if (state.data.opened > 0) {
+      toast.success($t('freeLlamas.claimed', { count: state.data.opened }));
     } else if (state.data.status === 'none') {
       toast.info($t('freeLlamas.noneAvailable'));
     }
@@ -131,7 +118,7 @@
   title={$t('freeLlamas.page.title')}
 >
   <HudPanel class="flex min-w-0 flex-col">
-    <div class="divide-y divide-border/50 px-4">
+    <div class="px-4">
       <div class="flex items-center justify-between gap-4 py-3">
         <div class="flex min-w-0 flex-col gap-0.5">
           <Label class="cursor-pointer font-medium" for="autoClaimToggle">
@@ -142,50 +129,6 @@
         <Switch id="autoClaimToggle" checked={autoClaim} onCheckedChange={toggleAutoClaim} />
       </div>
 
-      <div class="flex items-center justify-between gap-4 py-3">
-        <div class="flex min-w-0 flex-col gap-0.5">
-          <Label class="cursor-pointer font-medium" for="buySurvivorToggle">
-            {$t('freeLlamas.buySurvivor')}
-          </Label>
-          <span class="text-xs text-muted-foreground">{$t('freeLlamas.buySurvivorDescription')}</span>
-        </div>
-        <Switch
-          id="buySurvivorToggle"
-          checked={prefs.buySurvivorLlamas}
-          onCheckedChange={(checked) => persistPrefs({ buySurvivorLlamas: checked })}
-        />
-      </div>
-
-      <div class="space-y-2 py-3">
-        <Label>{$t('freeLlamas.currency')}</Label>
-        <div class="flex flex-wrap gap-2">
-          <Button
-            onclick={() => persistPrefs({ currency: 'xray' satisfies AutoLlamaCurrency })}
-            size="sm"
-            variant={prefs.currency === 'xray' ? 'default' : 'outline'}
-          >
-            {$t('freeLlamas.currencyXray')}
-          </Button>
-          <Button
-            onclick={() => persistPrefs({ currency: 'token' satisfies AutoLlamaCurrency })}
-            size="sm"
-            variant={prefs.currency === 'token' ? 'default' : 'outline'}
-          >
-            {$t('freeLlamas.currencyToken')}
-          </Button>
-        </div>
-        <div class="space-y-1">
-          <Label for="max-buys">{$t('freeLlamas.maxBuys')}</Label>
-          <Input
-            id="max-buys"
-            min="1"
-            onchange={(e) =>
-              persistPrefs({ maxBuysPerRun: Math.max(1, Number.parseInt(e.currentTarget.value, 10) || 1) })}
-            type="number"
-            value={prefs.maxBuysPerRun}
-          />
-        </div>
-      </div>
     </div>
   </HudPanel>
 
@@ -205,9 +148,6 @@
     <AccountResultCard accountId={state.accountId} displayName={state.displayName}>
       {#if state.data.status === 'claimed'}
         <p class="text-sm font-medium">{$t('freeLlamas.openedCount', { count: state.data.opened })}</p>
-        {#if state.data.bought > 0}
-          <p class="text-sm text-muted-foreground">{$t('freeLlamas.boughtCount', { count: state.data.bought })}</p>
-        {/if}
       {:else if state.data.status === 'none'}
         <p class="text-sm text-muted-foreground">{$t('freeLlamas.noneAvailable')}</p>
       {:else}
@@ -215,4 +155,44 @@
       {/if}
     </AccountResultCard>
   {/if}
+
+  <section class="space-y-3">
+    <div>
+      <h2 class="font-display text-xl text-foreground">{$t('freeLlamas.history.title')}</h2>
+      <p class="text-sm text-muted-foreground">{$t('freeLlamas.history.description')}</p>
+    </div>
+
+    {#if llamaHistory.length}
+      <div class="space-y-3">
+        {#each llamaHistory as entry (entry.id)}
+          <HudPanel class="p-4">
+            <div class="flex flex-wrap items-baseline justify-between gap-2">
+              <div>
+                <p class="font-semibold text-foreground">{entry.message}</p>
+                {#if entry.account}
+                  <p class="text-xs text-muted-foreground">{entry.account}</p>
+                {/if}
+              </div>
+              <time class="text-xs text-muted-foreground" datetime={entry.timestamp}>
+                {new Date(entry.timestamp).toLocaleString($language)}
+              </time>
+            </div>
+
+            <ul class="mt-3 divide-y divide-border/50 border-t border-border/50">
+              {#each entry.items ?? [] as item, index (`${entry.id}-${item.templateId}-${index}`)}
+                {@const display = resolveStwTemplateDisplay(item.templateId, $language)}
+                <li class="flex items-center gap-3 py-2">
+                  <img class="size-9 shrink-0 object-contain" alt="" loading="lazy" src={display.imageUrl} />
+                  <span class="min-w-0 flex-1 truncate text-sm">{display.name}</span>
+                  <span class="text-sm font-semibold tabular-nums">×{item.quantity.toLocaleString($language)}</span>
+                </li>
+              {/each}
+            </ul>
+          </HudPanel>
+        {/each}
+      </div>
+    {:else}
+      <HudPanel class="p-4 text-sm text-muted-foreground">{$t('freeLlamas.history.empty')}</HudPanel>
+    {/if}
+  </section>
 </PageContent>

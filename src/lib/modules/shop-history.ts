@@ -25,3 +25,8 @@ export function isLeavingSoon(item: ShopItem, now = Date.now(), withinMs = 3 * 8
   const out = new Date(item.dates.out).getTime();
   return out > now && out - now <= withinMs;
 }
+
+/** Leaves on the next daily shop rotation (within 24h). */
+export function isLeavingToday(item: ShopItem, now = Date.now()): boolean {
+  return isLeavingSoon(item, now, 86_400_000);
+}

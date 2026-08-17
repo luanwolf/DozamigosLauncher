@@ -5,6 +5,7 @@
   import { language, t } from '$lib/i18n';
   import { accountStore } from '$lib/storage';
   import { createDiscountedStore, createIsOwnedStore } from '$lib/stores';
+  import { isLeavingToday } from '$lib/modules/shop-history';
   import { getShopItemWishlistKey } from '$lib/modules/shop-item-key';
   import { shopWishlistStore, toggleShopWishlistKey } from '$lib/stores/shop-wishlist';
   import type { ShopItem } from '$types/shop';
@@ -22,6 +23,7 @@
   const discountedPrice = $derived(createDiscountedStore($activeAccount?.accountId, item));
   const wishlistKey = $derived(getShopItemWishlistKey(item));
   const isWishlisted = $derived($shopWishlistStore.has(wishlistKey));
+  const leavesToday = $derived(isLeavingToday(item));
 
   const colors: Record<string, string> = { ...ItemColors.rarities, ...ItemColors.series };
 
@@ -70,12 +72,19 @@
     <StarIcon class="size-4" fill={isWishlisted ? 'currentColor' : 'none'} />
   </button>
 
-  {#if item.isBundle}
-    <span
-      class="absolute top-2 left-2 z-10 rounded-sm bg-black/65 px-1.5 py-0.5 text-[10px] font-semibold text-white uppercase"
-    >
-      {$t('itemShop.bundle')}
-    </span>
+  {#if item.isBundle || leavesToday}
+    <div class="absolute top-2 left-2 z-10 flex flex-col items-start gap-1">
+      {#if leavesToday}
+        <span class="rounded-sm bg-black/65 px-1.5 py-0.5 text-[10px] font-semibold text-amber-300 uppercase">
+          {$t('itemShop.onlyToday')}
+        </span>
+      {/if}
+      {#if item.isBundle}
+        <span class="rounded-sm bg-black/65 px-1.5 py-0.5 text-[10px] font-semibold text-white uppercase">
+          {$t('itemShop.bundle')}
+        </span>
+      {/if}
+    </div>
   {/if}
 
   <div class="absolute right-0 bottom-0 left-0 bg-linear-to-t from-black/85 via-black/40 to-transparent px-3 pt-8 pb-3">

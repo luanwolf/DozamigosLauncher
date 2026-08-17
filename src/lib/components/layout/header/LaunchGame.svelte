@@ -1,25 +1,19 @@
 <script lang="ts">
   import { toast } from 'svelte-sonner';
-  import { get } from 'svelte/store';
   import { path } from '@tauri-apps/api';
   import { defaultClient, launcherAppClient2 } from '$lib/constants/clients';
   import { t } from '$lib/i18n';
   import { getCachedToken } from '$lib/modules/auth-session';
   import { getAccessTokenUsingExchangeCode, getExchangeCodeUsingAccessToken } from '$lib/modules/authentication';
   import { getFortniteManifest } from '$lib/modules/manifest';
-  import { allSettingsSchema } from '$lib/schemas/settings';
   import { accountStore, settingsStore } from '$lib/storage';
   import { runningAppIds } from '$lib/stores';
   import { launchApp, stopApp, type LaunchAppOptions } from '$lib/tauri';
-  import { handleError, sleep } from '$lib/utils';
+  import { cn, handleError, sleep } from '$lib/utils';
   import AccountCombobox from '$components/ui/AccountCombobox.svelte';
   import { Button } from '$components/ui/button';
   import * as Dialog from '$components/ui/dialog';
-  import { Input } from '$components/ui/input';
   import { Label } from '$components/ui/label';
-  import { Switch } from '$components/ui/switch';
-  import { TagInput } from '$components/ui/tag-input';
-  import type { AllSettings } from '$types/settings';
 
   const activeAccount = accountStore.getActiveStore(true);
   const fortniteAppId = 'Fortnite';
@@ -41,11 +35,6 @@
   let isStopping = $state(false);
   let dialogOpen = $state(false);
   let selectedAccountId = $state('');
-  let aliasDraft = $state('');
-  let tagsDraft = $state<string[]>([]);
-  let showXrayTickets = $state(true);
-  let showStwGold = $state(true);
-  let steamFreeGamesNotifications = $state(false);
 
   function openLaunchDialog() {
     if (runningAppIds.has(fortniteAppId)) {
@@ -60,51 +49,7 @@
     }
 
     selectedAccountId = account.accountId;
-    aliasDraft = account.alias ?? '';
-    tagsDraft = [...(account.tags ?? [])];
-    showXrayTickets = $settingsStore.app?.showXrayTickets !== false;
-    showStwGold = $settingsStore.app?.showStwGold !== false;
-    steamFreeGamesNotifications = $settingsStore.app?.steamFreeGamesNotifications === true;
     dialogOpen = true;
-  }
-
-  let lastSyncedAccountId = $state('');
-
-  $effect(() => {
-    if (!dialogOpen) {
-      lastSyncedAccountId = '';
-      return;
-    }
-
-    const accountId = selectedAccountId;
-    if (!accountId || accountId === lastSyncedAccountId) return;
-
-    const account = $accountStore.accounts.find((entry) => entry.accountId === accountId);
-    if (!account) return;
-
-    lastSyncedAccountId = accountId;
-    aliasDraft = account.alias ?? '';
-    tagsDraft = [...(account.tags ?? [])];
-  });
-
-  function persistLaunchPreferences() {
-    const next: AllSettings = {
-      ...get(settingsStore),
-      app: {
-        ...get(settingsStore).app,
-        showXrayTickets,
-        showStwGold,
-        steamFreeGamesNotifications
-      }
-    };
-
-    if (!allSettingsSchema.safeParse(next).success) {
-      toast.error($t('settings.invalidValue'));
-      return false;
-    }
-
-    settingsStore.set(() => next);
-    return true;
   }
 
   async function confirmAndLaunch() {
@@ -113,12 +58,6 @@
       return;
     }
 
-    if (!persistLaunchPreferences()) return;
-
-    accountStore.update(selectedAccountId, {
-      alias: aliasDraft.trim() || undefined,
-      tags: tagsDraft.map((tag) => tag.trim()).filter(Boolean)
-    });
     accountStore.setActive(selectedAccountId);
     dialogOpen = false;
     await launchFortnite();
@@ -196,8 +135,9 @@
     const toastId = toast.loading($t('launchGame.stopping'));
 
     try {
-      await stopApp({ appId: fortniteAppId });
-      toast.success($t('launchGame.stopped'), { id: toastId });
+      const killed = await stopApp({ appId: fortniteAppId });
+      if (killed) toast.success($t('launchGame.stopped'), { id: toastId });
+      else toast.error($t('launchGame.failedToStop'), { id: toastId });
     } catch (error) {
       handleError({
         error,
@@ -214,10 +154,13 @@
 </script>
 
 <Button
-  class="launch-cta flex shrink-0 items-center justify-center gap-x-2"
+  class={cn(
+    'launch-cta flex shrink-0 items-center justify-center gap-x-2',
+    runningAppIds.has(fortniteAppId) && 'bg-[var(--glow-magenta)] hover:bg-[oklch(0.66_0.24_340)]'
+  )}
   disabled={!$activeAccount || (isLaunching && !runningAppIds.has(fortniteAppId)) || isStopping}
   onclick={() => (runningAppIds.has(fortniteAppId) ? stopFortnite() : openLaunchDialog())}
-  variant={runningAppIds.has(fortniteAppId) ? 'destructive' : 'default'}
+  variant="default"
 >
   {#if runningAppIds.has(fortniteAppId)}
     <span class="max-[640px]:hidden">{$t('launchGame.stop')}</span>
@@ -239,40 +182,6 @@
       <div class="space-y-1.5">
         <Label>{$t('launchGame.profile.account')}</Label>
         <AccountCombobox type="single" bind:value={selectedAccountId} />
-      </div>
-
-      <div class="space-y-1.5">
-        <Label for="launch-alias">{$t('accountHub.customization.alias')}</Label>
-        <Input
-          id="launch-alias"
-          maxlength={32}
-          placeholder={$t('accountHub.customization.aliasPlaceholder')}
-          bind:value={aliasDraft}
-        />
-      </div>
-
-      <div class="space-y-1.5">
-        <Label>{$t('accountHub.customization.tags')}</Label>
-        <TagInput placeholder={$t('accountHub.customization.tagsPlaceholder')} bind:items={tagsDraft} />
-      </div>
-
-      <div class="space-y-3 rounded-none border border-border/70 p-3">
-        <p class="text-sm font-medium">{$t('launchGame.profile.headerBalances')}</p>
-        <div class="flex items-center justify-between gap-3">
-          <Label for="launch-show-xray">{$t('stw.xrayTickets')}</Label>
-          <Switch id="launch-show-xray" bind:checked={showXrayTickets} />
-        </div>
-        <div class="flex items-center justify-between gap-3">
-          <Label for="launch-show-gold">{$t('stw.gold')}</Label>
-          <Switch id="launch-show-gold" bind:checked={showStwGold} />
-        </div>
-        <div class="flex items-center justify-between gap-3">
-          <div class="min-w-0">
-            <Label for="launch-steam-notify">{$t('launchGame.profile.steamNotifications')}</Label>
-            <p class="text-xs text-muted-foreground">{$t('launchGame.profile.steamNotificationsHint')}</p>
-          </div>
-          <Switch id="launch-steam-notify" bind:checked={steamFreeGamesNotifications} />
-        </div>
       </div>
     </div>
 

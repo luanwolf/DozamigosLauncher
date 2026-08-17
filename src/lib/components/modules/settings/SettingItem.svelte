@@ -16,10 +16,10 @@
 <div
   class={['flex', orientation === 'horizontal' ? 'flex-row items-center justify-between gap-x-4' : 'flex-col gap-y-2']}
 >
-  <Label class="flex flex-col items-start" for={labelFor}>
-    {title}
+  <Label class="flex flex-col items-start gap-1" for={labelFor}>
+    <span class="font-display text-lg leading-none text-foreground">{title}</span>
     {#if description}
-      <p class="text-sm font-normal text-muted-foreground">{description}</p>
+      <span class="font-tagline text-sm font-normal text-muted-foreground">{description}</span>
     {/if}
   </Label>
 

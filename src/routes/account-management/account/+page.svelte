@@ -51,15 +51,13 @@
   import { redeemCode } from '$lib/modules/code';
   import { generateEpicExchangeUrl } from '$lib/modules/epic-web-url';
   import { accountStore } from '$lib/storage';
-  import { getAccountLabel, handleError } from '$lib/utils';
+  import { handleError } from '$lib/utils';
   import PageContent from '$components/layout/PageContent.svelte';
   import PageLoading from '$components/layout/PageLoading.svelte';
   import SectionHeading from '$components/layout/SectionHeading.svelte';
   import AccountFriendsSection from '$components/modules/account/AccountFriendsSection.svelte';
   import AccountResultCard from '$components/ui/AccountResultCard.svelte';
   import { Button } from '$components/ui/button';
-  import { Input } from '$components/ui/input';
-  import { Label } from '$components/ui/label';
   import { TagInput } from '$components/ui/tag-input';
   import * as Select from '$components/ui/select';
   import type { EpicAccountById } from '$types/game/lookup';
@@ -70,8 +68,6 @@
   const activeAccount = accountStore.getActiveStore();
 
   let showSensitiveData = $state(false);
-  let aliasDraft = $state('');
-  let tagsDraft = $state<string[]>([]);
   let isOpeningStwNews = $state(false);
 
   const cachedProfile = $derived(accountProfileCache.get($activeAccount));
@@ -333,22 +329,6 @@
     }
   }
 
-  function saveCustomization() {
-    if (!$activeAccount) return;
-    accountStore.update($activeAccount.accountId, {
-      alias: aliasDraft.trim() || undefined,
-      tags: tagsDraft.map((tag) => tag.trim()).filter(Boolean)
-    });
-    toast.success($t('accountHub.customization.saved'));
-  }
-
-  $effect(() => {
-    const account = $activeAccount;
-    if (!account) return;
-    aliasDraft = account.alias ?? '';
-    tagsDraft = [...(account.tags ?? [])];
-  });
-
   onMount(() => {
     scrollToHash();
   });
@@ -533,31 +513,6 @@
         </div>
       </div>
     {/if}
-  </section>
-
-  <section id="customization" class="scroll-mt-6 space-y-4">
-    <SectionHeading title={$t('accountHub.sections.customization')} />
-    <div class="space-y-3 rounded-none border border-border/70 bg-card p-4">
-      <div class="space-y-1.5">
-        <Label for="account-alias">{$t('accountHub.customization.alias')}</Label>
-        <Input
-          id="account-alias"
-          maxlength={32}
-          placeholder={$t('accountHub.customization.aliasPlaceholder')}
-          bind:value={aliasDraft}
-        />
-        <p class="text-xs text-muted-foreground">{$t('accountHub.customization.aliasHint')}</p>
-      </div>
-      <div class="space-y-1.5">
-        <Label>{$t('accountHub.customization.tags')}</Label>
-        <TagInput placeholder={$t('accountHub.customization.tagsPlaceholder')} bind:items={tagsDraft} />
-        <p class="text-xs text-muted-foreground">{$t('accountHub.customization.tagsHint')}</p>
-      </div>
-      <p class="text-xs text-muted-foreground">
-        Epic: {getAccountLabel({ displayName: $activeAccount.displayName, alias: undefined, accountId: $activeAccount.accountId })}
-      </p>
-      <Button onclick={saveCustomization} size="sm">{$t('accountHub.customization.save')}</Button>
-    </div>
   </section>
 
   <section id="friends" class="scroll-mt-6 space-y-4">

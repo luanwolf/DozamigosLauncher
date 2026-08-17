@@ -2,6 +2,7 @@
   import { SidebarCategories, type SidebarItem } from '$lib/constants/sidebar';
   import { t } from '$lib/i18n';
   import { settingsStore } from '$lib/storage';
+  import SectionHeading from '$components/layout/SectionHeading.svelte';
   import { Label } from '$components/ui/label';
   import { Separator } from '$components/ui/separator';
   import { Switch } from '$components/ui/switch';
@@ -27,10 +28,7 @@
 <div class="space-y-6">
   {#each categories as category (category.id)}
     <div>
-      <h2 class="font-display text-2xl leading-none">
-        {$t(`zones.${category.id}.title`)}
-      </h2>
-      <p class="mt-1 text-sm text-muted-foreground">{$t(`zones.${category.id}.blurb`)}</p>
+      <SectionHeading description={$t(`zones.${category.id}.blurb`)} title={$t(`zones.${category.id}.title`)} />
 
       <Separator class="mb-2 mt-2" orientation="horizontal" />
 

@@ -15,10 +15,9 @@
   import { initAutoKick } from '$lib/modules/autokick/base';
   import { initTaxiService } from '$lib/modules/taxi-service';
   import { fetchAvatars } from '$lib/modules/avatar';
-  import { startBackgroundNotifications } from '$lib/modules/background-notifications';
   import { addToQueue, initDownloader } from '$lib/modules/download.svelte';
-  import { promptLauncherUpdate } from '$lib/modules/launcher-update-prompt';
   import { ensureLibrary, getAppInfo } from '$lib/modules/legendary';
+  import { promptLauncherUpdate, simulateLauncherUpdate } from '$lib/modules/launcher-update-prompt';
   import { fetchUsersByIds } from '$lib/modules/lookup';
   import {
     runStartupActions,
@@ -37,7 +36,7 @@
     updateDiscordRPC
   } from '$lib/tauri';
   import { handleError } from '$lib/utils';
-  import FloatingNotifications from '$components/layout/FloatingNotifications.svelte';
+  import AchievementToasts from '$components/layout/AchievementToasts.svelte';
   import Header from '$components/layout/header/Header.svelte';
   import ScrollToTopButton from '$components/layout/ScrollToTopButton.svelte';
   import Sidebar from '$components/layout/sidebar/Sidebar.svelte';
@@ -214,7 +213,6 @@
     });
 
     Promise.allSettled([
-      promptLauncherUpdate(),
       setupDiscordRPC(),
       initAutoKick(),
       initTaxiService(),
@@ -222,12 +220,7 @@
       setWorldInfoCache(),
       syncAccountNames(),
       autoUpdateApps(),
-      runStartupActions()
-        .then(() => sessionStorage.setItem('startupActionsRan', 'true'))
-        .finally(() => {
-          // Start background polls after startup MCP settles — avoids double PopulatePrerolledOffers.
-          startBackgroundNotifications();
-        }),
+      runStartupActions().then(() => sessionStorage.setItem('startupActionsRan', 'true')),
       Promise.resolve(startLlamaAutoClaimScheduler()),
       Promise.resolve(startDailyQuestRerollScheduler()),
       // We could fetch all avatars using a single account
@@ -245,8 +238,23 @@
       )
     ]);
 
+    if (import.meta.env.DEV) {
+      // Preview the toast states once per dev session; replay from devtools.
+      (window as unknown as { previewUpdateToast: typeof simulateLauncherUpdate }).previewUpdateToast =
+        simulateLauncherUpdate;
+
+      if (!sessionStorage.getItem('updateToastPreviewed-v6')) {
+        sessionStorage.setItem('updateToastPreviewed-v6', 'true');
+        setTimeout(() => simulateLauncherUpdate('0.1.12'), 800);
+      }
+    } else {
+      void promptLauncherUpdate();
+    }
+
     // Window is hidden by default to prevent white flash on startup
-    getCurrentWindow().show();
+    getCurrentWindow()
+      .show()
+      .catch((error) => logger.error('Failed to show main window', { error }));
   });
 </script>
 
@@ -254,14 +262,18 @@
   <Tooltip.Provider>
     <Toaster
       pauseWhenPageIsHidden={true}
-      position="bottom-center"
+      position="top-center"
+      offset="calc(var(--app-header-height) + 0.75rem)"
       toastOptions={{
         duration: 3000,
         unstyled: true,
         classes: {
           toast:
-            'bg-secondary flex items-center px-4 py-4 border border-border/80 rounded-sm gap-3 w-[min(24rem,calc(100vw-1.5rem))] shadow-md',
-          title: 'text-sm'
+            'glitch-toast hud-panel flex items-center gap-3 px-3.5 py-2.5 w-[min(26rem,calc(100vw-1.5rem))] shadow-md',
+          title: 'glitch-toast-title font-display text-base leading-none text-foreground',
+          description: 'text-sm text-muted-foreground',
+          error: 'glitch-toast-error',
+          success: 'glitch-toast-success'
         }
       }}
     >
@@ -270,7 +282,7 @@
       {/snippet}
     </Toaster>
 
-    <FloatingNotifications />
+    <AchievementToasts />
 
     <Sidebar />
 

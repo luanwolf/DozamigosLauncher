@@ -476,7 +476,7 @@ async function runPurchase(
 
   const granted = extractGrantedItems(response);
   const packIds = granted
-    .filter((item) => item.templateId.startsWith('CardPack:') && item.itemGuid)
+    .filter((item) => item.templateId.toLowerCase().startsWith('cardpack:') && item.itemGuid)
     .map((item) => item.itemGuid!);
 
   if (!packIds.length) return granted;

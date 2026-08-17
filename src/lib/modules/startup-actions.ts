@@ -58,7 +58,7 @@ async function claimLlamasForAll(accounts: AccountData[], { logEmpty = true } = 
   const allReceived: GrantedItem[] = [];
   let errorCount = 0;
   let lastErrorDetail = '';
-  const { claimFreeAndOptionalSurvivorBuys } = await import('$lib/modules/stw-auto-llama');
+  const { claimFreeLlamas } = await import('$lib/modules/stw-auto-llama');
 
   markMcpBusy();
 
@@ -67,8 +67,8 @@ async function claimLlamasForAll(accounts: AccountData[], { logEmpty = true } = 
     accounts,
     async (account) => {
       try {
-        const result = await claimFreeAndOptionalSurvivorBuys(account);
-        const count = result.opened + result.bought;
+        const result = await claimFreeLlamas(account);
+        const count = result.opened;
         totalOpened += count;
         allReceived.push(...result.received);
 

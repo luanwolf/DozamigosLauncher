@@ -102,6 +102,7 @@
         items,
         titleLabel: $t('itemShop.page.title'),
         dateLabel: $t('itemShop.exportDate', { date }),
+        onlyTodayLabel: $t('itemShop.onlyToday'),
         locale: $language,
         onProgress: ({ done, total }) => {
           exportPercent = total > 0 ? Math.round((done / total) * 100) : 0;
@@ -360,7 +361,7 @@
 <PageContent center centerClass={HUD_PAGE_WIDTH} title={$t('itemShop.page.title')}>
   {#snippet description()}
     {#if remainingTime}
-      <p class="text-sm text-muted-foreground">
+      <p class="font-tagline text-sm text-muted-foreground">
         {$t('itemShop.nextRotation', { time: formatRemainingDuration(remainingTime) })}
       </p>
     {/if}

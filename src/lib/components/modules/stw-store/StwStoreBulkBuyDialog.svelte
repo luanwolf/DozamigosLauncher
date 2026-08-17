@@ -16,6 +16,7 @@
   } from '$lib/modules/stw-store-bulk';
   import { accountStore } from '$lib/storage';
   import { handleError } from '$lib/utils';
+  import type { GrantedItem } from '$lib/utils/mcp-loot';
   import { Button, buttonVariants } from '$components/ui/button';
   import * as Dialog from '$components/ui/dialog';
   import { Label } from '$components/ui/label';
@@ -28,6 +29,7 @@
     isPurchasing: boolean;
     onStoreUpdate: (store: StwStoreData) => void;
     onPurchasingChange: (value: boolean) => void;
+    onReceived: (items: GrantedItem[]) => void;
     onRefresh: () => void | Promise<void>;
     onClose: () => void;
   };
@@ -38,6 +40,7 @@
     isPurchasing,
     onStoreUpdate,
     onPurchasingChange,
+    onReceived,
     onRefresh,
     onClose
   }: Props = $props();
@@ -82,6 +85,7 @@
     onPurchasingChange(true);
     let working = store;
     let boughtOffers = 0;
+    const received: GrantedItem[] = [];
     const plannedPurchases = summary.purchases;
     let donePurchases = 0;
 
@@ -109,6 +113,7 @@
           onStoreUpdate(working);
           boughtOffers++;
           donePurchases += result.quantity;
+          received.push(...result.received);
         } catch (error) {
           if (error instanceof EpicAPIError && error.errorCode.includes('not_enough')) {
             toast.error($t('stwStore.notEnoughGold'));
@@ -133,6 +138,7 @@
 
       open = false;
       onClose();
+      if (received.length) onReceived(received);
       await onRefresh();
     } finally {
       progress = null;

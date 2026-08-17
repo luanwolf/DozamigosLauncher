@@ -150,6 +150,10 @@
 
   <div class="storm-hero-veil" aria-hidden="true"></div>
 
+  {#key activeIndex}
+    <div class="storm-hero-burst" aria-hidden="true"></div>
+  {/key}
+
   <div class="storm-hero-copy">
     {#key activeIndex}
       <div class="storm-hero-slide w-full">
@@ -166,7 +170,7 @@
                 <h1 class="font-display text-3xl leading-none text-foreground sm:text-4xl md:text-5xl">
                   {seasonTitle}
                 </h1>
-                <p class="text-sm text-foreground/85 sm:text-base">
+                <p class="font-tagline text-sm text-foreground/85 sm:text-base">
                   {hasLiveTimeline ? endsInLabel : $t('home.season.datesUnavailable')}
                 </p>
                 {#if hasLiveTimeline}

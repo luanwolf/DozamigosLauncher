@@ -97,6 +97,15 @@ const WORKER_BASIC: LocalizedLabel = {
   tr: 'Hayatta Kalan'
 };
 
+const WORKER_LEAD: LocalizedLabel = {
+  en: 'Lead Survivor',
+  de: 'Anführer',
+  es: 'Superviviente líder',
+  fr: 'Survivant chef',
+  'pt-br': 'Líder Sobrevivente',
+  tr: 'Lider Hayatta Kalan'
+};
+
 const HERO_BASIC: LocalizedLabel = {
   en: 'Hero',
   de: 'Held',
@@ -130,6 +139,10 @@ export function isInternalTemplateLabel(value: string) {
 
 export function resolveGenericTemplateBody(body: string, locale: Locale, rarity: RarityType): string | null {
   const lower = body.toLowerCase();
+
+  if (lower.includes('manager')) {
+    return withRarity(locale, rarity, label(WORKER_LEAD, locale));
+  }
 
   if (lower.startsWith('workerbasic')) {
     return withRarity(locale, rarity, label(WORKER_BASIC, locale));

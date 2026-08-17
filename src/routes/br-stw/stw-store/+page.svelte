@@ -146,8 +146,39 @@
   center
   centerClass={HUD_PAGE_WIDTH}
   description={$t('stwStore.page.description')}
-  title={$t('stwStore.page.title')}
 >
+  {#snippet title()}
+    <div class="flex flex-wrap items-end gap-x-3 gap-y-2">
+      <h2 class="font-display text-2xl leading-none text-foreground sm:text-3xl md:text-4xl">
+        {$t('stwStore.page.title')}
+      </h2>
+      {#if store}
+        <div class="flex flex-wrap items-center gap-2 pb-0.5">
+          <PageHeaderChip class="h-9 gap-1.5 px-2.5 text-sm">
+            <img
+              class="size-5 shrink-0 object-contain"
+              alt={$t('stw.xrayTickets')}
+              src="/resources/currency_xrayllama.png"
+            />
+            <span class="text-sm leading-none font-semibold tabular-nums">
+              {xrayBalance.toLocaleString($language)}
+            </span>
+          </PageHeaderChip>
+          <PageHeaderChip class="h-9 gap-1.5 px-2.5 text-sm">
+            <img
+              class="size-5 shrink-0 object-contain"
+              alt={$t('stw.gold')}
+              src="/resources/eventcurrency_scaling.png"
+            />
+            <span class="text-sm leading-none font-semibold tabular-nums">
+              {goldBalance.toLocaleString($language)}
+            </span>
+          </PageHeaderChip>
+        </div>
+      {/if}
+    </div>
+  {/snippet}
+
   {#snippet actions()}
     {#if $activeAccount}
       <PageActionButton
@@ -175,25 +206,6 @@
   {:else if isLoading && !store}
     <PageLoading label={$t('loading')} />
   {:else if store?.sections.length}
-    <div class="flex flex-wrap items-center gap-2">
-      <PageHeaderChip class="h-9 gap-1.5 px-2.5 text-sm">
-        <img
-          class="size-5 shrink-0 object-contain"
-          alt={$t('stw.xrayTickets')}
-          src="/resources/currency_xrayllama.png"
-        />
-        <span class="text-sm leading-none font-semibold tabular-nums">
-          {xrayBalance.toLocaleString($language)}
-        </span>
-      </PageHeaderChip>
-      <PageHeaderChip class="h-9 gap-1.5 px-2.5 text-sm">
-        <img class="size-5 shrink-0 object-contain" alt={$t('stw.gold')} src="/resources/eventcurrency_scaling.png" />
-        <span class="text-sm leading-none font-semibold tabular-nums">
-          {goldBalance.toLocaleString($language)}
-        </span>
-      </PageHeaderChip>
-    </div>
-
     <div class="space-y-8 sm:space-y-10">
       {#each store.sections as section (section.id)}
         <section class="flex flex-col gap-3 sm:gap-4">
@@ -273,6 +285,10 @@
     }}
     onPurchasingChange={(value) => {
       isPurchasing = value;
+    }}
+    onReceived={(items) => {
+      receivedItems = items;
+      receivedDialogOpen = true;
     }}
     onRefresh={loadStore}
     onStoreUpdate={updateStore}

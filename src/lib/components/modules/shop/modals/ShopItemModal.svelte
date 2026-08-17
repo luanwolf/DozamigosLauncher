@@ -14,7 +14,7 @@
   import { ItemColors } from '$lib/constants/item-colors';
   import { language, t } from '$lib/i18n';
   import { generateAuthenticatedGamePageUrl } from '$lib/modules/epic-web-url';
-  import { getShopAppearanceStats } from '$lib/modules/shop-history';
+  import { getShopAppearanceStats, isLeavingToday } from '$lib/modules/shop-history';
   import {
     mergeStyles,
     resolveCosmeticPreview,
@@ -220,6 +220,12 @@
             {:else if item.type?.name}
               <Badge class="rounded-md border px-2.5 py-0.5 text-xs font-medium text-foreground" variant="outline">
                 {item.type?.name}
+              </Badge>
+            {/if}
+
+            {#if isLeavingToday(item)}
+              <Badge class="rounded-md border px-2.5 py-0.5 text-xs font-medium text-foreground" variant="outline">
+                {$t('itemShop.onlyToday')}
               </Badge>
             {/if}
           </div>

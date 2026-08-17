@@ -15,6 +15,7 @@
   import { fetchFnbrStats, isFnbrApiConfigured } from '$lib/modules/fnbr-api';
   import { processValidatorLog, runProbes } from '$lib/modules/process-validator';
   import { accountStore } from '$lib/storage';
+  import SectionHeading from '$components/layout/SectionHeading.svelte';
   import { Badge } from '$components/ui/badge';
   import { Button } from '$components/ui/button';
   import HudPanel from '$components/ui/hud/HudPanel.svelte';
@@ -79,10 +80,10 @@
 
 <div class="space-y-5">
   <div class="flex flex-wrap items-center justify-between gap-2">
-    <div>
-      <p class="text-sm font-medium">{$t('externalIntegrations.page.title')}</p>
-      <p class="text-xs text-muted-foreground">{$t('externalIntegrations.page.description')}</p>
-    </div>
+    <SectionHeading
+      description={$t('externalIntegrations.page.description')}
+      title={$t('externalIntegrations.page.title')}
+    />
     <Button size="sm" variant="outline" onclick={() => (showDiagnostics = !showDiagnostics)}>
       {$t('externalIntegrations.diagnostics')}
     </Button>
@@ -102,8 +103,10 @@
   </div>
 
   <HudPanel class="p-4">
-    <p class="text-sm font-medium">{$t('externalIntegrations.islandCode.title')}</p>
-    <p class="mt-1 text-xs text-muted-foreground">{$t('externalIntegrations.islandCode.hint')}</p>
+    <SectionHeading
+      description={$t('externalIntegrations.islandCode.hint')}
+      title={$t('externalIntegrations.islandCode.title')}
+    />
     <div class="mt-3 flex flex-col gap-2 sm:flex-row">
       <Input
         class="h-8"
@@ -122,7 +125,7 @@
 
   {#if showDiagnostics}
     <HudPanel class="p-4">
-      <p class="mb-2 text-sm font-medium">{$t('externalIntegrations.diagnostics')}</p>
+      <SectionHeading class="mb-2" title={$t('externalIntegrations.diagnostics')} />
       {#if $processValidatorLog.length === 0}
         <p class="text-xs text-muted-foreground">{$t('externalIntegrations.diagnosticsEmpty')}</p>
       {:else}
@@ -150,7 +153,7 @@
     {@const items = EXTERNAL_INTEGRATIONS.filter((item) => item.category === category)}
     {#if items.length}
       <section class="space-y-3">
-        <h2 class="text-sm font-semibold text-muted-foreground">
+        <h2 class="font-tagline text-sm text-muted-foreground">
           {$t(`externalIntegrations.categories.${category}`)}
         </h2>
 

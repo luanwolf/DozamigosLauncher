@@ -21,7 +21,10 @@ export function localizedOfferTitle(
     fallbackName: string;
   }
 ): string {
-  if (options.catalogTitle?.trim()) return options.catalogTitle.trim();
+  if (options.catalogTitle?.trim()) {
+    const title = options.catalogTitle.trim();
+    return localizedStwItemName(`name:${title}`, locale, title);
+  }
 
   const fromDev = parseDevNameLabel(options.devName);
   const devIsReadable = fromDev && !isInternalTemplateLabel(fromDev);
@@ -36,7 +39,9 @@ export function localizedOfferTitle(
   }
 
   if (options.primaryTemplateId?.startsWith('Worker:')) {
-    if (options.fallbackName?.trim()) return options.fallbackName.trim();
+    if (options.fallbackName?.trim()) {
+      return localizedStwItemName(`name:${options.fallbackName.trim()}`, locale, options.fallbackName.trim());
+    }
   }
 
   if (options.primaryTemplateId?.startsWith('Token:')) {

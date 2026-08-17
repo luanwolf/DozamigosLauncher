@@ -3,14 +3,14 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/luanwolf/DozamigosLauncher/releases/latest"><img alt="Versão" src="https://img.shields.io/badge/vers%C3%A3o-0.1.11-a855f7"></a>
+  <a href="https://github.com/luanwolf/DozamigosLauncher/releases/latest"><img alt="Versão" src="https://img.shields.io/badge/vers%C3%A3o-0.1.12-a855f7"></a>
   <img alt="Plataforma" src="https://img.shields.io/badge/plataforma-Windows-2b3140">
   <a href="LICENSE"><img alt="Licença" src="https://img.shields.io/badge/licen%C3%A7a-GPL--3.0-2b3140"></a>
 </p>
 
 Um launcher em português para quem joga Fortnite de verdade: Battle Royale, Salve o Mundo (STW) e a
-biblioteca da Epic Games na mesma janela. Ele nasceu para resolver a chatice do dia a dia — trocar de conta,
-conferir a loja, resgatar lhama, ver alerta de missão — sem precisar abrir cinco sites e o jogo.
+biblioteca da Epic Games na mesma janela. Ele nasceu para resolver a chatice do dia a dia: trocar de conta,
+conferir a loja, resgatar lhama, ver alerta de missão, sem precisar abrir cinco sites e o jogo.
 
 Feito por **Heyash**.
 
@@ -31,7 +31,7 @@ Feito por **Heyash**.
 
 | Recurso | Detalhe |
 | --- | --- |
-| Loja de itens | Prévia em vídeo, áudio das músicas e emotes, estilos de cada cosmético e exportação da loja em imagem |
+| Loja de itens | Prévia em vídeo, áudio das músicas e emotes, estilos de cada cosmético, tag “Só até hoje” e exportação da loja em imagem |
 | Ofertas especiais | Promoções em dinheiro real da Epic e da PSN |
 | Vestiário | Filtro por categoria, prévia em vídeo do item e exportação do vestiário em imagem 1:1 |
 | Estatísticas e XP | Suas stats de BR e o XP ganho na temporada |
@@ -40,17 +40,19 @@ Feito por **Heyash**.
 ### Salve o Mundo (STW)
 
 - **Alertas de missão** com as recompensas da rotação atual.
-- **Lhamas grátis** com resgate automático: o launcher varre as contas de hora em hora (no horário UTC) e resgata para todo mundo que deixou a opção ligada.
-- **Loja do STW** e **missões diárias**.
+- **Lhamas grátis** com resgate automático: o launcher varre as contas de hora em hora (no horário UTC) e resgata para todo mundo que deixou a opção ligada, com histórico dos itens recebidos.
+- **Loja do STW** (incluindo lhamas com Fichas Raio-X) e **missões diárias**.
 - **Auto-kick**: sai da missão na hora, resgata as recompensas, transfere materiais e convida seus amigos quando a missão acaba.
+- Ferramentas extras: Party, Taxi Service, Boosts de XP, Matchmaking Track, World Info e desbloqueio de SSD.
 
 ### Conta e Epic Games
 
-- Várias contas cadastradas, com troca rápida — o login de todas acontece quando o app abre, então trocar de aba não faz você esperar de novo.
+- Várias contas cadastradas, com troca rápida. O login de todas acontece quando o app abre, então trocar de aba não faz você esperar de novo.
+- Apelido, tags e o que aparece na barra (V-Bucks, Tickets de Raio-X, Ouro) em Configurações → Customização.
 - Perfil, lista de amigos, EULA e ajustes num lugar só.
 - Autenticação: gera tokens de acesso, exchange codes e device auths.
 - Biblioteca da Epic: baixe, atualize e inicie seus jogos.
-- Jogos grátis da semana, já marcados como **Resgatado** na home quando você pegou.
+- Jogos grátis da Epic e promoções com 100% de desconto na Steam, com aviso opcional.
 
 ## Dicas do dia a dia
 
@@ -93,7 +95,7 @@ bun run tauri:build
 ```
 
 O instalador NSIS sai em `src-tauri/target/release/bundle/nsis/`. As artes do instalador e o banner deste
-README são gerados por `src-tauri/installer/build-images.ps1` e `scripts/build-banner.ps1` — rode os scripts
+README são gerados por `src-tauri/installer/build-images.ps1` e `scripts/build-banner.ps1`. Rode os scripts
 de novo sempre que o ícone ou a marca mudar.
 
 ### Atualização automática
@@ -113,4 +115,4 @@ em português, páginas novas e um monte de ajuste para o nosso jeito de jogar. 
 
 ## Licença
 
-GNU General Public License v3.0 — os detalhes estão em [LICENSE](LICENSE).
+GNU General Public License v3.0. Os detalhes estão em [LICENSE](LICENSE).

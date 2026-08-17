@@ -53,6 +53,16 @@ export function resolveStwTemplateDisplay(templateId: string, locale: Locale = '
     };
   }
 
+  if (templateId.toLowerCase().startsWith('cardpack:')) {
+    const key = templateId.replace(/^[^:]+:/, '');
+    return {
+      name: localizedStwItemName(key, locale, key),
+      imageUrl: '/resources/cardpack_bronze.png',
+      rarity,
+      kind: 'other'
+    };
+  }
+
   if (templateId.startsWith('Hero:')) {
     const key = resolveHeroCatalogKey(templateId);
     const hero = heroes[key as keyof typeof heroes];
@@ -72,7 +82,7 @@ export function resolveStwTemplateDisplay(templateId: string, locale: Locale = '
     for (const [id, lead] of Object.entries(survivorsMythicLeads)) {
       if (templateId.toLowerCase().includes(id.toLowerCase())) {
         return {
-          name: `${get(RarityNames)[Rarities.Mythic]} Lead`,
+          name: resolveGenericTemplateBody(`manager_${id}`, locale, Rarities.Mythic) ?? `${rarityName} Lead Survivor`,
           imageUrl: `/survivors/unique-leads/${id}.png`,
           rarity: Rarities.Mythic,
           kind: 'worker'
@@ -94,7 +104,7 @@ export function resolveStwTemplateDisplay(templateId: string, locale: Locale = '
     const workerBody = templateId.replace(/^Worker:/i, '');
     const genericWorker = resolveGenericTemplateBody(workerBody, locale, rarity);
     return {
-      name: genericWorker ?? (isManager ? `${rarityName} Lead` : `${rarityName} Survivor`),
+      name: genericWorker ?? (isManager ? `${rarityName} Lead Survivor` : `${rarityName} Survivor`),
       imageUrl: `/resources/voucher_generic_${isManager ? 'manager' : 'worker'}_${rarity}.png`,
       rarity,
       kind: 'worker'
