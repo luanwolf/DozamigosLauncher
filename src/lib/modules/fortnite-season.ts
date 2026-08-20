@@ -40,6 +40,10 @@ type FetchSeasonInfoOptions = {
   locale?: string;
 };
 
+/** Chapter 7 Season 4 (Override) — used only when Epic/API omit end dates. */
+export const FALLBACK_SEASON_BEGIN = new Date('2026-08-20T07:00:00.000Z');
+export const FALLBACK_SEASON_END = new Date('2026-10-31T23:59:59.000Z');
+
 function parseDate(value: unknown): Date | null {
   if (typeof value !== 'string' || !value) return null;
   const date = new Date(value);
@@ -74,6 +78,24 @@ function seasonProgress(begin: Date, end: Date) {
 function daysUntil(end: Date) {
   const ms = end.getTime() - Date.now();
   return Math.max(0, Math.ceil(ms / 86_400_000));
+}
+
+function withFallbackTimeline(season: SeasonInfo): SeasonInfo {
+  if (season.begin && season.displayedEnd) return season;
+
+  const begin = season.begin ?? FALLBACK_SEASON_BEGIN;
+  const end = season.end ?? FALLBACK_SEASON_END;
+  const displayedEnd = season.displayedEnd ?? end;
+
+  return {
+    ...season,
+    begin,
+    end,
+    displayedEnd,
+    progressPercent: seasonProgress(begin, displayedEnd),
+    daysRemaining: daysUntil(displayedEnd),
+    hasTimeline: true
+  };
 }
 
 function parseTimelineResponse(response: CalendarTimelineResponse, seasonNameHint?: string): SeasonInfo | null {
@@ -125,12 +147,12 @@ export function parsePublicSeasonResponse(response: PublicSeasonResponse, season
 }
 
 function buildNameOnlySeason(name: string, keyArt?: string): SeasonInfo {
-  return {
+  return withFallbackTimeline({
     seasonNumber: 0,
     name,
     hasTimeline: false,
     keyArt
-  };
+  });
 }
 
 export function formatSeasonNameFromNews(title: string) {
@@ -203,5 +225,10 @@ export async function fetchSeasonInfo(options: FetchSeasonInfoOptions = {}): Pro
     return buildNameOnlySeason(hint, keyArt);
   }
 
-  return null;
+  return withFallbackTimeline({
+    seasonNumber: 0,
+    name: 'Temporada atual',
+    hasTimeline: false,
+    keyArt
+  });
 }

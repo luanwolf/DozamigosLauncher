@@ -1,4 +1,6 @@
-import { derived, writable } from 'svelte/store';
+import { derived, get, writable } from 'svelte/store';
+import { NOTIFICATION_APP_TITLE, sendNotificationMessage } from '$lib/modules/notification';
+import { settingsStore } from '$lib/storage';
 import type { GrantedItem } from '$lib/utils/mcp-loot';
 
 export type ActivityType = 'llama' | 'game' | 'quest' | 'info' | 'error' | 'update';
@@ -24,12 +26,12 @@ export type NotifyOptions = {
   account?: string;
   items?: GrantedItem[];
   sticky?: boolean;
-  /** Always history-only until a new notification UI ships. */
+  /** Skip native OS toast; only write history. */
   historyOnly?: boolean;
   skipNative?: boolean;
   skipHistory?: boolean;
   id?: string;
-  /** Kept for call-site compatibility; actions are ignored without a UI. */
+  /** Kept for call-site compatibility; actions are ignored without a floating UI. */
   actions?: { id: string; label: string; onClick: () => void | Promise<void> }[];
 };
 
@@ -57,6 +59,10 @@ function persist(entries: ActivityEntry[]) {
   }
 }
 
+function notificationsEnabled() {
+  return get(settingsStore).app?.windowsNotifications !== false;
+}
+
 function createActivityLog() {
   const { subscribe, update, set } = writable<ActivityEntry[]>(loadEntries());
 
@@ -68,28 +74,31 @@ function createActivityLog() {
     });
   }
 
-  /**
-   * ponytail: notification UI was removed; callers keep writing history so a
-   * future panel can light up without rewiring every claim/reroll site.
-   */
   async function notify(type: ActivityType, message: string, options: NotifyOptions = {}) {
     const id = options.id ?? Math.random().toString(36).slice(2);
-    if (options.skipHistory) return id;
+    const title = options.title;
+    const account = options.account;
 
-    writeEntry({
-      id,
-      timestamp: new Date().toISOString(),
-      type,
-      title: options.title,
-      message,
-      account: options.account,
-      read: false,
-      items: options.items?.map((item) => ({
-        templateId: item.templateId,
-        quantity: item.quantity
-      }))
-    });
+    if (!options.skipHistory) {
+      writeEntry({
+        id,
+        timestamp: new Date().toISOString(),
+        type,
+        title,
+        message,
+        account,
+        read: false,
+        items: options.items?.map((item) => ({
+          templateId: item.templateId,
+          quantity: item.quantity
+        }))
+      });
+    }
 
+    if (options.historyOnly || options.skipNative || !notificationsEnabled()) return id;
+
+    // Same shape as auto-kick / send_native_notification: short title + one-line body.
+    await sendNotificationMessage(message, title ?? NOTIFICATION_APP_TITLE);
     return id;
   }
 

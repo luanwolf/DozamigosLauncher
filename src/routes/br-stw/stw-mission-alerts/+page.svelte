@@ -234,9 +234,16 @@
     worldInfoCache.set(new Map());
 
     try {
-      await Promise.all([setWorldInfoCache(), refreshClaimedAlerts()]);
-    } catch {
+      // World info needs the logged-in user token (Epic rejected client_credentials).
+      await setWorldInfoCache($activeAccount);
+      try {
+        await refreshClaimedAlerts();
+      } catch {
+        // Alerts list can still render without claimed-state overlay.
+      }
+    } catch (error) {
       loadError = true;
+      console.error('[stw-mission-alerts] load failed', error);
       toast.error($t('stwMissionAlerts.loadFailed'));
     } finally {
       isRefreshing = false;

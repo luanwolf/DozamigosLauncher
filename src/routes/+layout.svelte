@@ -24,6 +24,7 @@
     startDailyQuestRerollScheduler,
     startLlamaAutoClaimScheduler
   } from '$lib/modules/startup-actions';
+  import { startBackgroundNotifications } from '$lib/modules/background-notifications';
   import { setWorldInfoCache } from '$lib/modules/world-info';
   import { setLocale } from '$lib/paraglide/runtime';
   import { accountStore, downloaderStore, settingsStore } from '$lib/storage';
@@ -223,6 +224,7 @@
       runStartupActions().then(() => sessionStorage.setItem('startupActionsRan', 'true')),
       Promise.resolve(startLlamaAutoClaimScheduler()),
       Promise.resolve(startDailyQuestRerollScheduler()),
+      Promise.resolve(startBackgroundNotifications()),
       // We could fetch all avatars using a single account
       // However, fetching per account allows invalid accounts to fail independently
       // and be detected and removed from the config.

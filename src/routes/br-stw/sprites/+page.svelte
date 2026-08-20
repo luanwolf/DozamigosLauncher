@@ -8,7 +8,6 @@
   import ExternalLinkIcon from '@lucide/svelte/icons/external-link';
   import LoaderCircleIcon from '@lucide/svelte/icons/loader-circle';
   import SearchIcon from '@lucide/svelte/icons/search';
-  import SparklesIcon from '@lucide/svelte/icons/sparkles';
   import { openPath } from '@tauri-apps/plugin-opener';
   import { ItemColors } from '$lib/constants/item-colors';
   import { HUD_PAGE_WIDTH } from '$lib/constants/page-layout';
@@ -20,6 +19,7 @@
     SPRITE_ENTRIES,
     spriteShortName,
     writeSpriteCollection,
+    type SpriteEntry,
     type SpriteProgress,
     type SpriteRarity,
     type SpriteVariant
@@ -28,8 +28,8 @@
   import { handleError } from '$lib/utils';
   import PageActionButton from '$components/layout/PageActionButton.svelte';
   import PageContent from '$components/layout/PageContent.svelte';
+  import SpritePreviewModal from '$components/modules/sprites/SpritePreviewModal.svelte';
   import * as Dialog from '$components/ui/dialog';
-  import HudPanel from '$components/ui/hud/HudPanel.svelte';
   import { Input } from '$components/ui/input';
   import { Progress } from '$components/ui/progress';
 
@@ -51,18 +51,14 @@
   let isExporting = $state(false);
   let exportPercent = $state(0);
   let lastExportPath = $state<string | null>(null);
+  let previewEntry = $state<SpriteEntry | null>(null);
 
   const COLLECTION_INFO_DISMISSED = 'dozamigos:elementals-info-dismissed';
 
   const variantLabels: Record<SpriteVariant, string> = {
     base: 'Base',
     gold: 'Dourado',
-    gummy: 'Goma',
-    galaxy: 'Galáxia',
-    holofoil: 'Holofoil',
-    cube: 'Cubo',
-    quack: 'Quack',
-    gem: 'Gema'
+    'cheat-master': 'Cheat Master'
   };
 
   const rarityLabels: Record<SpriteRarity, string> = {
@@ -95,9 +91,6 @@
           variantLabels[entry.variant].toLowerCase().includes(query))
     );
   });
-
-  const extractedCount = $derived(SPRITE_ENTRIES.filter(isExtracted).length);
-  const masteredCount = $derived(SPRITE_ENTRIES.filter(isMastered).length);
 
   function save() {
     writeSpriteCollection($activeAccount?.accountId, extracted, mastered);
@@ -273,24 +266,6 @@
       <Progress class="h-2 w-full max-w-xs" value={exportPercent} />
     </div>
   {:else}
-    <HudPanel>
-      <div class="flex flex-wrap items-center gap-3">
-        <div class="rounded-md bg-primary/10 p-2 text-primary">
-          <SparklesIcon class="size-5" />
-        </div>
-        <div class="min-w-0 flex-1">
-          <p class="text-sm font-medium">{$t('sprites.summary', { count: SPRITE_ENTRIES.length })}</p>
-          <p class="text-xs text-muted-foreground">
-            {$t('sprites.extractedSummary', { count: extractedCount })}
-            · {$t('sprites.masteredSummary', { count: masteredCount })}
-          </p>
-        </div>
-        {#if progress.mastered.size}
-          <span class="hud-chip">{$t('sprites.mastery.detected', { count: progress.mastered.size })}</span>
-        {/if}
-      </div>
-    </HudPanel>
-
     <Dialog.Root bind:open={showCollectionInfo} onOpenChangeComplete={closeCollectionInfo}>
       <Dialog.Content class="max-w-md">
         <Dialog.Header>
@@ -351,7 +326,13 @@
               : ''}"
           style="background-color: {cardBackground(entry.rarity)}"
         >
-          <div class="relative">
+          <button
+            type="button"
+            class="relative block w-full text-left transition hover:brightness-110 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            onclick={() => {
+              previewEntry = entry;
+            }}
+          >
             <img class="aspect-square w-full object-cover" alt={entry.name} loading="lazy" src={entry.image} />
             {#if hasMastery}
               <span
@@ -368,40 +349,38 @@
                 <CheckIcon class="size-4" />
               </span>
             {/if}
-          </div>
-          <div class="space-y-1.5 bg-black/75 p-2 text-white">
-            <div>
+            <div class="space-y-0.5 bg-black/75 px-2 pt-2 text-white">
               <p class="truncate text-xs font-semibold">{entry.name}</p>
-              <p class="text-[10px] text-white/70">
+              <p class="pb-1 text-[10px] text-white/70">
                 {variantLabels[entry.variant]} · {rarityLabels[entry.rarity]}
               </p>
             </div>
-            <div class="grid grid-cols-2 gap-1">
-              <button
-                type="button"
-                aria-pressed={owned}
-                disabled={isDetectedExtracted}
-                onclick={() => toggleExtracted(entry.key)}
-                class="flex items-center justify-center gap-1 rounded border border-white/20 px-1 py-1 text-[10px] transition hover:bg-white/10 disabled:cursor-default {owned
-                  ? 'bg-primary text-primary-foreground'
-                  : ''}"
-              >
-                <DownloadIcon class="size-3" />
-                {$t('sprites.extracted')}
-              </button>
-              <button
-                type="button"
-                aria-pressed={hasMastery}
-                disabled={isDetectedMastery}
-                onclick={() => toggleMastered(entry.key)}
-                class="flex items-center justify-center gap-1 rounded border border-white/20 px-1 py-1 text-[10px] transition hover:bg-white/10 disabled:cursor-default {hasMastery
-                  ? 'bg-amber-400 text-black'
-                  : ''}"
-              >
-                <CrownIcon class="size-3" />
-                {$t('sprites.mastery.mastered')}
-              </button>
-            </div>
+          </button>
+          <div class="grid grid-cols-2 gap-1 bg-black/75 p-2 pt-0 text-white">
+            <button
+              type="button"
+              aria-pressed={owned}
+              disabled={isDetectedExtracted}
+              onclick={() => toggleExtracted(entry.key)}
+              class="flex items-center justify-center gap-1 rounded border border-white/20 px-1 py-1 text-[10px] transition hover:bg-white/10 disabled:cursor-default {owned
+                ? 'bg-primary text-primary-foreground'
+                : ''}"
+            >
+              <DownloadIcon class="size-3" />
+              {$t('sprites.extracted')}
+            </button>
+            <button
+              type="button"
+              aria-pressed={hasMastery}
+              disabled={isDetectedMastery}
+              onclick={() => toggleMastered(entry.key)}
+              class="flex items-center justify-center gap-1 rounded border border-white/20 px-1 py-1 text-[10px] transition hover:bg-white/10 disabled:cursor-default {hasMastery
+                ? 'bg-amber-400 text-black'
+                : ''}"
+            >
+              <CrownIcon class="size-3" />
+              {$t('sprites.mastery.mastered')}
+            </button>
           </div>
         </article>
       {/each}
@@ -410,3 +389,5 @@
     <p class="text-center text-[10px] text-muted-foreground">{$t('sprites.source')}</p>
   {/if}
 </PageContent>
+
+<SpritePreviewModal {variantLabels} {rarityLabels} bind:entry={previewEntry} />

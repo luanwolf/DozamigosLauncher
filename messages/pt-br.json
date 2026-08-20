@@ -550,8 +550,18 @@
     "failedToFetch": "Não foi possível carregar os vazamentos. Tente novamente mais tarde.",
     "empty": "Nada vazado por enquanto.",
     "buildInfo": "Build {build}",
+    "aesInfo": "AES {key}",
     "lastAddition": "Última adição: {date}",
-    "itemCount": "{count} cosméticos"
+    "itemCount": "{count} cosméticos",
+    "dayCount": "{count} itens",
+    "toggleSecrets": "Build / AES",
+    "export": {
+      "button": "Extrair imagens",
+      "category": "Vazamentos {date}",
+      "done": "{count} item(ns) exportado(s).",
+      "failed": "Não foi possível exportar os vazamentos.",
+      "open": "Abrir última exportação"
+    }
   },
   "sprites": {
     "page": {
@@ -1247,7 +1257,7 @@
       },
       "windowsNotifications": {
         "title": "Notificações do Windows",
-        "description": "Mostrar alertas nativos como Dozamigos Launcher (lhamas, missões diárias, loja, status do servidor e outras automações).",
+        "description": "Avisa no Windows sobre V-Bucks no STW, missões, lhamas grátis, loja do BR e outras automações.",
         "denied": "O Windows bloqueou as notificações. Ative nas configurações do sistema."
       },
       "showXrayTickets": {
@@ -1569,51 +1579,53 @@
   },
   "backgroundNotifications": {
     "llamas": {
-      "title": "Lhamas Gratuitas",
-      "message": "{count} lhama(s) gratuita(s) disponível(is)",
-      "messageWithAccount": "{count} lhama(s) em {account}"
+      "title": "Lhamas grátis",
+      "message": "Tem {count} pra resgatar.",
+      "messageWithAccount": "{account}: tem {count} pra resgatar."
     },
     "steamFreeGames": {
       "title": "Grátis na Steam",
-      "message": "{count} jogo(s) com 100% de desconto: {names}"
+      "message": "{count} jogo com 100% off: {names}"
     },
     "epicFreeGames": {
       "title": "Grátis na Epic",
-      "message": "{count} jogo(s) grátis na Epic: {names}"
+      "message": "{count} jogo grátis na Epic: {names}"
     },
     "viewGame": "Ver jogo",
     "dailyQuests": {
-      "title": "Missões Diárias",
-      "message": "As missões diárias do STW foram redefinidas. Há novas missões disponíveis."
+      "title": "Missões diárias",
+      "message": "As missões diárias do STW acabaram de resetar."
     },
     "itemShop": {
-      "title": "Loja de Itens",
-      "message": "A loja de itens do Battle Royale foi atualizada",
-      "messageDetailed": "Loja atualizada: {newCount} novidade(s), {leavingCount} item(ns) saindo em breve."
+      "title": "Loja do BR",
+      "message": "A loja do Battle Royale atualizou.",
+      "messageDetailed": "Loja nova: {newCount} novidade, {leavingCount} saindo em breve."
     },
     "wishlistLeavingSoon": {
       "title": "Lista de desejos",
-      "message": "{count} item(ns) da sua lista sai(em) da loja em breve: {names}"
+      "message": "{count} item da lista sai em breve: {names}"
     },
     "wishlist": {
       "title": "Lista de desejos",
-      "message": "{count} item(ns) da sua lista está(ão) na loja: {names}"
+      "message": "{count} item da sua lista está na loja: {names}"
     },
     "missionAlerts": {
-      "title": "Alertas de missão STW",
-      "vbucks": "{count} V-Bucks disponíveis hoje",
-      "survivors": "{count} sobrevivente(s) lendário(s)/mítico(s)",
-      "llamas": "{count} ficha(s) de lhama de melhoria",
-      "perkUp": "{count} PERK-UP disponível(is)"
+      "title": "Missões do STW",
+      "vbucksTitle": "V-Bucks no STW",
+      "vbucks": "Tem {count} V-Bucks nas missões de hoje.",
+      "survivors": "{count} sobrevivente lendário",
+      "llamas": "{count} ficha de lhama",
+      "perkUp": "{count} PERK-UP",
+      "rotated": "As missões de alerta atualizaram."
     },
     "serverStatus": {
       "offline": {
-        "title": "Status do Servidor",
-        "message": "Fortnite está offline ou em manutenção"
+        "title": "Servidores do Fortnite",
+        "message": "Fortnite está offline ou em manutenção."
       },
       "changed": {
-        "title": "Status do Servidor",
-        "message": "Status alterado: {status}"
+        "title": "Servidores do Fortnite",
+        "message": "Status agora: {status}"
       }
     }
   },
@@ -1623,14 +1635,14 @@
     "markAllRead": "Marcar tudo como lido",
     "clear": "Limpar histórico",
     "dismiss": "Dispensar",
-    "moreItems": "+{count} item(ns)",
-    "llamasTitle": "Lhamas",
-    "llamasClaimed": "{count} Lhama(s) resgatada(s)",
-    "llamasClaimedSummary": "{count} lhama(s) resgatada(s) em {accounts} conta(s)",
-    "llamasNone": "Nenhuma Lhama disponível no momento",
-    "llamasError": "Erro ao resgatar lhamas: {detail}",
-    "llamasErrorSummary": "Falha ao resgatar lhamas em {count} conta(s): {detail}",
-    "questsTitle": "Missões",
+    "moreItems": "+{count} item",
+    "llamasTitle": "Lhamas resgatadas",
+    "llamasClaimed": "Resgatamos {count} pra você.",
+    "llamasClaimedSummary": "Resgatamos {count} pra você.",
+    "llamasNone": "Nenhuma lhama disponível agora.",
+    "llamasError": "Não deu pra resgatar as lhamas: {detail}",
+    "llamasErrorSummary": "Falha ao resgatar lhamas em {count} contas: {detail}",
+    "questsTitle": "Missões diárias",
     "gameClaimed": "{title} resgatado com sucesso",
     "gameAlreadyOwned": "{title}: você já possui este jogo",
     "gameBrowserOnly": "{title}: use o link da Epic Store para resgatar",

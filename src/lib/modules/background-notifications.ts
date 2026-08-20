@@ -18,6 +18,7 @@ import { worldInfoCache } from '$lib/stores';
 import { isMcpBusy } from '$lib/modules/startup-actions';
 import type { AccountData } from '$types/account';
 import type { LightswitchData } from '$types/game/server-status';
+import type { ParsedWorldInfo } from '$types/game/stw/world-info';
 
 const STORAGE_KEY = 'backgroundNotificationState';
 const CHECK_INTERVAL_MS = 5 * 60 * 1000;
@@ -30,6 +31,8 @@ type MissionAlertsSnapshot = {
   totalSurvivors: number;
   totalUpgradeLlamas: number;
   totalPerkUp: number;
+  /** Sorted alert guids — changes when STW mission alerts rotate. */
+  fingerprint: string;
 };
 
 type PersistedState = {
@@ -157,6 +160,7 @@ async function checkLlamas(state: PersistedState, accounts: AccountData[]) {
                 account: account.displayName
               });
 
+        // Account stays in history only — body already matches auto-kick "Name: …" when multi-account.
         await pushNotification('llama', title, message, { account: account.displayName });
       } catch (error) {
         logger.debug('Background llama check failed', { accountId: account.accountId, error });
@@ -308,6 +312,16 @@ function checkDailyQuestReset(state: PersistedState): string {
   return last;
 }
 
+function missionAlertsFingerprint(cache: ParsedWorldInfo) {
+  const guids: string[] = [];
+  for (const missions of cache.values()) {
+    for (const mission of missions.values()) {
+      if (mission.alert?.guid) guids.push(mission.alert.guid);
+    }
+  }
+  return guids.sort().join(',');
+}
+
 async function checkMissionAlerts(state: PersistedState): Promise<MissionAlertsSnapshot | null> {
   try {
     let cache = get(worldInfoCache);
@@ -317,46 +331,51 @@ async function checkMissionAlerts(state: PersistedState): Promise<MissionAlertsS
     }
 
     const overview = aggregateMissionAlertsOverview(cache);
-    if (!overview) return state.missionAlertsSnapshot;
+    if (!overview || !cache?.size) return state.missionAlertsSnapshot;
 
     const snapshot: MissionAlertsSnapshot = {
       totalVbucks: overview.totalVbucks,
       totalSurvivors: overview.totalSurvivors,
       totalUpgradeLlamas: overview.totalUpgradeLlamas,
-      totalPerkUp: overview.totalPerkUp
+      totalPerkUp: overview.totalPerkUp,
+      fingerprint: missionAlertsFingerprint(cache)
     };
 
     const previous = state.missionAlertsSnapshot;
-    if (state.initialized && previous) {
-      const highlights: string[] = [];
-
-      if (snapshot.totalVbucks > previous.totalVbucks && snapshot.totalVbucks > 0) {
-        highlights.push(
+    // Skip once when upgrading old state without fingerprint — avoid a false “rotation” toast.
+    if (
+      state.initialized &&
+      previous?.fingerprint &&
+      previous.fingerprint !== snapshot.fingerprint
+    ) {
+      if (snapshot.totalVbucks > 0) {
+        await pushNotification(
+          'info',
+          get(t)('backgroundNotifications.missionAlerts.vbucksTitle'),
           get(t)('backgroundNotifications.missionAlerts.vbucks', { count: snapshot.totalVbucks })
         );
-      }
+      } else {
+        const bits: string[] = [];
+        if (snapshot.totalSurvivors > 0) {
+          bits.push(
+            get(t)('backgroundNotifications.missionAlerts.survivors', { count: snapshot.totalSurvivors })
+          );
+        }
+        if (snapshot.totalUpgradeLlamas > 0) {
+          bits.push(
+            get(t)('backgroundNotifications.missionAlerts.llamas', { count: snapshot.totalUpgradeLlamas })
+          );
+        }
+        if (snapshot.totalPerkUp > 0) {
+          bits.push(get(t)('backgroundNotifications.missionAlerts.perkUp', { count: snapshot.totalPerkUp }));
+        }
 
-      if (snapshot.totalSurvivors > previous.totalSurvivors && snapshot.totalSurvivors > 0) {
-        highlights.push(
-          get(t)('backgroundNotifications.missionAlerts.survivors', { count: snapshot.totalSurvivors })
-        );
-      }
-
-      if (snapshot.totalUpgradeLlamas > previous.totalUpgradeLlamas && snapshot.totalUpgradeLlamas > 0) {
-        highlights.push(
-          get(t)('backgroundNotifications.missionAlerts.llamas', { count: snapshot.totalUpgradeLlamas })
-        );
-      }
-
-      if (snapshot.totalPerkUp > previous.totalPerkUp && snapshot.totalPerkUp > 0) {
-        highlights.push(get(t)('backgroundNotifications.missionAlerts.perkUp', { count: snapshot.totalPerkUp }));
-      }
-
-      if (highlights.length) {
         await pushNotification(
           'info',
           get(t)('backgroundNotifications.missionAlerts.title'),
-          highlights.join('\n')
+          bits.length
+            ? bits.join(' · ')
+            : get(t)('backgroundNotifications.missionAlerts.rotated')
         );
       }
     }
@@ -497,8 +516,8 @@ function runQuestDayCheck() {
 }
 
 /**
- * Polls llamas, item shop, free games, and server status in the background.
- * Delivers floating in-app cards (or native OS toasts when the window is hidden).
+ * Polls llamas, item shop, STW mission alerts, free games, and server status.
+ * Sends native Windows toasts when "Notificações do Windows" is enabled.
  */
 export function startBackgroundNotifications() {
   if (checkInterval) return;

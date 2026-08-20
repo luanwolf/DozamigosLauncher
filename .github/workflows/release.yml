@@ -57,29 +57,27 @@ jobs:
           tagName: v__VERSION__
           releaseName: 'v__VERSION__'
           releaseBody: |
-            ## Dozamigos Launcher v0.1.2
+            ## Dozamigos Launcher v0.1.3
 
-            Baixe o instalador NSIS abaixo. Versões já instaladas recebem as próximas atualizações automaticamente.
+            Baixe o instalador **Windows NSIS** (`.exe`) abaixo. Quem já tem o launcher instalado recebe a atualização automaticamente na próxima abertura.
 
-            ### Visual e notificações
-            - Tema **retro-glitch** com tipografia e painéis alinhados ao restante do launcher
-            - Notificações de atualização no estilo conquista, com opção de baixar em segundo plano ou depois
-            - Avisos temporários (iniciar/encerrar Fortnite e erros) no mesmo formato
+            ### Arquivos desta release
+            - `Dozamigos Launcher_0.1.3_x64-setup.exe` — instalador Windows (recomendado)
+            - `latest.json` — manifesto da atualização automática
+            - assinatura do instalador (usada pelo updater)
+
+            ### Capítulo 7 — Temporada 4
+            - **Elementais (Sprites)** atualizados para a temporada Override, com imagens locais e prévia ao clicar
+            - Fallback de fim de temporada em **31/10/2026** quando a API não traz a data
+            - **Vazamentos** por dia, com blur de build/AES, prévia dos itens e exportação em WebP
 
             ### Salve o Mundo
-            - Histórico de **lhamas grátis** com os itens recebidos
-            - Compra na loja STW mostrando corretamente o conteúdo das lhamas
-            - Mais nomes de itens STW em português
-            - Ferramentas extras: Party, Taxi, Boosts de XP, Matchmaking Track, World Info e SSD
+            - Correção dos **alertas de missão** (agora usam o token da conta logada; a Epic bloqueou client credentials)
+            - Notificações do Windows quando há **V-Bucks** nas missões ou a rotação de alertas muda
 
-            ### Conta e home
-            - Aba **Customização** (apelido, tags e saldos na barra)
-            - Jogos grátis da **Steam** (100% de desconto) na home, com notificação opcional
-            - Tag **Só até hoje** na loja de itens e na exportação
-
-            ### Outros
-            - Encerrar Fortnite mais confiável (mata todos os processos do jogo)
-            - Copy em português revisada
+            ### Notificações
+            - Toasts nativos no mesmo estilo de sempre (ex.: “Saiu da base STW”)
+            - Avisos curtos para lhamas grátis, reset de missões diárias e atualização da **loja do BR**
           releaseDraft: true
           prerelease: false
           uploadUpdaterJson: true

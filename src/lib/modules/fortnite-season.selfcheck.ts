@@ -1,5 +1,11 @@
 import assert from 'node:assert/strict';
-import { findSeasonNews, formatSeasonNameFromNews, parsePublicSeasonResponse } from './fortnite-season';
+import {
+  FALLBACK_SEASON_BEGIN,
+  FALLBACK_SEASON_END,
+  findSeasonNews,
+  formatSeasonNameFromNews,
+  parsePublicSeasonResponse
+} from './fortnite-season';
 
 // Live MOTD list: the promoted broadcast outranks the season announcement.
 const news = [
@@ -29,5 +35,8 @@ assert.equal(publicSeason?.name, 'No Corre');
 assert.equal(publicSeason?.seasonNumber, 41);
 assert.equal(publicSeason?.hasTimeline, true);
 assert.equal(parsePublicSeasonResponse({ seasonDateBegin: '', seasonDateEnd: '', seasonNumber: 0 }), null);
+
+assert.equal(FALLBACK_SEASON_BEGIN.toISOString().slice(0, 10), '2026-08-20');
+assert.equal(FALLBACK_SEASON_END.toISOString().slice(0, 10), '2026-10-31');
 
 console.log('fortnite-season.selfcheck: ok');

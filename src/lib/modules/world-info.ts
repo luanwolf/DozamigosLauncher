@@ -13,11 +13,12 @@ import {
 import { ingredients, resources, survivors, survivorsMythicLeads, traps } from '$lib/data';
 import { resolveGenericTemplateBody } from '$lib/utils/stw-generic-names';
 import { baseGameService } from '$lib/http';
-import { getAccessTokenUsingClientCredentials } from '$lib/modules/authentication';
 import { aggregateMissionAlerts } from '$lib/modules/mission-alerts-buckets';
 import { recordDailyVbucks } from '$lib/modules/stw-vbucks-history';
+import { accountStore } from '$lib/storage';
 import { worldInfoCache } from '$lib/stores';
 import { resolveZoneCategoryId } from '$lib/utils/mission-zone-name';
+import type { AccountData } from '$types/account';
 import type {
   ParsedModifierData,
   ParsedRarityData,
@@ -42,22 +43,36 @@ type RewardItem = {
   attributes?: unknown;
 };
 
-export async function setWorldInfoCache() {
-  const parsed = parseWorldInfo(await getWorldInfo());
+export async function setWorldInfoCache(account?: AccountData | null) {
+  const parsed = parseWorldInfo(await getWorldInfo(account));
   worldInfoCache.set(parsed);
 
   const buckets = aggregateMissionAlerts(parsed);
   if (buckets) recordDailyVbucks(buckets.totalVbucks);
 }
 
-export async function getWorldInfo(accessToken?: string): Promise<WorldInfoData> {
-  const token = accessToken || (await getAccessTokenUsingClientCredentials()).access_token;
+/**
+ * Epic now rejects client_credentials for world/info ("dedicated-server permission").
+ * Prefer the active account's user token; optional explicit account/token still supported.
+ */
+export async function getWorldInfo(accountOrToken?: AccountData | string | null): Promise<WorldInfoData> {
+  if (typeof accountOrToken === 'string' && accountOrToken) {
+    return baseGameService
+      .get<WorldInfoData>('world/info', {
+        headers: { Authorization: `Bearer ${accountOrToken}` }
+      })
+      .json();
+  }
 
-  return baseGameService
-    .get<WorldInfoData>('world/info', {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    .json();
+  const account =
+    (accountOrToken && typeof accountOrToken === 'object' ? accountOrToken : null) ?? accountStore.getActive();
+
+  if (!account) {
+    throw new Error('A logged-in account is required to load mission alerts');
+  }
+
+  const { getAuthedKy } = await import('$lib/modules/auth-session');
+  return getAuthedKy(account, baseGameService).get<WorldInfoData>('world/info').json();
 }
 
 export function parseWorldInfo(data: WorldInfoData): ParsedWorldInfo {
@@ -104,19 +119,16 @@ export function parseWorldInfo(data: WorldInfoData): ParsedWorldInfo {
     worldInfo.set(
       theaterId,
       new Map(
-        missions
-          .entries()
-          .toArray()
-          .sort((entryA, entryB) => {
-            const a = entryA[1];
-            const b = entryB[1];
+        Array.from(missions.entries()).sort((entryA, entryB) => {
+          const a = entryA[1];
+          const b = entryB[1];
 
-            return (
-              b.powerLevel - a.powerLevel ||
-              Number(b.generator.includes('group')) - Number(a.generator.includes('group')) ||
-              Number(!!b.alert) - Number(!!a.alert)
-            );
-          })
+          return (
+            b.powerLevel - a.powerLevel ||
+            Number(b.generator.includes('group')) - Number(a.generator.includes('group')) ||
+            Number(!!b.alert) - Number(!!a.alert)
+          );
+        })
       )
     );
   }
@@ -141,7 +153,7 @@ function parseMission(
     TheaterPowerLevels.Ventures?.[zone as never] ??
     -1;
 
-  const missionRewards = mergeItems(mission.missionRewards.items).map((item) => {
+  const missionRewards = mergeItems(mission.missionRewards?.items ?? []).map((item) => {
     const parsed = parseResource(item.itemType, item.quantity);
     const isHard =
       parsed.itemType.includes('reagent_c_t0') &&
@@ -160,7 +172,7 @@ function parseMission(
 
   const alertRewards =
     alert &&
-    mergeItems(alert.missionAlertRewards.items).map((item) => {
+    mergeItems(alert.missionAlertRewards?.items ?? []).map((item) => {
       const parsed = parseResource(item.itemType, item.quantity);
       return {
         imageUrl: parsed.imageUrl,
@@ -172,6 +184,7 @@ function parseMission(
     });
 
   const modifiers = alert?.missionAlertModifiers?.items.map((m) => parseModifier(m.itemType)) ?? null;
+  const tile = theater.tiles?.[mission.tileIndex];
   return {
     theaterId: theater.uniqueId,
     guid: mission.missionGuid,
@@ -182,7 +195,7 @@ function parseMission(
     powerLevel,
     isGroup,
     zone: {
-      theme: theater.tiles[mission.tileIndex].zoneTheme,
+      theme: tile?.zoneTheme ?? '',
       type: zoneInfo
     },
     alert:
@@ -204,7 +217,7 @@ function mergeItems(items: RewardItem[]): RewardItem[] {
     else map.set(item.itemType, { ...item });
   }
 
-  return map.values().toArray();
+  return Array.from(map.values());
 }
 
 function parseModifier(key: string): ParsedModifierData {

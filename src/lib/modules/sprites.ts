@@ -1,7 +1,7 @@
 import type { AccountData } from '$types/account';
 
 export type SpriteRarity = 'rare' | 'epic' | 'legendary' | 'mythic';
-export type SpriteVariant = 'base' | 'gold' | 'gummy' | 'galaxy' | 'holofoil' | 'cube' | 'quack' | 'gem';
+export type SpriteVariant = 'base' | 'gold' | 'cheat-master';
 
 export type SpriteFamily = {
   slug: string;
@@ -19,185 +19,100 @@ export type SpriteEntry = SpriteFamily & {
 };
 
 const IMAGE_ROOT = '/resources/elementals';
+const S4_VARIANTS: Exclude<SpriteVariant, 'base'>[] = ['gold', 'cheat-master'];
 
+/** Chapter 7 Season 4 (Override) — season id 42 on fortnite.gg. */
 export const SPRITE_FAMILIES: SpriteFamily[] = [
   {
-    slug: 'water',
-    name: 'Elemental de Água',
+    slug: 'klombo',
+    name: 'Elemental Klimbo',
+    rarity: 'mythic',
+    ability:
+      'Concede itens aleatórios a cada nível; só sobe de nível ao consumir itens. A qualidade dos itens aumenta por nível.',
+    variants: [...S4_VARIANTS]
+  },
+  {
+    slug: 'crown',
+    name: 'Elemental Coroa',
+    rarity: 'mythic',
+    ability:
+      'Só sobe de nível ao vencer partidas (mais rápido com Vitórias de Coroa). Novas variantes ao dominar.',
+    variants: [...S4_VARIANTS]
+  },
+  {
+    slug: 'jackrabbit',
+    name: 'Elemental Jackrabbit',
+    rarity: 'legendary',
+    ability: 'Permite um salto extra no ar. O tempo entre saltos diminui a cada nível.',
+    variants: [...S4_VARIANTS]
+  },
+  {
+    slug: 'sonic',
+    name: 'Elemental Sonic',
+    rarity: 'epic',
+    ability: 'Gotta Go Fast! Corre mais rápido a cada nível.',
+    variants: [...S4_VARIANTS]
+  },
+  {
+    slug: 'tails',
+    name: 'Elemental Tails',
+    rarity: 'epic',
+    ability: 'Permite pairar com a ajuda do Tails. A velocidade do vôo sobe a cada nível.',
+    variants: [...S4_VARIANTS]
+  },
+  {
+    slug: 'shadow',
+    name: 'Elemental Shadow',
+    rarity: 'epic',
+    ability:
+      'Recarrega armas guardadas com o tempo; no nível máximo, também a equipada. Fica mais rápido a cada nível.',
+    variants: [...S4_VARIANTS]
+  },
+  {
+    slug: 'killswitch',
+    name: 'Elemental Killswitch',
+    rarity: 'epic',
+    ability:
+      'Entra em Hangtime com precisão melhorada ao mirar no salto/queda. A precisão sobe a cada nível.',
+    variants: [...S4_VARIANTS]
+  },
+  {
+    slug: 'eight-bit',
+    name: 'Elemental 8-Bit',
     rarity: 'rare',
-    ability: 'Recupera escudo enquanto você estiver na água.',
-    variants: ['gold', 'gummy', 'galaxy', 'gem', 'holofoil', 'quack']
+    ability: 'Encontra uma Espingarda 8-Bit no primeiro baú e ganha multiplicador de pontuação nela.',
+    variants: [...S4_VARIANTS]
   },
   {
-    slug: 'earth',
-    name: 'Elemental de Terra',
+    slug: 'adventure',
+    name: 'Elemental Aventura',
     rarity: 'rare',
-    ability: 'Pode encontrar itens raros adicionais ao abrir baús.',
-    variants: ['gold', 'gummy', 'galaxy', 'gem', 'cube', 'quack']
+    ability: 'Melhora um item aleatório do inventário a cada nível.',
+    variants: [...S4_VARIANTS]
   },
   {
-    slug: 'fire',
-    name: 'Elemental de Fogo',
+    slug: 'bush',
+    name: 'Elemental Arbusto',
     rarity: 'rare',
-    ability: 'Cria uma explosão de fogo depois que você causa dano suficiente.',
-    variants: ['gold', 'gummy', 'galaxy', 'holofoil', 'cube', 'quack']
+    ability:
+      'Concede um Arbusto após um tempo; no nível máximo, ganha um ao eliminar. O intervalo diminui por nível.',
+    variants: [...S4_VARIANTS]
   },
   {
-    slug: 'fishy',
-    name: 'Elemental Peixinho',
+    slug: 'jonesy',
+    name: 'Elemental Jonesy',
     rarity: 'rare',
-    ability: 'Aumenta bastante a velocidade ao nadar; sofrer dano também acelera seu movimento por um tempo.',
-    variants: ['gold', 'gummy', 'galaxy', 'cube']
+    ability:
+      'Após sofrer dano, recupera um pouco de vida ou escudo. A cura aumenta a cada nível.',
+    variants: [...S4_VARIANTS]
   },
   {
-    slug: 'air',
-    name: 'Elemental de Ar',
+    slug: 'storm-scout',
+    name: 'Elemental Storm Scout',
     rarity: 'rare',
-    ability: 'Aumenta a corrida e o salto, além de anular dano de queda.',
-    variants: ['gold', 'gummy', 'galaxy', 'holofoil']
-  },
-  {
-    slug: 'duck',
-    name: 'Elemental Pato',
-    rarity: 'epic',
-    ability: 'Dançar ou fazer uma Jam recupera seu escudo.',
-    variants: ['gold', 'gummy', 'galaxy', 'gem']
-  },
-  {
-    slug: 'ghost',
-    name: 'Elemental Fantasma',
-    rarity: 'epic',
-    ability: 'Concede camuflagem por um tempo após recarregar.',
-    variants: ['gold', 'gummy', 'galaxy', 'holofoil']
-  },
-  {
-    slug: 'demon',
-    name: 'Elemental Demônio',
-    rarity: 'epic',
-    ability: 'Recupera parte da vida e do escudo ao eliminar um oponente.',
-    variants: ['gold', 'gummy', 'galaxy', 'gem']
-  },
-  {
-    slug: 'king',
-    name: 'Elemental Rei',
-    rarity: 'epic',
-    ability: 'Sua picareta causa mais dano.',
-    variants: ['gold', 'gummy', 'galaxy', 'holofoil']
-  },
-  {
-    slug: 'striker',
-    name: 'Elemental Striker',
-    rarity: 'epic',
-    ability: 'Ativa Sobrecarga ao escalar, saltar obstáculos ou correr pela parede.',
-    variants: ['gold', 'gummy', 'galaxy', 'holofoil']
-  },
-  {
-    slug: 'aura',
-    name: 'Elemental Aura',
-    rarity: 'epic',
-    ability: 'Ganha uma carga de Rocha de Choque ao causar dano suficiente.',
-    variants: ['gold', 'gummy', 'galaxy', 'gem']
-  },
-  {
-    slug: 'dream',
-    name: 'Elemental do Sonho',
-    rarity: 'legendary',
-    ability: 'Entrega um item aleatório a cada nível e loot lendário no nível máximo.',
-    variants: ['gold', 'gummy', 'galaxy', 'cube']
-  },
-  {
-    slug: 'punk',
-    name: 'Elemental Punk',
-    rarity: 'legendary',
-    ability: 'Talvez nada... ou algo infinitamente especial.',
-    variants: ['gold', 'gummy', 'galaxy', 'gem', 'cube']
-  },
-  {
-    slug: 'boss',
-    name: 'Elemental Chefe',
-    rarity: 'legendary',
-    ability: 'Aumenta sua vida e seu escudo máximos.',
-    variants: ['gold', 'gummy', 'galaxy', 'cube']
-  },
-  {
-    slug: 'seven',
-    name: 'Elemental dos Sete',
-    rarity: 'legendary',
-    ability: 'Sua equipe consegue enxergar rastros de passos dos inimigos.',
-    variants: ['gold', 'gummy', 'galaxy', 'holofoil']
-  },
-  {
-    slug: 'lootin-llama',
-    imageSlug: 'llama',
-    name: 'Elemental Lhama Saqueadora',
-    rarity: 'legendary',
-    ability: 'Abrir caixas de munição pode melhorar uma arma.',
-    variants: ['gold', 'gummy', 'galaxy', 'gem']
-  },
-  {
-    slug: 'peeky-peely',
-    imageSlug: 'peely',
-    name: 'Elemental Peeky Peely',
-    rarity: 'legendary',
-    ability: 'Detecta jogadores com Elementais raros por perto, mas marca você no mapa.',
-    variants: ['gold', 'gummy', 'galaxy', 'holofoil']
-  },
-  {
-    slug: 'john-wick',
-    name: 'Elemental John Wick',
-    rarity: 'mythic',
-    ability: 'Derrubar um jogador revela outros inimigos próximos.',
-    variants: []
-  },
-  {
-    slug: 'batman',
-    name: 'Elemental Batman',
-    rarity: 'mythic',
-    ability: 'Permite se lançar no ar e abrir a Batcapa.',
-    variants: ['gold', 'gummy', 'galaxy', 'holofoil', 'cube']
-  },
-  {
-    slug: 'burnt-peanut',
-    name: 'Elemental Amendoim Queimado',
-    rarity: 'mythic',
-    ability: 'Eliminar jogadores pode entregar mais loot — às vezes até mítico.',
-    variants: []
-  },
-  {
-    slug: 'vini-jr',
-    name: 'Elemental Vini Jr.',
-    rarity: 'mythic',
-    ability: 'Correr torna sua deslizada destrutiva; acertar inimigos melhora cadência e recarga.',
-    variants: []
-  },
-  {
-    slug: 'zero-point',
-    name: 'Elemental do Ponto Zero',
-    rarity: 'mythic',
-    ability: 'Cria uma Bolha de Escudo Jr. ao usar um item de cura em si mesmo.',
-    variants: ['gold', 'gummy', 'galaxy', 'gem', 'holofoil', 'cube', 'quack']
-  },
-  {
-    slug: 'grim-reaper',
-    imageSlug: 'grim',
-    name: 'Elemental Ceifador',
-    rarity: 'mythic',
-    ability: 'Jogadores que atacam você ficam marcados por um tempo.',
-    variants: ['gold', 'gummy', 'galaxy', 'gem', 'holofoil', 'cube']
-  },
-  {
-    slug: 'pollo',
-    name: 'Elemental Pollo',
-    rarity: 'mythic',
-    ability: 'Após uma eliminação, recupera aos poucos o escudo seu e de aliados próximos.',
-    variants: []
-  },
-  {
-    slug: 'ironmouse',
-    name: 'Elemental Ironmouse',
-    rarity: 'mythic',
-    ability: 'Regenera vida quando ela está baixa e concede camuflagem e baixa gravidade durante a cura.',
-    variants: []
+    ability:
+      'Ativa Sobrecarga após dano da tempestade; no nível máximo, revela círculos futuros. O limiar cai por nível.',
+    variants: [...S4_VARIANTS]
   }
 ];
 
@@ -263,32 +178,21 @@ export function writeSpriteCollection(
   );
 }
 
+/** Epic trophy ids from fortnite.gg `data-parent` (season 42). */
 const TROPHY_FAMILIES: Record<string, string> = {
-  water: 'water',
-  earth: 'earth',
-  fire: 'fire',
-  duck: 'duck',
-  ghost: 'ghost',
-  sleepy: 'dream',
-  reddemon: 'demon',
-  punk: 'punk',
-  king: 'king',
-  crispynut: 'burnt-peanut',
-  zeropoint: 'zero-point',
-  fishy: 'fishy',
-  soccer: 'striker',
-  drifter: 'aura',
-  boss: 'boss',
-  seven: 'seven',
-  air: 'air',
-  grimreaper: 'grim-reaper',
-  fossilmeal: 'batman',
-  companystargazer: 'pollo',
-  cokeparmesan: 'vini-jr',
-  fillergrunt: 'john-wick',
-  llama: 'lootin-llama',
-  peely: 'peeky-peely',
-  pedicureantacid: 'ironmouse'
+  klombo: 'klombo',
+  crown: 'crown',
+  cosmicthunderdoublejump: 'jackrabbit',
+  narrowflea: 'sonic',
+  narrowfleamonkey: 'tails',
+  reloadovertime: 'shadow',
+  killswitch: 'killswitch',
+  '8bitblaster': 'eight-bit',
+  eightbitblaster: 'eight-bit',
+  dwarf: 'adventure',
+  bushranger: 'bush',
+  jonesy: 'jonesy',
+  stormscout: 'storm-scout'
 };
 
 export type SpriteProgress = {
@@ -307,9 +211,10 @@ type QuestItem = {
   };
 };
 
-const MASTERY_QUEST = /^Quest:quest_s41_spritemastery_(redeem_)?p\d+_(q\d+)([a-z]?)$/;
+// ponytail: s41 kept so old profiles still parse; s42 is Override. Ceiling: bump when Epic rolls s43+.
+const MASTERY_QUEST = /^Quest:quest_s4\d_spritemastery_(redeem_)?p\d+_(q\d+)([a-z]?)$/;
 const TROPHY_REWARD =
-  /^CosmeticVariantToken:vtid_backpack_coldtrophy_([a-z]+?)(?:_(gummy|galaxy|gold|gem|holofoil|cube|quack))?$/;
+  /^CosmeticVariantToken:vtid_backpack_coldtrophy_([a-z0-9]+?)(?:_(gummy|galaxy|gold|gem|holofoil|cube|quack|cheatmaster))?$/;
 
 /**
  * Epic exposes the Sprite collection only through the Battle Pass Mastery track: the `redeem` quests
@@ -343,11 +248,16 @@ export function parseSpriteProgress(profile: unknown): SpriteProgress {
     const rewards = [...(quest.attributes?.rewards ?? []), ...(quest.attributes?.premium_rewards?.rewards ?? [])];
     for (const reward of rewards) {
       const trophy = reward.templateId?.match(TROPHY_REWARD);
-      const family = trophy && TROPHY_FAMILIES[trophy[1]];
+      if (!trophy) continue;
+      const family = TROPHY_FAMILIES[trophy[1].toLowerCase()];
       if (!family) continue;
 
+      const variantRaw = trophy[2]?.toLowerCase();
+      const variant =
+        variantRaw === 'cheatmaster' ? 'cheat-master' : variantRaw === 'gold' ? 'gold' : 'base';
+
       familyByQuest[questId] = family;
-      if (claimed) mastered.add(`${family}:${trophy[2] ?? 'base'}`);
+      if (claimed) mastered.add(`${family}:${variant}`);
     }
   }
 

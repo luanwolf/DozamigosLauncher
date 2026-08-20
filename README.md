@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/luanwolf/DozamigosLauncher/releases/latest"><img alt="Versão" src="https://img.shields.io/badge/vers%C3%A3o-0.1.2-a855f7"></a>
+  <a href="https://github.com/luanwolf/DozamigosLauncher/releases/latest"><img alt="Versão" src="https://img.shields.io/badge/vers%C3%A3o-0.1.3-a855f7"></a>
   <img alt="Plataforma" src="https://img.shields.io/badge/plataforma-Windows-2b3140">
   <a href="LICENSE"><img alt="Licença" src="https://img.shields.io/badge/licen%C3%A7a-GPL--3.0-2b3140"></a>
 </p>
@@ -35,15 +35,25 @@ Feito por **Heyash**.
 | Ofertas especiais | Promoções em dinheiro real da Epic e da PSN |
 | Vestiário | Filtro por categoria, prévia em vídeo do item e exportação do vestiário em imagem 1:1 |
 | Estatísticas e XP | Suas stats de BR e o XP ganho na temporada |
-| Extras | Mapa atual, status dos servidores, vazamentos, compra de V-Bucks e apoiar um criador |
+| Extras | Mapa atual, status dos servidores, vazamentos (por dia, com prévia e exportação), compra de V-Bucks e apoiar um criador |
 
 ### Salve o Mundo (STW)
 
-- **Alertas de missão** com as recompensas da rotação atual.
+- **Alertas de missão** com as recompensas da rotação atual (carregam com a conta logada).
+- **Elementais (Sprites)** da temporada atual, com prévia e variantes locais.
 - **Lhamas grátis** com resgate automático: o launcher varre as contas de hora em hora (no horário UTC) e resgata para todo mundo que deixou a opção ligada, com histórico dos itens recebidos.
 - **Loja do STW** (incluindo lhamas com Fichas Raio-X) e **missões diárias**.
 - **Auto-kick**: sai da missão na hora, resgata as recompensas, transfere materiais e convida seus amigos quando a missão acaba.
 - Ferramentas extras: Party, Taxi Service, Boosts de XP, Matchmaking Track, World Info e desbloqueio de SSD.
+
+### Notificações do Windows
+
+Com a opção ligada em _Ajustes_, o launcher avisa no Windows (mesmo visual dos toasts nativos) quando:
+
+- há **V-Bucks** nas missões do STW ou a rotação de alertas muda;
+- as **missões diárias** resetam;
+- aparecem ou são resgatadas **lhamas grátis**;
+- a **loja do BR** atualiza.
 
 ### Conta e Epic Games
 
