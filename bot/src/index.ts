@@ -19,8 +19,8 @@ const client = new Client({
     activities: [
       {
         type: ActivityType.Custom,
-        name: 'Dozamigos',
-        state: 'Fortnite'
+        name: 'custom',
+        state: '◈  /ajuda'
       }
     ],
     status: PresenceUpdateStatus.Online

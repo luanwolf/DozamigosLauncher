@@ -1,4 +1,4 @@
-import { Locale, resolveColor } from 'discord.js';
+import { Locale } from 'discord.js';
 import type { Level } from 'pino';
 import * as v from 'valibot';
 import { logger } from '@/shared/logger';
@@ -74,10 +74,5 @@ export const config = {
     }
   },
   encryptionKey: parsed.output.ENCRYPTION_KEY,
-  fortniteApiKey: parsed.output.FORTNITE_API_KEY ?? '',
-  embedColors: {
-    default: resolveColor('#5865F2'),
-    error: resolveColor('#F04A47'),
-    success: resolveColor('#56B849')
-  }
+  fortniteApiKey: parsed.output.FORTNITE_API_KEY ?? ''
 } as const;

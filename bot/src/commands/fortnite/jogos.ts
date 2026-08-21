@@ -1,10 +1,4 @@
-import {
-  ActionRowBuilder,
-  ButtonBuilder,
-  ButtonStyle,
-  EmbedBuilder,
-  SlashCommandBuilder
-} from 'discord.js';
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, SlashCommandBuilder } from 'discord.js';
 import type { TFunction } from 'i18next';
 import { getCachedToken, getExchangeCode } from '@/fortnite/auth';
 import {
@@ -15,22 +9,12 @@ import {
   formatBRL,
   type FreeGame
 } from '@/fortnite/free-games';
-import { config } from '@/shared/config';
 import { getLinkedAccount } from '@/store/accounts';
+import { discordTime } from '@/ui/theme';
+import type { UiCard } from '@/ui/message';
 import { rateLimit } from '@/utils/account';
-import { sendError } from '@/utils/send-embed';
+import { sendCards, sendError } from '@/utils/send-embed';
 import { defineCommand } from '@/utils/type-guards';
-
-function untilLabel(iso: string) {
-  return new Date(iso).toLocaleString('pt-BR', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-}
 
 async function claimUrl(games: { namespace: string; id: string }[], userId: string) {
   const purchase = buildStorePurchaseUrl(games);
@@ -45,21 +29,23 @@ async function claimUrl(games: { namespace: string; id: string }[], userId: stri
   }
 }
 
-function gameEmbed(game: FreeGame, t: TFunction<'commands'>) {
+function gameCard(game: FreeGame, t: TFunction<'commands'>, footer?: string): UiCard {
   const original = formatBRL(game.originalPrice);
   const current = game.currentPrice === 0 ? t('gratis.free') : formatBRL(game.currentPrice);
-  const embed = new EmbedBuilder()
-    .setColor(config.embedColors.default)
-    .setTitle(game.title)
-    .setURL(game.storeUrl)
-    .addFields(
-      { name: t('gratis.original'), value: original, inline: true },
+  return {
+    title: game.title,
+    description: game.description ? game.description.slice(0, 300) : undefined,
+    image: game.cover || undefined,
+    footer,
+    fields: [
+      { name: t('gratis.original'), value: `~~${original}~~`, inline: true },
       { name: t('gratis.current'), value: `**${current}**`, inline: true },
-      { name: t('gratis.until'), value: untilLabel(game.endDate), inline: false }
-    );
-  if (game.description) embed.setDescription(game.description.slice(0, 300));
-  if (game.cover) embed.setImage(game.cover);
-  return embed;
+      {
+        name: t('gratis.until'),
+        value: `${discordTime(game.endDate, 'F')} · ${discordTime(game.endDate, 'R')}`
+      }
+    ]
+  };
 }
 
 export default defineCommand({
@@ -77,14 +63,21 @@ export default defineCommand({
     const account = getLinkedAccount(interaction.user.id);
     const url = await claimUrl(games, interaction.user.id);
     const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
-      new ButtonBuilder().setStyle(ButtonStyle.Link).setURL(url).setLabel(t('gratis.claim'))
+      new ButtonBuilder().setStyle(ButtonStyle.Link).setURL(url).setLabel(t('gratis.claim')).setEmoji('🎁')
     );
 
-    const embeds = games.slice(0, 10).map((game) => gameEmbed(game, t));
-    embeds[0]?.setFooter({
-      text: account ? t('gratis.captionLoggedIn', { name: account.displayName }) : t('gratis.caption')
-    });
+    const cards = games.slice(0, 10).map((game, i) =>
+      gameCard(
+        game,
+        t,
+        i === 0
+          ? account
+            ? t('gratis.captionLoggedIn', { name: account.displayName })
+            : t('gratis.caption')
+          : undefined
+      )
+    );
 
-    return interaction.editReply({ embeds, components: [row] });
+    return sendCards(interaction, cards, { components: [row] });
   }
 });

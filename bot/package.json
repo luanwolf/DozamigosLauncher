@@ -6,7 +6,7 @@
   "scripts": {
     "start": "tsx src/index.ts",
     "register": "tsx src/register-commands.ts",
-    "selfcheck": "tsx src/fortnite/overview-parse.selfcheck.ts && tsx src/fortnite/stw-resources.selfcheck.ts && tsx src/fortnite/stw-alerts.selfcheck.ts && tsx src/fortnite/free-games.selfcheck.ts && tsx src/fortnite/locker.selfcheck.ts && tsx src/canvas/grid.selfcheck.ts && tsx src/confirm.selfcheck.ts",
+    "selfcheck": "tsx src/fortnite/overview-parse.selfcheck.ts && tsx src/fortnite/stw-resources.selfcheck.ts && tsx src/fortnite/stw-alerts.selfcheck.ts && tsx src/fortnite/free-games.selfcheck.ts && tsx src/fortnite/locker.selfcheck.ts && tsx src/canvas/grid.selfcheck.ts && tsx src/ui/message.selfcheck.ts && tsx src/confirm.selfcheck.ts",
     "lint": "biome lint",
     "format": "biome check --write",
     "typecheck": "tsc",

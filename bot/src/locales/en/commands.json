@@ -12,7 +12,8 @@
       "conta": "Account",
       "stw": "Save the World"
     },
-    "links": { "title": "Links", "supportServer": "Support", "invite": "Invite" }
+    "links": { "title": "Links", "supportServer": "Support", "invite": "Invite" },
+    "inspect": "Inspect a command"
   },
   "ping": { "pong": "Pong!", "roundtrip": "Roundtrip", "gateway": "Gateway" },
   "login": {

@@ -1,7 +1,7 @@
-import { EmbedBuilder, SlashCommandBuilder } from 'discord.js';
+import { SlashCommandBuilder } from 'discord.js';
 import { fetchVbucks } from '@/fortnite/vbucks';
-import { config } from '@/shared/config';
 import { requireAccount } from '@/utils/account';
+import { sendInfo } from '@/utils/send-embed';
 import { defineCommand } from '@/utils/type-guards';
 
 export default defineCommand({
@@ -12,16 +12,15 @@ export default defineCommand({
     if (!account) return;
     await interaction.deferReply();
     const v = await fetchVbucks(account);
-    const embed = new EmbedBuilder()
-      .setColor(config.embedColors.default)
-      .setTitle(t('vbucks.title'))
-      .setDescription(`**${v.total.toLocaleString('pt-BR')}**`)
-      .addFields(
-        { name: t('vbucks.purchased'), value: String(v.purchased), inline: true },
-        { name: t('vbucks.earned'), value: String(v.earned), inline: true },
-        { name: t('vbucks.other'), value: String(v.other), inline: true },
-        { name: t('vbucks.platform'), value: v.platform, inline: true }
-      );
-    return interaction.editReply({ embeds: [embed] });
+    return sendInfo(interaction, {
+      title: t('vbucks.title'),
+      description: `# ${v.total.toLocaleString('pt-BR')}`,
+      fields: [
+        { name: t('vbucks.purchased'), value: `\`${v.purchased.toLocaleString('pt-BR')}\`` },
+        { name: t('vbucks.earned'), value: `\`${v.earned.toLocaleString('pt-BR')}\`` },
+        { name: t('vbucks.other'), value: `\`${v.other.toLocaleString('pt-BR')}\`` },
+        { name: t('vbucks.platform'), value: `\`${v.platform}\`` }
+      ]
+    });
   }
 });

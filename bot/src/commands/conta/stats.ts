@@ -1,7 +1,7 @@
-import { EmbedBuilder, SlashCommandBuilder } from 'discord.js';
+import { SlashCommandBuilder } from 'discord.js';
 import { fetchBrStats } from '@/fortnite/stats';
-import { config } from '@/shared/config';
 import { requireAccount } from '@/utils/account';
+import { sendInfo } from '@/utils/send-embed';
 import { defineCommand } from '@/utils/type-guards';
 
 export default defineCommand({
@@ -12,16 +12,15 @@ export default defineCommand({
     if (!account) return;
     await interaction.deferReply();
     const stats = await fetchBrStats(account);
-    const embed = new EmbedBuilder()
-      .setColor(config.embedColors.default)
-      .setTitle(stats.displayName)
-      .addFields(
-        { name: t('stats.wins'), value: String(stats.wins), inline: true },
-        { name: t('stats.kills'), value: String(stats.kills), inline: true },
-        { name: 'K/D', value: stats.kd.toFixed(2), inline: true },
-        { name: t('stats.matches'), value: String(stats.matches), inline: true },
-        { name: t('stats.winRate'), value: `${stats.winRate.toFixed(1)}%`, inline: true }
-      );
-    return interaction.editReply({ embeds: [embed] });
+    return sendInfo(interaction, {
+      title: stats.displayName,
+      fields: [
+        { name: t('stats.wins'), value: `\`${stats.wins}\`` },
+        { name: t('stats.kills'), value: `\`${stats.kills}\`` },
+        { name: 'K/D', value: `\`${stats.kd.toFixed(2)}\`` },
+        { name: t('stats.matches'), value: `\`${stats.matches}\`` },
+        { name: t('stats.winRate'), value: `\`${stats.winRate.toFixed(1)}%\`` }
+      ]
+    });
   }
 });
