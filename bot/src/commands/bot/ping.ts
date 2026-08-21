@@ -14,7 +14,10 @@ export default defineCommand({
 
     return sendInfo(interaction, {
       title: t('ping.pong'),
-      description: `${t('ping.roundtrip')}: **${latency}ms**\n${t('ping.gateway')}: **${interaction.client.ws.ping}ms**`
+      fields: [
+        { name: t('ping.roundtrip'), value: `\`${latency}ms\`` },
+        { name: t('ping.gateway'), value: `\`${interaction.client.ws.ping}ms\`` }
+      ]
     });
   }
 });

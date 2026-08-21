@@ -282,8 +282,10 @@ export async function renderGrid(opts: {
   const { canvas, ctx } = makeCanvas(out, out);
   if (out < size) ctx.scale(out / size, out / size);
 
-  ctx.fillStyle = '#0a1628';
+  ctx.fillStyle = '#070b12';
   ctx.fillRect(0, 0, size, size);
+  ctx.fillStyle = '#22d3ee';
+  ctx.fillRect(originX, originY + header - 3, size - originX * 2, 2);
   ctx.fillStyle = '#ffffff';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';

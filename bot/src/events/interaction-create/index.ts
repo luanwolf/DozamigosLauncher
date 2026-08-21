@@ -4,6 +4,7 @@ import i18next, { type TFunction } from 'i18next';
 import { handleConfirmButton, isConfirmButton } from '@/confirm';
 import { handleApplicationCommand } from '@/events/interaction-create/application-command';
 import { handleAutocomplete } from '@/events/interaction-create/autocomplete';
+import { HELP_SELECT_ID, handleHelpSelect } from '@/commands/bot/help';
 import type { Command } from '@/loaders/command';
 import { config } from '@/shared/config';
 import { resolveLanguage } from '@/utils/language';
@@ -18,6 +19,10 @@ export default defineEvent({
 
     if (interaction.isAutocomplete()) {
       return handleAutocomplete(interaction);
+    }
+
+    if (interaction.isStringSelectMenu() && interaction.customId === HELP_SELECT_ID) {
+      return handleHelpSelect(interaction);
     }
 
     if (interaction.isButton() && isConfirmButton(interaction.customId)) {

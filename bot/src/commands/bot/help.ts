@@ -1,18 +1,27 @@
 import {
+  ActionRowBuilder,
   ApplicationCommandOptionType,
-  EmbedBuilder,
+  ButtonBuilder,
+  ButtonStyle,
   OAuth2Scopes,
   PermissionFlagsBits,
   SlashCommandBuilder,
+  StringSelectMenuBuilder,
+  StringSelectMenuOptionBuilder,
   type APIApplicationCommandOption,
-  type Locale
+  type Client,
+  type Locale,
+  type StringSelectMenuInteraction
 } from 'discord.js';
+import i18next, { type TFunction } from 'i18next';
 import { commands, type Command } from '@/loaders/command';
 import { config } from '@/shared/config';
+import { replyUi, type UiRow } from '@/ui/message';
 import { resolveLanguage } from '@/utils/language';
 import { sendError } from '@/utils/send-embed';
 import { defineCommand } from '@/utils/type-guards';
 
+export const HELP_SELECT_ID = 'help:cmd';
 const CATEGORY_ORDER = ['fortnite', 'conta', 'stw', 'bot'] as const;
 
 function localized(
@@ -53,6 +62,97 @@ function findCommand(query: string, lang: Locale) {
   });
 }
 
+function inviteUrl(client: Client) {
+  return client.generateInvite({
+    permissions: [
+      PermissionFlagsBits.SendMessages,
+      PermissionFlagsBits.SendMessagesInThreads,
+      PermissionFlagsBits.EmbedLinks,
+      PermissionFlagsBits.AttachFiles,
+      PermissionFlagsBits.UseExternalEmojis
+    ],
+    scopes: [OAuth2Scopes.Bot, OAuth2Scopes.ApplicationsCommands]
+  });
+}
+
+function helpRows(client: Client, lang: Locale, t: TFunction<'commands'>) {
+  const links = new ActionRowBuilder<ButtonBuilder>().addComponents(
+    new ButtonBuilder().setStyle(ButtonStyle.Link).setURL(inviteUrl(client)).setLabel(t('help.links.invite')).setEmoji('🔗')
+  );
+  if (config.guilds.support.invite) {
+    links.addComponents(
+      new ButtonBuilder()
+        .setStyle(ButtonStyle.Link)
+        .setURL(config.guilds.support.invite)
+        .setLabel(t('help.links.supportServer'))
+        .setEmoji('🛠')
+    );
+  }
+
+  const publicCmds = [...commands.filter((c) => !c.config.botAdminsOnly).values()].slice(0, 25);
+  const select = new StringSelectMenuBuilder()
+    .setCustomId(HELP_SELECT_ID)
+    .setPlaceholder(t('help.inspect'))
+    .addOptions(
+      publicCmds.map((c) => {
+        const { name, description } = localized(c.data.toJSON(), lang);
+        return new StringSelectMenuOptionBuilder()
+          .setLabel(`/${name}`.slice(0, 100))
+          .setValue(c.data.name)
+          .setDescription(description.slice(0, 100));
+      })
+    );
+
+  return [links, new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(select)] as UiRow[];
+}
+
+function catalogDescription(lang: Locale, t: TFunction<'commands'>) {
+  const blocks = [t('help.embed.description')];
+  for (const category of CATEGORY_ORDER) {
+    const lines = [...commands.filter((c) => c.config.category === category && !c.config.botAdminsOnly).values()].flatMap(
+      (c) => commandLines(c, lang)
+    );
+    if (!lines.length) continue;
+    blocks.push(`**${t(`help.categories.${category}`)}**\n${lines.join('\n')}`);
+  }
+  return blocks.join('\n\n');
+}
+
+export async function handleHelpSelect(interaction: StringSelectMenuInteraction) {
+  const lang = resolveLanguage(interaction.locale);
+  const t = i18next.getFixedT(lang, 'commands');
+  const name = interaction.values[0] ?? '';
+  const cmd = findCommand(name, lang);
+  if (!cmd) {
+    return replyUi(
+      interaction,
+      { cards: [{ kind: 'error', description: t('help.commandNotFound', { name: `\`${name}\`` }) }], ephemeral: true },
+      'reply'
+    );
+  }
+  const { name: localName } = localized(cmd.data.toJSON(), lang);
+  return replyUi(
+    interaction,
+    {
+      cards: [
+        {
+          title: `/${localName}`,
+          description: commandLines(cmd, lang).join('\n'),
+          fields: [
+            {
+              name: t('help.details.title'),
+              value: `**${t('help.details.category')}**: ${t(`help.categories.${cmd.config.category}`)}`
+            }
+          ],
+          thumbnail: interaction.client.user.displayAvatarURL({ size: 256 })
+        }
+      ],
+      rows: helpRows(interaction.client, lang, t)
+    },
+    'update'
+  );
+}
+
 export default defineCommand({
   data: new SlashCommandBuilder()
     .setName('help')
@@ -64,59 +164,43 @@ export default defineCommand({
   run: async ({ interaction, t }) => {
     const lang = resolveLanguage(interaction.locale);
     const commandName = interaction.options.getString('command');
-    const embed = new EmbedBuilder()
-      .setColor(config.embedColors.default)
-      .setAuthor({ name: interaction.client.user.username, iconURL: interaction.client.user.displayAvatarURL() });
+    const avatar = interaction.client.user.displayAvatarURL({ size: 256 });
+    const rows = helpRows(interaction.client, lang, t);
 
     if (commandName) {
       const cmd = findCommand(commandName, lang);
       if (!cmd) {
         return sendError(interaction, t('help.commandNotFound', { name: `\`${commandName}\`` }));
       }
-
-      const json = cmd.data.toJSON();
-      const { name } = localized(json, lang);
-      embed
-        .setTitle(`/${name}`)
-        .setDescription(commandLines(cmd, lang).join('\n'))
-        .setFields({
-          name: t('help.details.title'),
-          value: `**${t('help.details.category')}**: ${t(`help.categories.${cmd.config.category}`)}`
-        });
-    } else {
-      const botInvite = interaction.client.generateInvite({
-        permissions: [
-          PermissionFlagsBits.SendMessages,
-          PermissionFlagsBits.SendMessagesInThreads,
-          PermissionFlagsBits.EmbedLinks,
-          PermissionFlagsBits.AttachFiles,
-          PermissionFlagsBits.UseExternalEmojis
+      const { name } = localized(cmd.data.toJSON(), lang);
+      return replyUi(interaction, {
+        cards: [
+          {
+            title: `/${name}`,
+            description: commandLines(cmd, lang).join('\n'),
+            fields: [
+              {
+                name: t('help.details.title'),
+                value: `**${t('help.details.category')}**: ${t(`help.categories.${cmd.config.category}`)}`
+              }
+            ],
+            thumbnail: avatar
+          }
         ],
-        scopes: [OAuth2Scopes.Bot, OAuth2Scopes.ApplicationsCommands]
-      });
-
-      embed.setTitle(t('help.embed.title')).setDescription(t('help.embed.description'));
-
-      for (const category of CATEGORY_ORDER) {
-        const lines = [...commands.filter((c) => c.config.category === category && !c.config.botAdminsOnly).values()].flatMap(
-          (c) => commandLines(c, lang)
-        );
-        if (!lines.length) continue;
-        embed.addFields({ name: t(`help.categories.${category}`), value: lines.join('\n') });
-      }
-
-      embed.addFields({
-        name: t('help.links.title'),
-        value: [
-          config.guilds.support.invite ? `🛠 [${t('help.links.supportServer')}](${config.guilds.support.invite})` : '',
-          `🔗 [${t('help.links.invite')}](${botInvite})`
-        ]
-          .filter(Boolean)
-          .join('\n')
+        rows
       });
     }
 
-    return interaction.reply({ embeds: [embed] });
+    return replyUi(interaction, {
+      cards: [
+        {
+          title: t('help.embed.title'),
+          description: catalogDescription(lang, t),
+          thumbnail: avatar
+        }
+      ],
+      rows
+    });
   },
   autocomplete: async ({ interaction }) => {
     const query = interaction.options.getFocused();

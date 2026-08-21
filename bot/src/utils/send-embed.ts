@@ -1,43 +1,44 @@
-import {
-  type ChatInputCommandInteraction,
-  type ColorResolvable,
-  EmbedBuilder,
-  type EmbedData,
-  MessageFlags,
-  resolveColor
-} from 'discord.js';
+import type { ChatInputCommandInteraction } from 'discord.js';
+import type { ActionRowBuilder, AttachmentBuilder, ColorResolvable, MessageActionRowComponentBuilder } from 'discord.js';
 import i18next from 'i18next';
-import { config } from '@/shared/config';
+import { replyUi, type UiCard } from '@/ui/message';
 import { resolveLanguage } from './language';
 
 export type EmbedType = 'error' | 'success' | 'info';
-export type EmbedOptions = Omit<EmbedData, 'image' | 'thumbnail' | 'color'> & {
+export type EmbedOptions = {
+  title?: string;
+  description?: string;
+  fields?: { name: string; value: string; inline?: boolean }[];
+  footer?: { text: string };
   image?: string;
   thumbnail?: string;
   color?: ColorResolvable;
   ephemeral?: boolean;
   language?: string;
+  components?: ActionRowBuilder<MessageActionRowComponentBuilder>[];
+  files?: AttachmentBuilder[];
 };
 
-export function buildEmbed(type: EmbedType, options: EmbedOptions) {
-  const emoji = type === 'error' ? ':x:' : type === 'success' ? ':white_check_mark:' : '';
+function toCard(type: EmbedType, options: EmbedOptions, language?: string): UiCard {
   let title = options.title;
   if (title == null && type !== 'info') {
     const titles = i18next.t(`embedTitles.${type}`, {
       returnObjects: true,
       ns: 'common',
-      lng: options.language
+      lng: language
     }) as string[];
-    title = `${emoji} ${titles[Math.floor(Math.random() * titles.length)]}`;
+    title = titles[Math.floor(Math.random() * titles.length)];
   }
-  const { image, thumbnail, color, ephemeral: _ephemeral, language: _language, ...rest } = options;
-  return new EmbedBuilder({
-    ...rest,
-    title: title || undefined,
-    color: resolveColor(color || (type === 'info' ? config.embedColors.default : config.embedColors[type])),
-    image: image ? { url: image } : undefined,
-    thumbnail: thumbnail ? { url: thumbnail } : undefined
-  });
+  return {
+    kind: type === 'info' ? 'info' : type,
+    title,
+    description: options.description,
+    fields: options.fields,
+    footer: options.footer?.text,
+    image: options.image,
+    thumbnail: options.thumbnail,
+    color: options.color
+  };
 }
 
 export async function sendEmbed(
@@ -45,21 +46,13 @@ export async function sendEmbed(
   type: EmbedType,
   optionsOrDesc: EmbedOptions | string
 ) {
-  if (typeof optionsOrDesc === 'string') {
-    optionsOrDesc = { description: optionsOrDesc };
-  }
-
+  if (typeof optionsOrDesc === 'string') optionsOrDesc = { description: optionsOrDesc };
   const language = resolveLanguage(optionsOrDesc.language || interaction.locale);
-  const embed = buildEmbed(type, { ...optionsOrDesc, language });
-
-  if (interaction.deferred || interaction.replied) {
-    return interaction.editReply({ embeds: [embed], components: [] });
-  }
-
-  return interaction.reply({
-    embeds: [embed],
-    components: [],
-    flags: optionsOrDesc.ephemeral ? [MessageFlags.Ephemeral] : undefined
+  return replyUi(interaction, {
+    cards: [toCard(type, optionsOrDesc, language)],
+    rows: optionsOrDesc.components,
+    files: optionsOrDesc.files,
+    ephemeral: optionsOrDesc.ephemeral
   });
 }
 
@@ -73,4 +66,17 @@ export async function sendSuccess(interaction: ChatInputCommandInteraction, opti
 
 export async function sendInfo(interaction: ChatInputCommandInteraction, optionsOrDesc: EmbedOptions | string) {
   return sendEmbed(interaction, 'info', optionsOrDesc);
+}
+
+export async function sendCards(
+  interaction: ChatInputCommandInteraction,
+  cards: UiCard[],
+  extras?: Pick<EmbedOptions, 'components' | 'files' | 'ephemeral'>
+) {
+  return replyUi(interaction, {
+    cards,
+    rows: extras?.components,
+    files: extras?.files,
+    ephemeral: extras?.ephemeral
+  });
 }

@@ -2,11 +2,10 @@ import {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
-  EmbedBuilder,
   type ButtonInteraction,
-  type ChatInputCommandInteraction,
-  MessageFlags
+  type ChatInputCommandInteraction
 } from 'discord.js';
+import { replyUi } from '@/ui/message';
 
 const TTL_MS = 60_000;
 
@@ -28,13 +27,9 @@ export function rememberConfirm(id: string, userId: string, run: () => Promise<s
 
 export function confirmRow(id: string, confirmLabel: string, cancelLabel: string) {
   return new ActionRowBuilder<ButtonBuilder>().addComponents(
-    new ButtonBuilder().setCustomId(`ok:${id}`).setLabel(confirmLabel).setStyle(ButtonStyle.Danger),
-    new ButtonBuilder().setCustomId(`no:${id}`).setLabel(cancelLabel).setStyle(ButtonStyle.Secondary)
+    new ButtonBuilder().setCustomId(`ok:${id}`).setLabel(confirmLabel).setStyle(ButtonStyle.Danger).setEmoji('✅'),
+    new ButtonBuilder().setCustomId(`no:${id}`).setLabel(cancelLabel).setStyle(ButtonStyle.Secondary).setEmoji('❌')
   );
-}
-
-function embed(description: string, color: number = 0x5865f2) {
-  return new EmbedBuilder().setColor(color).setDescription(description);
 }
 
 export async function askConfirm(
@@ -44,11 +39,10 @@ export async function askConfirm(
   const id = nonce();
   rememberConfirm(id, interaction.user.id, opts.run);
   const row = confirmRow(id, opts.confirmLabel ?? 'Confirmar', opts.cancelLabel ?? 'Cancelar');
-  const payload = { embeds: [embed(opts.description)], components: [row] };
-  if (interaction.deferred || interaction.replied) {
-    return interaction.editReply(payload);
-  }
-  return interaction.reply(payload);
+  return replyUi(interaction, {
+    cards: [{ kind: 'warn', title: 'Confirmar', description: opts.description }],
+    rows: [row]
+  });
 }
 
 /** Pure: who can press, and whether the nonce is still live. */
@@ -70,32 +64,37 @@ export async function handleConfirmButton(interaction: ButtonInteraction) {
   if (!resolved.ok) {
     const description =
       resolved.reason === 'wrong-user' ? 'Só quem pediu a ação pode confirmar.' : 'Esse pedido expirou.';
-    return interaction.reply({
-      embeds: [embed(description, 0xf04a47)],
-      flags: MessageFlags.Ephemeral
-    });
+    return replyUi(
+      interaction,
+      {
+        cards: [{ kind: 'error', title: 'Bloqueado', description }],
+        ephemeral: true
+      },
+      'reply'
+    );
   }
 
   pending.delete(resolved.id);
   if (resolved.kind === 'no') {
-    return interaction.update({
-      embeds: [embed('Cancelado.', 0xf04a47)],
-      components: []
-    });
+    return replyUi(
+      interaction,
+      {
+        cards: [{ kind: 'error', title: 'Cancelado', description: 'Nada foi alterado.' }]
+      },
+      'update'
+    );
   }
 
   await interaction.deferUpdate();
   try {
     const message = await resolved.item.run();
-    await interaction.editReply({
-      embeds: [embed(message, 0x56b849).setTitle('Pronto')],
-      components: []
+    return replyUi(interaction, {
+      cards: [{ kind: 'success', title: 'Pronto', description: message }]
     });
   } catch (error) {
     const detail = error instanceof Error ? error.message : String(error);
-    await interaction.editReply({
-      embeds: [embed(detail, 0xf04a47).setTitle('Erro')],
-      components: []
+    return replyUi(interaction, {
+      cards: [{ kind: 'error', title: 'Erro', description: detail }]
     });
   }
 }

@@ -1,14 +1,8 @@
-import {
-  ActionRowBuilder,
-  ButtonBuilder,
-  ButtonStyle,
-  MessageFlags,
-  SlashCommandBuilder
-} from 'discord.js';
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags, SlashCommandBuilder } from 'discord.js';
 import { createDeviceCode, pollDeviceLogin } from '@/fortnite/auth';
 import { errorDetail } from '@/fortnite/errors';
 import { getLinkedAccount, saveLinkedAccount } from '@/store/accounts';
-import { buildEmbed, sendError, sendSuccess } from '@/utils/send-embed';
+import { sendError, sendInfo, sendSuccess } from '@/utils/send-embed';
 import { defineCommand } from '@/utils/type-guards';
 
 export default defineCommand({
@@ -23,16 +17,16 @@ export default defineCommand({
 
     const device = await createDeviceCode();
     const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
-      new ButtonBuilder().setStyle(ButtonStyle.Link).setURL(device.verification_uri_complete).setLabel(t('login.openEpic'))
+      new ButtonBuilder()
+        .setStyle(ButtonStyle.Link)
+        .setURL(device.verification_uri_complete)
+        .setLabel(t('login.openEpic'))
+        .setEmoji('🔗')
     );
 
-    await interaction.editReply({
-      embeds: [
-        buildEmbed('info', {
-          title: t('login.title'),
-          description: t('login.prompt', { code: device.user_code })
-        })
-      ],
+    await sendInfo(interaction, {
+      title: t('login.title'),
+      description: t('login.prompt', { code: device.user_code }),
       components: [row]
     });
 

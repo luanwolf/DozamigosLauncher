@@ -1,6 +1,6 @@
-import { EmbedBuilder, SlashCommandBuilder } from 'discord.js';
+import { SlashCommandBuilder } from 'discord.js';
 import { fetchSeasonInfo } from '@/fortnite/public';
-import { config } from '@/shared/config';
+import { sendInfo } from '@/utils/send-embed';
 import { defineCommand } from '@/utils/type-guards';
 
 export default defineCommand({
@@ -9,14 +9,10 @@ export default defineCommand({
   run: async ({ interaction, t }) => {
     await interaction.deferReply();
     const season = await fetchSeasonInfo();
-    const embed = new EmbedBuilder()
-      .setColor(config.embedColors.default)
-      .setTitle(season.name)
-      .setDescription(
-        season.daysRemaining != null
-          ? t('temporada.days', { days: season.daysRemaining })
-          : t('temporada.current')
-      );
-    return interaction.editReply({ embeds: [embed] });
+    return sendInfo(interaction, {
+      title: season.name,
+      description:
+        season.daysRemaining != null ? t('temporada.days', { days: season.daysRemaining }) : t('temporada.current')
+    });
   }
 });

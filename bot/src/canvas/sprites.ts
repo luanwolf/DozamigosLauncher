@@ -59,8 +59,10 @@ export async function renderSpriteAlbum(opts: {
   const height = HEADER + PAD + NAME_ROW + gridH + PAD + FOOTER;
   const { canvas, ctx } = makeCanvas(width, height, SCALE);
 
-  ctx.fillStyle = '#0a1628';
+  ctx.fillStyle = '#070b12';
   ctx.fillRect(0, 0, width, height);
+  ctx.fillStyle = '#22d3ee';
+  ctx.fillRect(PAD, 118, width - PAD * 2, 2);
   ctx.fillStyle = '#ffffff';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
