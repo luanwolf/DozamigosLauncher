@@ -1,0 +1,88 @@
+{
+  "help": {
+    "name": "help",
+    "description": "View bot commands",
+    "options": {
+      "command": { "name": "command", "description": "Command to inspect" }
+    }
+  },
+  "ping": { "name": "ping", "description": "Bot latency" },
+  "login": { "name": "login", "description": "Link your Epic account (only you see the reply)" },
+  "logout": { "name": "logout", "description": "Unlink your Epic account" },
+  "conta": { "name": "account", "description": "Fortnite account overview" },
+  "loja": { "name": "shop", "description": "Today's item shop (image)" },
+  "jogos": {
+    "name": "games",
+    "description": "Epic Games Store",
+    "options": {
+      "gratis": { "name": "free", "description": "Epic Store free games (image + claim)" }
+    }
+  },
+  "vazamentos": { "name": "leaks", "description": "New cosmetics (image)" },
+  "mapa": { "name": "map", "description": "Current island map" },
+  "status": { "name": "status", "description": "Server status" },
+  "temporada": { "name": "season", "description": "Current season" },
+  "elementais": { "name": "sprites", "description": "Your Sprite album" },
+  "vestiario": {
+    "name": "locker",
+    "description": "Locker collage by category",
+    "options": {
+      "categoria": {
+        "name": "category",
+        "description": "Item type",
+        "choices": {
+          "outfits": "Outfits",
+          "backpacks": "Back blings",
+          "pickaxes": "Pickaxes",
+          "gliders": "Gliders",
+          "emotes": "Emotes",
+          "wraps": "Wraps",
+          "auras": "Aura",
+          "pets": "Pets",
+          "shoes": "Shoes"
+        }
+      }
+    }
+  },
+  "stats": { "name": "stats", "description": "Battle Royale stats" },
+  "vbucks": { "name": "vbucks", "description": "V-Bucks balance" },
+  "stw": {
+    "name": "stw",
+    "description": "Save the World",
+    "options": {
+      "recursos": { "name": "resources", "description": "STW resources (image)" },
+      "alertas": { "name": "alerts", "description": "Today's V-Bucks mission alerts" },
+      "missoes": { "name": "quests", "description": "Daily and claimable quests" },
+      "lhama": { "name": "llama", "description": "Open free llamas" },
+      "resgatar": { "name": "claim", "description": "Claim completed quests" }
+    }
+  },
+  "passe": {
+    "name": "pass",
+    "description": "Battle Pass",
+    "options": {
+      "ver": { "name": "view", "description": "Pending offers" },
+      "resgatar": { "name": "claim", "description": "Claim with battle stars" }
+    }
+  },
+  "mfa": {
+    "name": "mfa",
+    "description": "Claim 2FA reward",
+    "options": { "modo": { "name": "mode", "description": "BR or STW" } }
+  },
+  "codigo": {
+    "name": "code",
+    "description": "Redeem an Epic code",
+    "options": { "codigo": { "name": "code", "description": "Code" } }
+  },
+  "criador": {
+    "name": "creator",
+    "description": "View or set Support-a-Creator",
+    "options": { "codigo": { "name": "code", "description": "Creator code" } }
+  },
+  "comprar": {
+    "name": "buy",
+    "description": "Buy a shop item with V-Bucks",
+    "options": { "item": { "name": "item", "description": "Shop item" } }
+  }
+}

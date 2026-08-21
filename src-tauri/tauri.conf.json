@@ -26,8 +26,8 @@
     "security": {
       "csp": {
         "default-src": "'self'",
-        "connect-src": "http://ipc.localhost http://tauri.localhost https://*.epicgames.com https://*.live.on.epicgames.com https://*.ogs.live.on.epicgames.com wss://xmpp-service-prod.ol.epicgames.com https://fortnite-api.com https://prod.api-fortnite.com https://fnbr.co https://fortnite.gg https://fnggcdn.com https://store.steampowered.com",
-        "img-src": "'self' https://*.epicgames.com https://fortnite-api.com https://*.fortnite-api.com https://fortnite.gg https://fnggcdn.com https://image.fnbr.co https://media.fortniteapi.io https://*.unrealengine.com https://*.steamstatic.com",
+        "connect-src": "http://ipc.localhost http://tauri.localhost https://*.epicgames.com https://*.epicgames.dev https://api.epicgames.dev https://*.live.on.epicgames.com https://*.ogs.live.on.epicgames.com wss://xmpp-service-prod.ol.epicgames.com https://fortnite-api.com https://prod.api-fortnite.com https://fnbr.co https://fortnite.gg https://fnggcdn.com https://store.steampowered.com",
+        "img-src": "'self' https://*.epicgames.com https://fortnite-api.com https://*.fortnite-api.com https://fortnite.gg https://fnggcdn.com https://image.fnbr.co https://media.fortniteapi.io https://ucs-images.fortnite.com https://*.unrealengine.com https://*.steamstatic.com",
         "media-src": "'self' blob: https://fnggcdn.com https://ucs-images.fortnite.com https://*.unrealengine.com",
         "style-src": "'self' 'unsafe-inline' https://fonts.googleapis.com",
         "font-src": "'self' https://fonts.gstatic.com data:"

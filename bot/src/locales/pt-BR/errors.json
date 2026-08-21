@@ -1,0 +1,13 @@
+{
+  "botAdminsOnly": "Só administradores do bot podem usar isso.",
+  "dmOnly": "Use este comando no privado.",
+  "guildOnly": "Use este comando num servidor.",
+  "supportServerOnly": "Só no [servidor de suporte]({invite}).",
+  "permissions": {
+    "missingMember": "Você precisa destas permissões: {permissions}",
+    "missingBot": "O bot precisa destas permissões: {permissions}"
+  },
+  "generic": "Algo deu errado. Tenta de novo.",
+  "needLogin": "Vincule a conta Epic com `/login` no privado.",
+  "slowDown": "Espera uns segundos... gerar a imagem custa caro."
+}

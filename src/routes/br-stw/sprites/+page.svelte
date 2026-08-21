@@ -12,12 +12,11 @@
   import { ItemColors } from '$lib/constants/item-colors';
   import { HUD_PAGE_WIDTH } from '$lib/constants/page-layout';
   import { t } from '$lib/i18n';
-  import { exportLockerCategoryWebp, type LockerExportItem } from '$lib/modules/locker-export';
+  import { fetchSpriteAccountState, SPRITE_DUST_ICON, type SpriteResources } from '$lib/modules/sprites-account';
+  import { exportSpriteAlbumWebp } from '$lib/modules/sprites-export';
   import {
-    fetchSpriteProgress,
     readSpriteCollection,
     SPRITE_ENTRIES,
-    spriteShortName,
     writeSpriteCollection,
     type SpriteEntry,
     type SpriteProgress,
@@ -45,13 +44,15 @@
   let search = $state('');
   let rarity = $state<RarityFilter>('all');
   let variant = $state<VariantFilter>('all');
-  let status = $state<StatusFilter>('all');
+  let status = $state<StatusFilter>('extracted');
   let showCollectionInfo = $state(false);
   let hideCollectionInfo = $state(false);
   let isExporting = $state(false);
   let exportPercent = $state(0);
   let lastExportPath = $state<string | null>(null);
   let previewEntry = $state<SpriteEntry | null>(null);
+  let resources = $state<SpriteResources>({ dust: 0, gizmos: [] });
+  let levels = $state<Record<string, number>>({});
 
   const COLLECTION_INFO_DISMISSED = 'dozamigos:elementals-info-dismissed';
 
@@ -70,7 +71,9 @@
 
   /** Epic only proves extraction for the base Sprite; variants stay on manual marks. */
   const isAutoExtracted = (entry: (typeof SPRITE_ENTRIES)[number]) =>
-    progress.mastered.has(entry.key) || (entry.variant === 'base' && progress.extracted.has(entry.slug));
+    progress.mastered.has(entry.key) ||
+    (entry.variant === 'base' && progress.extracted.has(entry.slug)) ||
+    levels[entry.key] != null;
 
   const isExtracted = (entry: (typeof SPRITE_ENTRIES)[number]) => extracted.has(entry.key) || isAutoExtracted(entry);
   const isMastered = (entry: (typeof SPRITE_ENTRIES)[number]) =>
@@ -123,46 +126,29 @@
 
   async function exportCollection() {
     if (!$activeAccount || isExporting) return;
-    // Exports exactly what the filters are showing, so each status can be its own image.
-    const items: LockerExportItem[] = filtered.map((entry) => ({
-      itemId: entry.key,
-      templateId: entry.key,
-      cosmeticId: entry.key,
-      name: `${spriteShortName(entry.name)} · ${variantLabels[entry.variant]}`,
-      note: isMastered(entry)
-        ? $t('sprites.mastery.mastered')
-        : isExtracted(entry)
-          ? $t('sprites.extracted')
-          : $t('sprites.export.pending'),
-      faded: !isExtracted(entry),
-      description: '',
-      rarity: entry.rarity,
-      styles: [],
-      imageUrl: entry.image,
-      favorite: false,
-      equippedSlots: []
-    }));
 
-    if (!items.length) {
-      toast.info($t('sprites.export.empty'));
-      return;
-    }
+    const ownedKeys = new Set<string>([
+      ...extracted,
+      ...progress.mastered,
+      ...[...progress.extracted].map((slug) => `${slug}:base`),
+      ...Object.keys(levels)
+    ]);
 
     isExporting = true;
     exportPercent = 0;
     lastExportPath = null;
     try {
-      const result = await exportLockerCategoryWebp({
-        items,
-        categorySlug: 'elementais',
-        categoryLabel: $t('sprites.page.title'),
+      const result = await exportSpriteAlbumWebp({
         accountLabel: $activeAccount.displayName,
+        ownedKeys,
+        levels,
+        resources,
         onProgress: ({ done, total }) => {
           exportPercent = total > 0 ? Math.round((done / total) * 100) : 0;
         }
       });
       lastExportPath = result.path;
-      toast.success($t('sprites.export.done', { count: result.count }));
+      toast.success($t('sprites.export.done', { count: result.owned }));
     } catch (error) {
       handleError({ error, message: $t('sprites.export.failed'), account: $activeAccount });
     } finally {
@@ -202,12 +188,17 @@
   $effect(() => {
     const account = $activeAccount;
     progress = { mastered: new Set(), extracted: new Set() };
+    resources = { dust: 0, gizmos: [] };
+    levels = {};
     if (!account) return;
 
     let cancelled = false;
-    fetchSpriteProgress(account)
+    fetchSpriteAccountState(account)
       .then((result) => {
-        if (!cancelled) progress = result;
+        if (cancelled) return;
+        progress = { mastered: result.mastered, extracted: result.extracted };
+        resources = result.resources;
+        levels = result.levels;
       })
       .catch((error) => handleError({ error, message: $t('sprites.mastery.failed'), account }));
 
@@ -237,7 +228,7 @@
   {#snippet actions()}
     {#if $activeAccount}
       <PageActionButton
-        disabled={isExporting || filtered.length === 0}
+        disabled={isExporting}
         label={$t('sprites.export.button')}
         loading={isExporting}
         onclick={() => exportCollection()}
@@ -310,7 +301,35 @@
       </select>
     </div>
 
-    <p class="text-xs text-muted-foreground">{$t('sprites.results', { count: filtered.length })}</p>
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <p class="text-xs text-muted-foreground">{$t('sprites.results', { count: filtered.length })}</p>
+      {#if $activeAccount}
+        {#if resources.dust > 0 || resources.gizmos.some((gizmo) => gizmo.quantity > 0)}
+        <div class="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+          <span
+            class="inline-flex items-center gap-1 rounded-md border border-border/50 bg-background/60 px-1.5 py-0.5"
+            title={$t('sprites.resources.dust')}
+          >
+            <img src={SPRITE_DUST_ICON} alt="" class="size-5 object-contain" />
+            <strong class="text-foreground tabular-nums">{resources.dust}</strong>
+          </span>
+          {#each resources.gizmos as gizmo (gizmo.id)}
+            <span
+              class="inline-flex items-center gap-1 rounded-md border border-border/50 bg-background/60 px-1.5 py-0.5"
+              title={gizmo.label}
+            >
+              {#if gizmo.iconUrl}
+                <img src={gizmo.iconUrl} alt="" class="size-5 object-contain" />
+              {/if}
+              <strong class="text-foreground tabular-nums">{gizmo.quantity}</strong>
+            </span>
+          {/each}
+        </div>
+        {:else}
+          <p class="max-w-xl text-xs text-muted-foreground">{$t('sprites.resources.magpieLocked')}</p>
+        {/if}
+      {/if}
+    </div>
 
     <div class="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
       {#each filtered as entry (entry.key)}
@@ -333,7 +352,20 @@
               previewEntry = entry;
             }}
           >
-            <img class="aspect-square w-full object-cover" alt={entry.name} loading="lazy" src={entry.image} />
+            <img
+              class="aspect-square w-full object-contain p-1"
+              alt={entry.name}
+              loading="lazy"
+              src={entry.image}
+            />
+            {#if levels[entry.key] >= 1 && levels[entry.key] <= 5}
+              <span
+                class="absolute top-2 left-2 rounded bg-black/80 px-1.5 py-0.5 text-[10px] font-bold tracking-wide text-cyan-300"
+                title={$t('sprites.level', { level: levels[entry.key] })}
+              >
+                {$t('sprites.level', { level: levels[entry.key] })}
+              </span>
+            {/if}
             {#if hasMastery}
               <span
                 class="absolute top-2 right-2 flex size-6 items-center justify-center rounded-full bg-amber-400 text-black shadow"

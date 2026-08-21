@@ -30,6 +30,18 @@
 					"url": "https://*.ogs.live.on.epicgames.com/*"
 				},
 				{
+					"url": "https://api.epicgames.dev"
+				},
+				{
+					"url": "https://api.epicgames.dev/*"
+				},
+				{
+					"url": "https://*.epicgames.dev"
+				},
+				{
+					"url": "https://*.epicgames.dev/*"
+				},
+				{
 					"url": "https://fortnite-api.com"
 				},
 				{

@@ -252,7 +252,98 @@
     "earned": "Ganhos",
     "other": "Outros",
     "loginExpired": "Sessão expirada. Faça login novamente.",
-    "unknownError": "Erro desconhecido"
+    "unknownError": "Erro desconhecido",
+    "platformTitle": "Plataforma de V-Bucks",
+    "platformDescription": "Define onde a loja cobra V-Bucks (útil para contas compartilhadas entre plataformas).",
+    "platformLabel": "Plataforma",
+    "platformCurrent": "Atual: {platform}",
+    "platformSave": "Salvar plataforma",
+    "platformSaved": "Plataforma alterada para {platform}.",
+    "platformLoadFailed": "Não foi possível carregar a plataforma de V-Bucks.",
+    "platformSaveFailed": "Não foi possível alterar a plataforma de V-Bucks.",
+    "platforms": {
+      "EpicPC": "Epic PC",
+      "Epic": "Epic",
+      "EpicPCKorea": "Epic PC Coreia",
+      "PSN": "PlayStation",
+      "Live": "Xbox",
+      "Nintendo": "Nintendo",
+      "IOSAppStore": "iOS",
+      "EpicAndroid": "Android",
+      "Samsung": "Samsung",
+      "Shared": "Shared",
+      "wegame": "WeGame"
+    }
+  },
+  "accountOverview": {
+    "page": {
+      "title": "Visão geral",
+      "description": "Resumo BR e STW da conta ativa, com claim de recompensa 2FA."
+    },
+    "refresh": "Atualizar",
+    "loadFailed": "Não foi possível carregar a visão geral.",
+    "tabs": {
+      "br": "Battle Royale",
+      "stw": "Salve o Mundo"
+    },
+    "br": {
+      "title": "Battle Royale",
+      "accountLevel": "Nível da conta",
+      "season": "Temporada {season}",
+      "battlePass": "Passe",
+      "freePass": "Passe grátis",
+      "battleStars": "Estrelas de batalha",
+      "gold": "Ouro",
+      "supercharged": "XP supercharged",
+      "superchargedValue": "{xp} XP · multiplicador {mult}",
+      "lastMatch": "Última partida"
+    },
+    "stw": {
+      "title": "Salve o Mundo",
+      "unavailable": "Não foi possível carregar o perfil de campanha.",
+      "accountLevel": "Nível da conta",
+      "backpack": "Mochila",
+      "storage": "Armazenamento",
+      "zones": "Zonas concluídas",
+      "collectionBook": "Livro de coleção",
+      "researchPoints": "Pontos de pesquisa",
+      "fort": "FORT",
+      "research": "Pesquisa",
+      "ssd": "SSD concluídos",
+      "endurance": "Endurance",
+      "enduranceMissing": "Não concluído"
+    },
+    "mfa": {
+      "title": "Recompensa 2FA",
+      "description": "Resgate único após ativar autenticação em dois fatores na Epic.",
+      "claimBr": "Resgatar BR",
+      "claimStw": "Resgatar STW",
+      "alreadyBr": "BR já resgatado",
+      "alreadyStw": "STW já resgatado",
+      "claimedBr": "Recompensa 2FA do BR resgatada.",
+      "claimedStw": "Recompensa 2FA do STW resgatada.",
+      "failed": "Não foi possível resgatar a recompensa 2FA. Confira se o 2FA está ativo.",
+      "need2fa": "Ative o 2FA na conta Epic antes de resgatar."
+    }
+  },
+  "stwResources": {
+    "page": {
+      "title": "Recursos STW",
+      "description": "Inventário de recursos da campanha, com exportação em imagem."
+    },
+    "refresh": "Atualizar",
+    "loadFailed": "Não foi possível carregar os recursos.",
+    "search": "Buscar recurso...",
+    "empty": "Nenhum recurso na conta.",
+    "searchEmpty": "Nenhum recurso encontrado.",
+    "count": "{count} recursos",
+    "powerLabel": "PL {power}",
+    "exportWebp": "Exportar imagem",
+    "exportTitle": "Recursos STW",
+    "exportProgress": "Gerando imagem… {percent}%",
+    "exported": "Imagem exportada com {count} recursos.",
+    "exportFailed": "Não foi possível exportar a imagem.",
+    "openExport": "Abrir imagem"
   },
   "deviceAuth": {
     "page": {
@@ -540,6 +631,26 @@
     "resetsAt": "Reinicia em {time}",
     "summaryAccounts": "{count} conta(s)"
   },
+  "battlePassRewards": {
+    "page": {
+      "title": "Passe de Batalha",
+      "description": "Veja o progresso e resgate ofertas do passe nas contas selecionadas."
+    },
+    "check": "Verificar status",
+    "loading": "Carregando…",
+    "claim": "Resgatar",
+    "claimAll": "Resgatar todas",
+    "claimFailed": "Não foi possível resgatar a oferta do passe.",
+    "claimedToast": "Resgatado(s) {count} item(ns).",
+    "hint": "O auto-resgatar da Epic foi desativado. Resgate oferta a oferta (ou todas da conta). Recompensas de página que não aparecem no catálogo ainda precisam ser resgatadas no jogo; no fim da temporada a Epic concede o que ficou pendente.",
+    "level": "Nível {level}",
+    "season": "Temporada {season}",
+    "purchased": "Passe comprado",
+    "freeTrack": "Trilha gratuita",
+    "stars": "{count} estrelas",
+    "offerPrice": "{price} estrelas",
+    "noOffers": "Nenhuma oferta resgatável no catálogo agora. Use o jogo para páginas do passe, se ainda houver recompensas pendentes."
+  },
   "leaks": {
     "page": {
       "title": "Vazamentos",
@@ -572,6 +683,7 @@
     "extractedSummary": "{count} extraído(s)",
     "masteredSummary": "{count} dominado(s)",
     "extracted": "Extraído",
+    "level": "Lv {level}",
     "search": "Buscar Elemental ou variante…",
     "results": "{count} resultado(s)",
     "source": "Imagens do jogo armazenadas localmente no launcher.",
@@ -585,9 +697,9 @@
     },
     "collection": {
       "title": "Sua coleção",
-      "perAccount": "As marcações ficam salvas para a conta atual e mudam junto com ela. A Epic só informa os Elementais dominados, então apenas eles são marcados automaticamente aqui.",
+      "perAccount": "Extraído só conta token de Mastery já ganho na conta — a Epic lista a quest de todo Elemental mesmo sem você ter extraído. Dust, dispositivos e nível (Lv) ficam no Magpie do Fortnite — o launcher público não tem a permissão que o jogo no PC tem.",
       "noAccount": "Entre em uma conta para separar as marcações por perfil.",
-      "explanation": "Elementais abaixo do nível 4, que ainda não foram dominados, precisam ser controlados manualmente pelos botões de cada card.",
+      "explanation": "A imagem exportada segue o álbum Base + Cheat Master (24 slots). Dust e bugigangas no topo só aparecem se o Magpie da conta for legível.",
       "dontShowAgain": "Não mostrar novamente"
     },
     "mastery": {
@@ -598,11 +710,16 @@
     "export": {
       "button": "Exportar Elementais",
       "open": "Abrir imagem",
-      "empty": "Nenhum Elemental no filtro atual para exportar.",
+      "empty": "Nada para exportar.",
       "pending": "Pendente",
-      "done": "{count} Elemental(is) exportado(s).",
+      "done": "{count}/24 Elementais na imagem.",
       "failed": "Não foi possível exportar os Elementais.",
       "progress": "Baixando imagens… {percent}%"
+    },
+    "resources": {
+      "dust": "Sprite Dust",
+      "gizmos": "Bugigangas",
+      "magpieLocked": "Dust, dispositivos e nível só o Fortnite (cliente do jogo) consegue ler. O token do launcher não tem essa permissão Magpie."
     }
   },
   "itemShop": {
@@ -732,6 +849,9 @@
     "loadFailed": "Não foi possível carregar o vestiário.",
     "search": "Buscar cosmético...",
     "empty": "Nenhum item nesta categoria.",
+    "searchEmpty": "Nenhum cosmético encontrado com essa busca.",
+    "exclusives": "Exclusivos",
+    "exclusivesOnly": "Só exclusivos",
     "equippedNow": "Equipado agora",
     "categories": {
       "outfits": "Trajes",
@@ -739,7 +859,10 @@
       "pickaxes": "Picaretas",
       "gliders": "Planadores",
       "emotes": "Emotes",
-      "wraps": "Envelopamentos"
+      "wraps": "Envelopamentos",
+      "auras": "Aura",
+      "pets": "Pets",
+      "shoes": "Calçados"
     }
   },
   "specialOffers": {
@@ -790,6 +913,9 @@
       "gliders": "Planadores",
       "emotes": "Emotes",
       "wraps": "Envelopamentos",
+      "auras": "Aura",
+      "pets": "Pets",
+      "shoes": "Calçados",
       "total": "{count} cosméticos"
     },
     "affiliate": "Código SAC ativo: {code}",
@@ -984,6 +1110,18 @@
     },
     "buyVbucks": {
       "open": "Comprar V-Bucks"
+    },
+    "adminPanel": {
+      "label": "./ admin panel",
+      "placeholder": "GottaGoFast",
+      "submit": "Resgatar",
+      "all": "Todos",
+      "busy": "Resgatando códigos…",
+      "done": "{redeemed} código(s) resgatado(s), {skipped} já usados.",
+      "none": "Nenhum código novo pra resgatar.",
+      "unavailable": "Não foi possível autenticar o perfil Athena pra resgatar os códigos.",
+      "failed": "Não foi possível resgatar os códigos da temporada.",
+      "needAccount": "Entre numa conta para resgatar os códigos."
     },
     "news": {
       "brTitle": "Novidades do Battle Royale",

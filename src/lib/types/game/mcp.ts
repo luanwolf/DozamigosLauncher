@@ -64,6 +64,8 @@ export type AthenaProfileAttributes = {
   book_purchased?: boolean;
   season_num: number;
   book_xp: number;
+  /** Season ids with auto-spend enabled (e.g. `br` via SetSeasonPassAutoClaim). */
+  auto_spend_season_currency_ids?: string[];
   creative_dynamic_xp: {
     dailyExcessXpMult: number;
     currentWeekXp: number;
@@ -206,7 +208,19 @@ export type CommonCoreProfileAttributes = {
     cooldownExpires: string;
   }[];
   mtx_affiliate_set_time: string;
-  current_mtx_platform: 'EpicPC' | 'Live' | 'PSN' | 'Nintendo' | 'IOSAppStore' | 'Samsung' | 'GooglePlay';
+  current_mtx_platform:
+    | 'EpicPC'
+    | 'Epic'
+    | 'EpicPCKorea'
+    | 'Live'
+    | 'PSN'
+    | 'Nintendo'
+    | 'IOSAppStore'
+    | 'EpicAndroid'
+    | 'Samsung'
+    | 'Shared'
+    | 'wegame'
+    | 'GooglePlay';
   mtx_affiliate: string;
   mtx_affiliate_id: string;
   in_app_purchases: {

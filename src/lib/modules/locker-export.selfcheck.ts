@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { gridColumns, gridPixelSize } from './locker-export-layout';
+import { rarityBackgroundSlug } from './locker-export-rarity';
 import { sortLockerItemsForExport } from './locker-export-sort';
 import type { LockerOwnedItem } from './locker-parse';
 
@@ -43,5 +44,20 @@ assert.deepEqual(
   sorted.map((i) => i.name),
   ['Batman', 'Vader', 'Mythic', 'Legendary', 'Epic', 'Rare', 'Common']
 );
+
+assert.equal(rarityBackgroundSlug({ rarity: 'legendary' }), 'legendary');
+assert.equal(rarityBackgroundSlug({ rarity: 'epic', series: 'marvelseries' }), 'marvel');
+assert.equal(rarityBackgroundSlug({ rarity: 'epic', series: 'dcuseries' }), 'dc');
+assert.equal(rarityBackgroundSlug({ rarity: 'legendary', series: 'cubeseries' }), 'dark');
+assert.equal(rarityBackgroundSlug({ rarity: 'epic', series: 'platformseries' }), 'gaminglegends');
+assert.equal(rarityBackgroundSlug({ rarity: 'rare', series: 'creatorcollabseries' }), 'icon');
+assert.equal(rarityBackgroundSlug({ rarity: 'legendary', series: 'starwarsseries' }), 'starwars');
+assert.equal(rarityBackgroundSlug({ rarity: 'legendary', series: 'columbusseries' }), 'starwars');
+assert.equal(rarityBackgroundSlug({ rarity: 'starwars' }), 'starwars');
+assert.equal(rarityBackgroundSlug({ rarity: 'rare', series: 'crewseries' }), 'crew');
+assert.equal(rarityBackgroundSlug({ rarity: 'crew' }), 'crew');
+
+// Print-density scale: 300 DPI / CSS 96 DPI.
+assert.equal(300 / 96, 3.125);
 
 console.log('locker-export.selfcheck: ok');

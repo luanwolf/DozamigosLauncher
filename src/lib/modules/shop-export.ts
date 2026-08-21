@@ -1,11 +1,12 @@
 import {
-  APP_ICON_URL,
-  APP_NAME,
+  createExportCanvas,
   DISPLAY_FONT,
+  drawFortniteApiCredit,
   ensureDisplayFont,
   fillRarityBackground,
   fitText,
   loadBitmap,
+  loadRarityBackground,
   roundRect,
   sanitizeFilename,
   saveExportBlob,
@@ -19,14 +20,14 @@ const PRICE_ICON_URL = '/resources/currency_mtxswap.png';
 const ONLY_TODAY_COLOR = '#fcd34d';
 
 /** Shop collage uses a larger tile than the locker export so tags stay readable. */
-const CELL = 160;
-const GAP = 10;
-const PAD = 28;
-const HEADER = 120;
-const FOOTER = 56;
-const MAX_COLS = 28;
-const TILE_BAND = 58;
-const TILE_RADIUS = 10;
+const CELL = 200;
+const GAP = 12;
+const PAD = 32;
+const HEADER = 128;
+const FOOTER = 60;
+const MAX_COLS = 24;
+const TILE_BAND = 64;
+const TILE_RADIUS = 12;
 
 export type ShopExportOptions = {
   items: ShopItem[];
@@ -118,11 +119,7 @@ export async function exportItemShopWebp(options: ShopExportOptions): Promise<Sh
 
   const { cols, width, height } = shopGridPixelSize(items.length);
 
-  const canvas = document.createElement('canvas');
-  canvas.width = width;
-  canvas.height = height;
-  const ctx = canvas.getContext('2d');
-  if (!ctx) throw new Error('Canvas 2D unavailable');
+  const { canvas, ctx } = createExportCanvas(width, height);
 
   ctx.fillStyle = '#0a1628';
   ctx.fillRect(0, 0, width, height);
@@ -139,15 +136,18 @@ export async function exportItemShopWebp(options: ShopExportOptions): Promise<Sh
   const total = items.length;
   onProgress?.({ done: 0, total });
   let done = 0;
-  const bitmaps = await Promise.all(
-    items.map(async (item) => {
-      const bitmap = await loadBitmap(imageUrl(item));
-      done += 1;
-      onProgress?.({ done, total });
-      return bitmap;
-    })
-  );
-  const [priceIcon, appIcon] = await Promise.all([loadBitmap(PRICE_ICON_URL), loadBitmap(APP_ICON_URL)]);
+  const [bitmaps, backgrounds] = await Promise.all([
+    Promise.all(
+      items.map(async (item) => {
+        const bitmap = await loadBitmap(imageUrl(item));
+        done += 1;
+        onProgress?.({ done, total });
+        return bitmap;
+      })
+    ),
+    Promise.all(items.map((item) => loadRarityBackground(exportTone(item))))
+  ]);
+  const [priceIcon] = await Promise.all([loadBitmap(PRICE_ICON_URL)]);
   const priceFormatter = new Intl.NumberFormat(locale);
   const gridTop = HEADER + PAD;
 
@@ -161,7 +161,7 @@ export async function exportItemShopWebp(options: ShopExportOptions): Promise<Sh
     ctx.save();
     roundRect(ctx, x, y, CELL, CELL, TILE_RADIUS);
     ctx.clip();
-    fillRarityBackground(ctx, x, y, CELL, CELL, exportTone(item));
+    fillRarityBackground(ctx, x, y, CELL, CELL, exportTone(item), backgrounds[index]);
 
     const bitmap = bitmaps[index];
     if (bitmap) {
@@ -205,24 +205,7 @@ export async function exportItemShopWebp(options: ShopExportOptions): Promise<Sh
 
   priceIcon?.close();
 
-  const footerY = height - FOOTER / 2;
-  const brandIconSize = 22;
-  ctx.font = `600 20px ${UI_FONT}`;
-  const brandGap = 8;
-  const brandWidth = ctx.measureText(APP_NAME).width;
-  const blockWidth = (appIcon ? brandIconSize + brandGap : 0) + brandWidth;
-  let brandX = (width - blockWidth) / 2;
-
-  if (appIcon) {
-    ctx.drawImage(appIcon, brandX, footerY - brandIconSize / 2, brandIconSize, brandIconSize);
-    brandX += brandIconSize + brandGap;
-    appIcon.close();
-  }
-
-  ctx.fillStyle = 'rgba(255,255,255,0.7)';
-  ctx.textAlign = 'left';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(APP_NAME, brandX, footerY);
+  await drawFortniteApiCredit(ctx, width, height, FOOTER, PAD);
 
   const blob = await new Promise<Blob>((resolve, reject) => {
     canvas.toBlob(

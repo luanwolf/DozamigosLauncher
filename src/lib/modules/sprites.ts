@@ -18,7 +18,7 @@ export type SpriteEntry = SpriteFamily & {
   image: string;
 };
 
-const IMAGE_ROOT = '/resources/elementals';
+const IMAGE_ROOT = '/elementals';
 const S4_VARIANTS: Exclude<SpriteVariant, 'base'>[] = ['gold', 'cheat-master'];
 
 /** Chapter 7 Season 4 (Override) — season id 42 on fortnite.gg. */
@@ -178,27 +178,39 @@ export function writeSpriteCollection(
   );
 }
 
-/** Epic trophy ids from fortnite.gg `data-parent` (season 42). */
-const TROPHY_FAMILIES: Record<string, string> = {
+/** Epic trophy / Magpie relic ids (season 42). */
+export const SPRITE_RELIC_FAMILIES: Record<string, string> = {
   klombo: 'klombo',
   crown: 'crown',
   cosmicthunderdoublejump: 'jackrabbit',
+  doublejump: 'jackrabbit',
   narrowflea: 'sonic',
   narrowfleamonkey: 'tails',
   reloadovertime: 'shadow',
   killswitch: 'killswitch',
   '8bitblaster': 'eight-bit',
   eightbitblaster: 'eight-bit',
+  '8bit': 'eight-bit',
   dwarf: 'adventure',
   bushranger: 'bush',
   jonesy: 'jonesy',
-  stormscout: 'storm-scout'
+  stormscout: 'storm-scout',
+  jazzjackrabbit: 'jackrabbit',
+  jackrabbit: 'jackrabbit',
+  sonic: 'sonic',
+  tails: 'tails',
+  shadow: 'shadow',
+  adventure: 'adventure',
+  bush: 'bush',
+  eightbit: 'eight-bit'
 };
+
+const TROPHY_FAMILIES = SPRITE_RELIC_FAMILIES;
 
 export type SpriteProgress = {
   /** Entry keys (`family:variant`) whose Mastery reward was already claimed. */
   mastered: Set<string>;
-  /** Family slugs with at least one Mastery stage done, which requires extracting the Sprite. */
+  /** Family slugs with a mastery token on the profile (quest presence is not ownership). */
   extracted: Set<string>;
 };
 
@@ -213,16 +225,14 @@ type QuestItem = {
 
 // ponytail: s41 kept so old profiles still parse; s42 is Override. Ceiling: bump when Epic rolls s43+.
 const MASTERY_QUEST = /^Quest:quest_s4\d_spritemastery_(redeem_)?p\d+_(q\d+)([a-z]?)$/;
+const MASTERY_TOKEN = /^Token:athena_s4\d_spritemastery_token_([a-z0-9]+?)(?:_\d+)?$/i;
 const TROPHY_REWARD =
   /^CosmeticVariantToken:vtid_backpack_coldtrophy_([a-z0-9]+?)(?:_(gummy|galaxy|gold|gem|holofoil|cube|quack|cheatmaster))?$/;
 
 /**
- * Epic exposes the Sprite collection only through the Battle Pass Mastery track: the `redeem` quests
- * name the Sprite (via the trophy variant they grant) and the plain Mastery quests say which stages
- * are done. The in-match Sprite level lives in the Magpie/SaveFramework collection, which no
- * non-game client can read.
- * ponytail: a Sprite extracted but never advanced on the track stays invisible here — the page keeps
- * manual marks for those.
+ * Epic exposes Mastery through athena quests. Dust, gizmos and per-Sprite levels live in Magpie
+ * (SaveFramework / MagpieService) — not in MCP athena/collections items. Public EOS Inventory `/br`
+ * only has accolades; Magpie HTTP path is undocumented (bots that show dust use a private route).
  */
 export function parseSpriteProgress(profile: unknown): SpriteProgress {
   const changes = (profile as { profileChanges?: { profile?: { items?: Record<string, unknown> } }[] })
@@ -266,6 +276,15 @@ export function parseSpriteProgress(profile: unknown): SpriteProgress {
       .filter(([questId]) => advanced.has(questId))
       .map(([, family]) => family)
   );
+
+  // s42 lists every `quest_s42_spritemastery_jonesy` as Active even if you never extracted
+  // that Creature Sprite. Owned proof is the mastery token (granted when the stage pays out).
+  for (const item of Object.values(changes?.[0]?.profile?.items ?? {})) {
+    const tokenMatch = (item as QuestItem).templateId?.match(MASTERY_TOKEN);
+    if (!tokenMatch) continue;
+    const family = SPRITE_RELIC_FAMILIES[tokenMatch[1].toLowerCase()];
+    if (family) extracted.add(family);
+  }
 
   return { mastered, extracted };
 }

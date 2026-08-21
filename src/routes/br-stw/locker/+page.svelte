@@ -6,12 +6,14 @@
   import RefreshCwIcon from '@lucide/svelte/icons/refresh-cw';
   import SearchIcon from '@lucide/svelte/icons/search';
   import { openPath } from '@tauri-apps/plugin-opener';
-  import { ItemColors } from '$lib/constants/item-colors';
   import { HUD_PAGE_WIDTH } from '$lib/constants/page-layout';
   import { t } from '$lib/i18n';
   import { lockerCache } from '$lib/modules/account-data';
   import { LOCKER_CATEGORIES, type LockerCategory, type LockerData, type LockerOwnedItem } from '$lib/modules/locker';
+  import { isLockerExclusiveId } from '$lib/modules/locker-exclusives';
   import { exportLockerCategoryWebp } from '$lib/modules/locker-export';
+  import { onCosmeticImageError } from '$lib/modules/cosmetic-image';
+  import { rarityBackgroundStyle } from '$lib/modules/locker-export-rarity';
   import { accountStore } from '$lib/storage';
   import { handleError } from '$lib/utils';
   import PageActionButton from '$components/layout/PageActionButton.svelte';
@@ -20,17 +22,19 @@
   import StoreItemGrid from '$components/layout/StoreItemGrid.svelte';
   import LockerItemPreviewModal from '$components/modules/locker/LockerItemPreviewModal.svelte';
   import { Input } from '$components/ui/input';
+  import { Label } from '$components/ui/label';
   import { Progress } from '$components/ui/progress';
+  import { Switch } from '$components/ui/switch';
   import * as Tabs from '$components/ui/tabs';
 
   const activeAccount = accountStore.getActiveStore(true);
-  const colors: Record<string, string> = { ...ItemColors.rarities, ...ItemColors.series };
 
   let isExporting = $state(false);
   let exportPercent = $state(0);
   let lastExportPath = $state<string | null>(null);
   let category = $state<LockerCategory>('outfits');
   let search = $state('');
+  let exclusivesOnly = $state(false);
   let previewItem = $state<LockerOwnedItem | null>(null);
 
   const cached = $derived(lockerCache.get($activeAccount));
@@ -38,10 +42,18 @@
   const isLoading = $derived(cached.loading || cached.refreshing);
 
   const items = $derived(locker?.itemsByCategory[category] ?? []);
+  const searchQuery = $derived(search.trim().toLowerCase());
   const filtered = $derived.by(() => {
-    const q = search.trim().toLowerCase();
-    if (!q) return items;
-    return items.filter((item) => item.name.toLowerCase().includes(q) || item.cosmeticId.toLowerCase().includes(q));
+    const q = searchQuery;
+    return items.filter((item) => {
+      if (exclusivesOnly && !isLockerExclusiveId(item.cosmeticId)) return false;
+      if (!q) return true;
+      return (
+        item.name.toLowerCase().includes(q) ||
+        item.cosmeticId.toLowerCase().includes(q) ||
+        item.templateId.toLowerCase().includes(q)
+      );
+    });
   });
 
   async function loadLocker(force = false) {
@@ -62,12 +74,12 @@
   }
 
   function bgFor(item: LockerOwnedItem) {
-    return colors[item.rarity] || colors.common;
+    return rarityBackgroundStyle({ rarity: item.rarity, series: item.series });
   }
 
   async function exportWebp() {
     if (!locker || isExporting) return;
-    const list = locker.itemsByCategory[category];
+    const list = filtered;
     if (!list.length) {
       toast.info($t('locker.exportEmpty'));
       return;
@@ -79,8 +91,10 @@
     try {
       const result = await exportLockerCategoryWebp({
         items: list,
-        categorySlug: category,
-        categoryLabel: categoryLabel(category),
+        categorySlug: exclusivesOnly ? `${category}-exclusives` : category,
+        categoryLabel: exclusivesOnly
+          ? `${categoryLabel(category)} · ${$t('locker.exclusives')}`
+          : categoryLabel(category),
         accountLabel: $activeAccount?.displayName,
         onProgress: ({ done, total }) => {
           exportPercent = total > 0 ? Math.round((done / total) * 100) : 0;
@@ -119,7 +133,7 @@
   {#snippet actions()}
     {#if $activeAccount}
       <PageActionButton
-        disabled={isLoading || isExporting || !locker?.itemsByCategory[category]?.length}
+        disabled={isLoading || isExporting || !filtered.length}
         label={$t('locker.exportWebp')}
         loading={isExporting}
         onclick={() => exportWebp()}
@@ -164,9 +178,15 @@
     <PageLoading label={$t('loading')} />
   {:else if locker}
     <div class="space-y-4">
-      <div class="relative max-w-md">
-        <SearchIcon class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-        <Input class="pl-9" placeholder={$t('locker.search')} bind:value={search} />
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div class="relative max-w-md flex-1">
+          <SearchIcon class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input class="pl-9" placeholder={$t('locker.search')} bind:value={search} />
+        </div>
+        <div class="flex items-center gap-2">
+          <Switch id="locker-exclusives" bind:checked={exclusivesOnly} />
+          <Label class="text-sm" for="locker-exclusives">{$t('locker.exclusivesOnly')}</Label>
+        </div>
       </div>
 
       <Tabs.Root bind:value={category}>
@@ -183,7 +203,13 @@
       </Tabs.Root>
 
       {#if !filtered.length}
-        <p class="text-center text-sm text-muted-foreground">{$t('locker.empty')}</p>
+        <p class="text-center text-sm text-muted-foreground">
+          {exclusivesOnly && !searchQuery
+            ? $t('locker.empty')
+            : searchQuery
+              ? $t('locker.searchEmpty')
+              : $t('locker.empty')}
+        </p>
       {:else}
         <StoreItemGrid variant="br">
           {#each filtered as item (item.itemId)}
@@ -192,11 +218,17 @@
               onclick={() => {
                 previewItem = item;
               }}
-              style="background-color: {bgFor(item)}"
+              style={bgFor(item)}
               type="button"
             >
               {#if item.imageUrl}
-                <img class="size-full object-cover" alt={item.name} loading="lazy" src={item.imageUrl} />
+                <img
+                  class="size-full object-cover"
+                  alt={item.name}
+                  loading="lazy"
+                  src={item.imageUrl}
+                  onerror={onCosmeticImageError}
+                />
               {:else}
                 <div class="flex size-full items-center justify-center p-2 text-center text-xs font-medium">
                   {item.name}

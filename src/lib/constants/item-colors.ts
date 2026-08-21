@@ -8,9 +8,12 @@ export const ItemColors = Object.freeze({
     marvelseries: '#FF0000',
     cubeseries: '#BA25C0',
     dcuseries: '#285EAD',
-    columbusseries: '#2EB3B7',
+    columbusseries: '#2555B2',
+    starwars: '#2555B2',
+    starwarsseries: '#2555B2',
     slurpseries: '#0CB9E7',
-    shadowseries: '#FFFFFF'
+    shadowseries: '#FFFFFF',
+    crewseries: '#B30102'
   },
   rarities: {
     legendary: '#DA791D',

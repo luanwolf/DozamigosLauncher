@@ -22,12 +22,17 @@ import type { StwStoreData } from '$types/game/stw-store';
 const byAccount = (account: AccountData) => account.accountId;
 const byLocale = (locale: string) => locale;
 
+/** ponytail: BR live pages used to stay frozen for the whole session; 15m + background ensure covers season flips without hammering Epic. Bump down if drops feel late. */
+const BR_LIVE_MAX_AGE_MS = 15 * 60 * 1000;
+
 // ponytail: account caches are keyed by account only, not by locale. Switching
 // language keeps localized names from the previous locale until a manual
 // refresh — acceptable while the UI ships pt-br only. Add the locale to the key
 // if a second language is ever exposed.
-export const lockerCache = createCache<AccountData, LockerData>(byAccount, (account) =>
-  fetchLocker(account, get(language))
+export const lockerCache = createCache<AccountData, LockerData>(
+  byAccount,
+  (account) => fetchLocker(account, get(language)),
+  { maxAgeMs: BR_LIVE_MAX_AGE_MS }
 );
 
 export const accountProfileCache = createCache<AccountData, EpicAccountById>(byAccount, (account) =>
@@ -72,13 +77,18 @@ export const brStatsCache = createCache<AccountData, BrStatsSummary>(
     ]);
 
     return stats;
-  }
+  },
+  { maxAgeMs: BR_LIVE_MAX_AGE_MS }
 );
 
-export const mapCache = createCache<string, FortniteMapData>(byLocale, (locale) => fetchMap(locale));
+export const mapCache = createCache<string, FortniteMapData>(byLocale, (locale) => fetchMap(locale), {
+  maxAgeMs: BR_LIVE_MAX_AGE_MS
+});
 
-export const leaksCache = createCache<string, LeaksData>(byLocale, (locale) =>
-  fetchFortniteLeaks(locale)
+export const leaksCache = createCache<string, LeaksData>(
+  byLocale,
+  (locale) => fetchFortniteLeaks(locale),
+  { maxAgeMs: BR_LIVE_MAX_AGE_MS }
 );
 
 export const freeGamesCache = createCache<string, FreeGame[]>(byLocale, () => fetchFreeGames());
@@ -109,5 +119,19 @@ export async function warmAccountData(account: AccountData | null | undefined): 
     );
   }
 
+  await Promise.allSettled(work);
+}
+
+/**
+ * Re-fetches map / leaks / locker / Status BR when their TTL has expired.
+ * Called from the background poller so open sessions pick up season/content
+ * drops without a manual refresh or app restart.
+ */
+export async function refreshLiveBrData(account: AccountData | null | undefined): Promise<void> {
+  const locale = get(language);
+  const work: Promise<unknown>[] = [mapCache.ensure(locale), leaksCache.ensure(locale)];
+  if (account) {
+    work.push(lockerCache.ensure(account), brStatsCache.ensure(account));
+  }
   await Promise.allSettled(work);
 }

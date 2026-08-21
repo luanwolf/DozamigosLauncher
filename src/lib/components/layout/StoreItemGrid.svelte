@@ -21,9 +21,9 @@
   class={cn(
     'grid w-full gap-5 sm:gap-6',
     variant === 'br' &&
-      '[grid-template-columns:repeat(auto-fill,minmax(min(100%,12rem),1fr))]',
+      '[grid-template-columns:repeat(auto-fill,minmax(min(100%,14rem),1fr))]',
     variant === 'stw' &&
-      'items-stretch gap-3 sm:gap-4 [grid-template-columns:repeat(auto-fill,minmax(min(100%,13rem),1fr))]',
+      'items-stretch gap-3 sm:gap-4 [grid-template-columns:repeat(auto-fill,minmax(min(100%,14.5rem),1fr))]',
     className
   )}
 >

@@ -2,7 +2,7 @@ import { toast } from 'svelte-sonner';
 import { get } from 'svelte/store';
 import { isForceRetryError, type KyInstance } from 'ky';
 import { AsyncLock } from '$lib/async-lock';
-import { defaultClient, type ClientCredentials } from '$lib/constants/clients';
+import { defaultClient, fortniteAndroidGameClient, type ClientCredentials } from '$lib/constants/clients';
 import { isEpicAPIError } from '$lib/exceptions/EpicAPIError';
 import { t } from '$lib/i18n';
 import { getChildLogger } from '$lib/logger';
@@ -98,7 +98,7 @@ async function refreshToken(account: AccountData, state: AuthState, client: Clie
   try {
     let accessTokenData = await getAccessTokenUsingDeviceAuth(account);
 
-    if (client.clientId !== defaultClient.clientId) {
+    if (client.clientId !== fortniteAndroidGameClient.clientId) {
       const { code } = await getExchangeCodeUsingAccessToken(accessTokenData.access_token);
       accessTokenData = await getAccessTokenUsingExchangeCode(code, client);
     }

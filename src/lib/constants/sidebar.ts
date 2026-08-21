@@ -10,13 +10,16 @@ import EyeIcon from '@lucide/svelte/icons/eye';
 import FileTextIcon from '@lucide/svelte/icons/file-text';
 import FolderArchiveIcon from '@lucide/svelte/icons/folder-archive';
 import GiftIcon from '@lucide/svelte/icons/gift';
+import MedalIcon from '@lucide/svelte/icons/medal';
 import HeartHandshakeIcon from '@lucide/svelte/icons/heart-handshake';
 import HomeIcon from '@lucide/svelte/icons/home';
+import IdCardIcon from '@lucide/svelte/icons/id-card';
 import LibraryIcon from '@lucide/svelte/icons/library';
 import ListChecksIcon from '@lucide/svelte/icons/list-checks';
 import MapIcon from '@lucide/svelte/icons/map';
 import MapPinnedIcon from '@lucide/svelte/icons/map-pinned';
 import MonitorSmartphone from '@lucide/svelte/icons/monitor-smartphone';
+import PackageIcon from '@lucide/svelte/icons/package';
 import RadarIcon from '@lucide/svelte/icons/radar';
 import ServerIcon from '@lucide/svelte/icons/server';
 import SettingsIcon from '@lucide/svelte/icons/settings';
@@ -74,6 +77,12 @@ export const NavZones = Object.freeze([
     deck: false,
     items: [
       {
+        id: 'accountOverview',
+        href: '/br-stw/overview',
+        icon: IdCardIcon,
+        requiresLogin: true
+      },
+      {
         id: 'itemShop',
         href: '/br-stw/item-shop',
         icon: ShoppingBagIcon,
@@ -113,6 +122,12 @@ export const NavZones = Object.freeze([
         id: 'earnedXP',
         href: '/br-stw/earned-xp',
         icon: TrendingUpIcon,
+        requiresLogin: true
+      },
+      {
+        id: 'battlePassRewards',
+        href: '/br-stw/battle-pass-rewards',
+        icon: MedalIcon,
         requiresLogin: true
       },
       {
@@ -164,6 +179,12 @@ export const NavZones = Object.freeze([
         id: 'stwStore',
         href: '/br-stw/stw-store',
         icon: CoinsIcon,
+        requiresLogin: true
+      },
+      {
+        id: 'stwResources',
+        href: '/br-stw/stw-resources',
+        icon: PackageIcon,
         requiresLogin: true
       },
       {

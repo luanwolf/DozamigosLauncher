@@ -13,6 +13,7 @@
   import { openUrl } from '@tauri-apps/plugin-opener';
   import { ItemColors } from '$lib/constants/item-colors';
   import { language, t } from '$lib/i18n';
+  import { rarityBackgroundStyle } from '$lib/modules/locker-export-rarity';
   import { generateAuthenticatedGamePageUrl } from '$lib/modules/epic-web-url';
   import { getShopAppearanceStats, isLeavingToday } from '$lib/modules/shop-history';
   import {
@@ -72,6 +73,13 @@
   const hasAudio = $derived(AUDIO_TYPE_IDS.has(item.type.id.toLowerCase()));
   const styles = $derived<StyleOption[]>(mergeStyles(item.styles, preview));
   const previewVideoUrl = $derived(selectedStyle ? (selectedStyle.video ?? null) : preview.video);
+  const previewBg = $derived.by(() => {
+    if (item.type.id === 'track') return rarityBackgroundStyle({ rarity: 'epic' });
+    return rarityBackgroundStyle({
+      rarity: item.rarity?.id || 'common',
+      series: item.series?.id
+    });
+  });
 
   $effect(() => {
     const cosmeticId = previewCosmeticId;
@@ -144,7 +152,8 @@
     <div class="grid max-h-[min(90vh,52rem)] grid-cols-1 overflow-y-auto sm:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
       <!-- Left: full turntable / image -->
       <div
-        class="relative flex min-h-72 flex-col items-center justify-center gap-3 bg-black/50 p-4 sm:min-h-[28rem] sm:border-r sm:border-border/80"
+        class="relative flex min-h-72 flex-col items-center justify-center gap-3 p-4 sm:min-h-[28rem] sm:border-r sm:border-border/80"
+        style={previewBg}
       >
         {#if previewVideoUrl && !previewVideoFailed}
           <video

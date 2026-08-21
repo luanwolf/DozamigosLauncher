@@ -51,6 +51,7 @@ export const MCPOperations = Object.freeze([
   'ExchangeGameCurrencyForBattlePassOffer',
   'ExchangeGameCurrencyForSeasonPassOffer',
   'ExchangeGiftToken',
+  'ExecuteTerminalCommand',
   'FortRerollDailyQuest',
   'GiftCatalogEntry',
   'InitializeTheater',

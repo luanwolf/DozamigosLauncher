@@ -9,6 +9,7 @@
   import { ItemColors } from '$lib/constants/item-colors';
   import { t } from '$lib/i18n';
   import type { LockerCategory, LockerOwnedItem } from '$lib/modules/locker-parse';
+  import { rarityBackgroundStyle } from '$lib/modules/locker-export-rarity';
   import {
     mergeStyles,
     resolveCosmeticPreview,
@@ -36,6 +37,9 @@
   const badgeColor = $derived(colors[badgeLabel] || colors.common);
   const styles = $derived<StyleOption[]>(mergeStyles(item?.styles ?? [], preview));
   const previewVideoUrl = $derived(selectedStyle ? (selectedStyle.video ?? null) : preview.video);
+  const previewBg = $derived(
+    item ? rarityBackgroundStyle({ rarity: item.rarity, series: item.series }) : ''
+  );
 
   $effect(() => {
     isOpen = !!item;
@@ -81,7 +85,8 @@
         class="grid max-h-[min(90vh,52rem)] grid-cols-1 overflow-y-auto sm:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]"
       >
         <div
-          class="relative flex min-h-72 flex-col items-center justify-center gap-3 bg-black/50 p-4 sm:min-h-[28rem] sm:border-r sm:border-border/80"
+          class="relative flex min-h-72 flex-col items-center justify-center gap-3 p-4 sm:min-h-[28rem] sm:border-r sm:border-border/80"
+          style={previewBg}
         >
           {#if previewVideoUrl && !previewVideoFailed}
             <video
