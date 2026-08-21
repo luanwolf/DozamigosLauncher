@@ -1,4 +1,5 @@
 import { fortniteApiService } from '$lib/http';
+import { pickCosmeticImage } from '$lib/modules/cosmetic-image';
 import type { ShopData, ShopItem } from '$types/shop';
 
 type FnApiShopEntry = {
@@ -150,44 +151,21 @@ function mapEntry(entry: FnApiShopEntry, locale?: string): ShopItem {
     : (brItem?.name ?? car?.name ?? bundle?.name ?? track?.title ?? labelFromDevName(entry.devName) ?? '');
   const description =
     isBundle && bundle?.info ? bundle.info : (brItem?.description ?? car?.description ?? bundle?.info ?? '');
-  const cosmeticImage =
-    brItem?.images?.featured ??
-    brItem?.images?.icon ??
-    brItem?.images?.smallIcon ??
-    car?.images?.large ??
-    car?.images?.small ??
-    car?.images?.icon;
-
-  const image =
-    isBundle && bundle?.image
-      ? bundle.image
-      : isTrackOffer
-        ? (track.albumArt ?? renderImage ?? '')
-        : (cosmeticImage ?? renderImage ?? bundle?.image ?? track?.albumArt ?? '');
-  const smallImage =
-    isBundle && bundle?.image
-      ? bundle.image
-      : isTrackOffer
-        ? (track.albumArt ?? renderImage ?? '')
-        : (brItem?.images?.smallIcon ??
-          car?.images?.small ??
-          car?.images?.icon ??
-          renderImage ??
-          bundle?.image ??
-          track?.albumArt ??
-          '');
-  const largeImage =
-    isBundle && bundle?.image
-      ? bundle.image
-      : isTrackOffer
-        ? (track.albumArt ?? renderImage ?? '')
-        : (brItem?.images?.icon ??
-          car?.images?.large ??
-          car?.images?.icon ??
-          renderImage ??
-          bundle?.image ??
-          track?.albumArt ??
-          '');
+  const image = isBundle && bundle?.image
+    ? bundle.image
+    : isTrackOffer
+      ? pickCosmeticImage(track.albumArt, renderImage)
+      : pickCosmeticImage(
+          brItem?.images?.featured,
+          renderImage,
+          brItem?.images?.icon,
+          car?.images?.large,
+          brItem?.images?.smallIcon,
+          car?.images?.small,
+          car?.images?.icon,
+          bundle?.image,
+          track?.albumArt
+        );
 
   const shopHistory = brItem?.shopHistory ?? [];
   const lastSeen = shopHistory.at(-1) ?? entry.inDate;
@@ -215,8 +193,8 @@ function mapEntry(entry: FnApiShopEntry, locale?: string): ShopItem {
       floor: 0
     },
     assets: {
-      small: smallImage,
-      large: largeImage,
+      small: image,
+      large: image,
       featured: image
     },
     type: {
@@ -323,21 +301,26 @@ type FnApiCosmeticsResponse = {
   data: FnApiBrItem[];
 };
 
-const cosmeticsCacheByLang = new Map<string, Map<string, CosmeticMeta>>();
+type CosmeticsCacheEntry = { map: Map<string, CosmeticMeta>; fetchedAt: number };
+
+const cosmeticsCacheByLang = new Map<string, CosmeticsCacheEntry>();
+
+/** Align with locker TTL so new-season items get names/icons on the next locker refresh. */
+const COSMETICS_MAX_AGE_MS = 15 * 60 * 1000;
 
 /**
  * Fetches the full Battle Royale cosmetics catalog from fortnite-api.com and
  * returns a map keyed by the cosmetic id (lowercased). Cached in memory per
- * language for the session — the catalog is large, so we only fetch it once.
+ * language with a short TTL — the catalog is large, but season drops need a refetch.
  */
 export async function fetchCosmeticsBr(locale?: string): Promise<Map<string, CosmeticMeta>> {
   const language = (locale && LOCALE_TO_FN_LANG[locale]) || 'pt-BR';
 
   const cached = cosmeticsCacheByLang.get(language);
-  if (cached) return cached;
+  if (cached && Date.now() - cached.fetchedAt < COSMETICS_MAX_AGE_MS) return cached.map;
 
   const response = await fortniteApiService
-    .get<FnApiCosmeticsResponse>('v2/cosmetics/br', { searchParams: { language } })
+    .get<FnApiCosmeticsResponse>('v2/cosmetics/br', { searchParams: { language }, timeout: 90_000 })
     .json();
 
   const map = new Map<string, CosmeticMeta>();
@@ -349,13 +332,13 @@ export async function fetchCosmeticsBr(locale?: string): Promise<Map<string, Cos
       typeBackend: item.type?.backendValue ?? '',
       rarity: item.rarity?.value?.toLowerCase() ?? 'common',
       series: item.series?.backendValue?.toLowerCase() || undefined,
-      smallIcon: item.images?.smallIcon ?? item.images?.icon ?? '',
-      icon: item.images?.icon ?? item.images?.smallIcon ?? '',
+      smallIcon: item.images?.icon ?? item.images?.featured ?? item.images?.smallIcon ?? '',
+      icon: item.images?.icon ?? item.images?.featured ?? item.images?.smallIcon ?? '',
       styles: mapStyles(item)
     });
   }
 
-  cosmeticsCacheByLang.set(language, map);
+  cosmeticsCacheByLang.set(language, { map, fetchedAt: Date.now() });
   return map;
 }
 

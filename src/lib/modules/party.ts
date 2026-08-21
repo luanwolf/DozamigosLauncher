@@ -3,6 +3,7 @@ import defaultPartyMeta from '$lib/data/default-party-meta.json';
 import { EpicAPIError } from '$lib/exceptions/EpicAPIError';
 import { partyService } from '$lib/http';
 import { getAuthedKy } from '$lib/modules/auth-session';
+import { fortniteApiCosmeticIconUrl } from '$lib/modules/cosmetic-image';
 import { avatarCache, displayNameCache, partyCache } from '$lib/stores';
 import type { AccountData } from '$types/account';
 import type { FetchPartyResponse, InviterPartyResponse } from '$types/game/party';
@@ -25,10 +26,7 @@ export async function getParty(account: AccountData): Promise<FetchPartyResponse
         const loadout = JSON.parse(loadoutJ).AthenaCosmeticLoadout;
         const equippedCharacterId = loadout?.characterPrimaryAssetId?.split(':')[1];
         if (equippedCharacterId) {
-          avatarCache.set(
-            member.account_id,
-            `https://fortnite-api.com/images/cosmetics/br/${equippedCharacterId}/smallicon.png`
-          );
+          avatarCache.set(member.account_id, fortniteApiCosmeticIconUrl(equippedCharacterId));
         }
       }
     }

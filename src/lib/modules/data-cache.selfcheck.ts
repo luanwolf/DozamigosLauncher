@@ -50,4 +50,29 @@ assert.equal(await cache.ensure(null), null);
 cache.clear('a');
 assert.equal(cache.get('a').data, null);
 
+// maxAgeMs: stale entries refetch on the next ensure.
+let now = 1_000;
+const realNow = Date.now;
+Date.now = () => now;
+
+let ttlCalls = 0;
+const ttlCache = createCache<string, string>(
+  (key) => key,
+  async (key) => {
+    ttlCalls += 1;
+    return `${key}-${ttlCalls}`;
+  },
+  { maxAgeMs: 100 }
+);
+
+assert.equal(await ttlCache.ensure('t'), 't-1');
+assert.equal(await ttlCache.ensure('t'), 't-1');
+assert.equal(ttlCalls, 1);
+
+now = 1_200; // past maxAge
+assert.equal(await ttlCache.ensure('t'), 't-2');
+assert.equal(ttlCalls, 2);
+
+Date.now = realNow;
+
 console.log('data-cache.selfcheck: ok');

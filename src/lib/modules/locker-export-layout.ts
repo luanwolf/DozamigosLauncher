@@ -1,9 +1,9 @@
-const CELL = 108;
-const GAP = 6;
-const PAD = 20;
-const MAX_COLS = 40;
-const HEADER = 110;
-const FOOTER = 52;
+const CELL = 132;
+const GAP = 8;
+const PAD = 24;
+const MAX_COLS = 36;
+const HEADER = 120;
+const FOOTER = 56;
 
 export const LOCKER_EXPORT_CELL = CELL;
 export const LOCKER_EXPORT_GAP = GAP;

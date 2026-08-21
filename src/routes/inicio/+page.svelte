@@ -5,18 +5,20 @@
   import { page } from '$app/state';
   import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
   import RefreshCwIcon from '@lucide/svelte/icons/refresh-cw';
+  import SearchIcon from '@lucide/svelte/icons/search';
   import { HUD_PAGE_WIDTH } from '$lib/constants/page-layout';
   import { NavZones } from '$lib/constants/sidebar';
   import { getWeeklySuperchargerInfo } from '$lib/constants/stw/weekly-supercharger';
   import { language, t } from '$lib/i18n';
   import { fetchSeasonInfo, type SeasonInfo } from '$lib/modules/fortnite-season';
+  import { redeemAllCheatCodes, redeemCheatCodes } from '$lib/modules/cheat-codes';
   import { queryProfile } from '$lib/modules/mcp';
   import { aggregateMissionAlertsOverview } from '$lib/modules/mission-alerts-buckets';
   import { resolveWeeklySuperchargerType } from '$lib/modules/weekly-supercharger';
   import { setWorldInfoCache } from '$lib/modules/world-info';
   import { accountStore, settingsStore } from '$lib/storage';
   import { claimedAlerts, worldInfoCache } from '$lib/stores';
-  import { formatRemainingDuration, msUntilNextUtcMidnight } from '$lib/utils';
+  import { formatRemainingDuration, handleError, msUntilNextUtcMidnight } from '$lib/utils';
   import PageContent from '$components/layout/PageContent.svelte';
   import HomeOnboarding from '$components/modules/home/HomeOnboarding.svelte';
   import HomeSeasonHero from '$components/modules/home/HomeSeasonHero.svelte';
@@ -31,6 +33,8 @@
   let seasonInfo = $state<SeasonInfo | null>(null);
   let battlePass = $state<{ level: number; xp: number } | null>(null);
   let weeklySuperchargerType = $state(resolveWeeklySuperchargerType(null));
+  let isRedeemingHacks = $state(false);
+  let customHackCode = $state('');
 
   const alertsOverview = $derived(aggregateMissionAlertsOverview($worldInfoCache));
   const weeklySuperchargerInfo = $derived(getWeeklySuperchargerInfo(weeklySuperchargerType, $t));
@@ -101,6 +105,42 @@
     }
   }
 
+  function toastHackSummary(summary: Awaited<ReturnType<typeof redeemCheatCodes>>) {
+    if (summary.unavailable) {
+      toast.error($t('home.adminPanel.unavailable'));
+    } else if (summary.redeemed > 0) {
+      toast.success($t('home.adminPanel.done', { redeemed: summary.redeemed, skipped: summary.skipped }));
+    } else if (summary.skipped > 0 && summary.failed === 0) {
+      toast.success($t('home.adminPanel.none'));
+    } else {
+      toast.error($t('home.adminPanel.failed'));
+    }
+  }
+
+  async function redeemLobbyHacks() {
+    if (!$activeAccount || isRedeemingHacks) return;
+    isRedeemingHacks = true;
+    try {
+      toastHackSummary(await redeemAllCheatCodes($activeAccount));
+    } catch (error) {
+      handleError({ error, message: $t('home.adminPanel.failed'), account: $activeAccount });
+    } finally {
+      isRedeemingHacks = false;
+    }
+  }
+
+  async function redeemTypedHack() {
+    if (!$activeAccount || isRedeemingHacks || !customHackCode.trim()) return;
+    isRedeemingHacks = true;
+    try {
+      toastHackSummary(await redeemCheatCodes($activeAccount, [customHackCode]));
+    } catch (error) {
+      handleError({ error, message: $t('home.adminPanel.failed'), account: $activeAccount });
+    } finally {
+      isRedeemingHacks = false;
+    }
+  }
+
   async function refreshAll() {
     isRefreshing = true;
     await Promise.all([loadSeason(), loadAccountBalances(), refreshWorldInfo()]);
@@ -154,7 +194,47 @@
   {#if showOnboarding}
     <HomeOnboarding />
   {:else}
-    <HomeSeasonHero {battlePass} loading={isLoadingSeason} requiresLogin={!$activeAccount} season={seasonInfo} />
+    <div class="cheat-admin-hero">
+      <form
+        class="cheat-admin-chip"
+        class:is-locked={!$activeAccount}
+        onsubmit={(event) => {
+          event.preventDefault();
+          redeemTypedHack();
+        }}
+      >
+        <span class="cheat-admin-key" aria-hidden="true">.</span>
+        <SearchIcon class="size-3.5" />
+        <span>{isRedeemingHacks ? $t('home.adminPanel.busy') : $t('home.adminPanel.label')}</span>
+        <input
+          class="cheat-admin-input"
+          type="text"
+          autocomplete="off"
+          spellcheck="false"
+          placeholder={$t('home.adminPanel.placeholder')}
+          disabled={!$activeAccount || isRedeemingHacks}
+          title={!$activeAccount ? $t('home.adminPanel.needAccount') : $t('home.adminPanel.placeholder')}
+          bind:value={customHackCode}
+        />
+        <button
+          class="cheat-admin-action"
+          type="submit"
+          disabled={!$activeAccount || isRedeemingHacks || !customHackCode.trim()}
+        >
+          {$t('home.adminPanel.submit')}
+        </button>
+        <button
+          class="cheat-admin-action"
+          type="button"
+          disabled={!$activeAccount || isRedeemingHacks}
+          title={!$activeAccount ? $t('home.adminPanel.needAccount') : $t('home.adminPanel.all')}
+          onclick={redeemLobbyHacks}
+        >
+          {$t('home.adminPanel.all')}
+        </button>
+      </form>
+      <HomeSeasonHero {battlePass} loading={isLoadingSeason} requiresLogin={!$activeAccount} season={seasonInfo} />
+    </div>
 
     <section class="deck-grid">
       {#each deckZones as zone (zone.id)}

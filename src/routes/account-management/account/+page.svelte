@@ -83,8 +83,8 @@
     { label: 'Bearer', value: 'bearer' }
   ];
 
-  let selectedClient = $state<string>();
-  const allClients = [fortniteAndroidGameClient, fortnitePCGameClient, launcherAppClient2];
+  let selectedClient = $state<string>(defaultClient.clientId);
+  const allClients = [fortnitePCGameClient, fortniteAndroidGameClient, launcherAppClient2];
   const clientOptions = allClients.map((client) => ({ value: client.clientId, label: client.name }));
 
   const humanizedErrors = $derived<Record<string, string>>({
@@ -254,7 +254,7 @@
     try {
       let accessTokenData = await getAccessTokenUsingDeviceAuth($activeAccount, selectedTokenType);
 
-      if (selectedClient !== defaultClient.clientId) {
+      if (selectedClient !== fortniteAndroidGameClient.clientId) {
         const { code } = await getExchangeCodeUsingAccessToken(accessTokenData.access_token);
 
         const client = allClients.find((client) => client.clientId === selectedClient);

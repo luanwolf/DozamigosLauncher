@@ -147,7 +147,105 @@ const lowerData = parseLockerData(athenaLower, cosmetics);
 assert.deepEqual(lowerData.itemsByCategory.outfits[0]!.equippedSlots, [0]);
 assert.equal(lowerData.itemsByCategory.outfits[0]!.name, 'Unseen');
 
-const cats: LockerCategory[] = ['outfits', 'backpacks', 'pickaxes', 'gliders', 'emotes', 'wraps'];
-assert.equal(cats.length, 6);
+const cats: LockerCategory[] = [
+  'outfits',
+  'backpacks',
+  'pickaxes',
+  'gliders',
+  'emotes',
+  'wraps',
+  'auras',
+  'pets',
+  'shoes'
+];
+assert.equal(cats.length, 9);
+
+const extraAthena = {
+  profileChanges: [
+    {
+      changeType: 'fullProfileUpdate',
+      profile: {
+        items: {
+          locker1: {
+            templateId: 'CosmeticLocker:cosmeticlocker_athena',
+            quantity: 1,
+            attributes: {
+              locker_slots_data: {
+                slots: {
+                  SparksAura: { items: ['SparksAura:SparksAura_Bats'] },
+                  CosmeticCompanion: { items: ['pet1'] },
+                  Shoes: { items: ['CosmeticShoes:Shoes_AbyssBlot'] }
+                }
+              }
+            }
+          },
+          aura1: {
+            templateId: 'SparksAura:SparksAura_Bats',
+            quantity: 1,
+            attributes: {}
+          },
+          pet1: {
+            templateId: 'CosmeticCompanion:Companion_AboutJury',
+            quantity: 1,
+            attributes: {}
+          },
+          shoe1: {
+            templateId: 'CosmeticShoes:Shoes_AbyssBlot',
+            quantity: 1,
+            attributes: {}
+          }
+        },
+        stats: { attributes: { loadouts: ['locker1'], last_applied_loadout: 'locker1' } }
+      }
+    }
+  ]
+} as unknown as FullQueryProfile<'athena'>;
+
+const extraCosmetics = new Map([
+  [
+    'sparksaura_bats',
+    {
+      id: 'SparksAura_Bats',
+      name: 'Bats',
+      description: '',
+      typeBackend: 'SparksAura',
+      rarity: 'uncommon',
+      smallIcon: 'aura.png',
+      icon: 'aura.png'
+    }
+  ],
+  [
+    'companion_aboutjury',
+    {
+      id: 'Companion_AboutJury',
+      name: 'Squanchy',
+      description: '',
+      typeBackend: 'CosmeticCompanion',
+      rarity: 'uncommon',
+      smallIcon: 'pet.png',
+      icon: 'pet.png'
+    }
+  ],
+  [
+    'shoes_abyssblot',
+    {
+      id: 'Shoes_AbyssBlot',
+      name: 'Octopus Feet',
+      description: '',
+      typeBackend: 'CosmeticShoes',
+      rarity: 'uncommon',
+      smallIcon: 'shoe.png',
+      icon: 'shoe.png'
+    }
+  ]
+]);
+
+const extra = parseLockerData(extraAthena, extraCosmetics);
+assert.equal(extra.itemsByCategory.auras[0]!.name, 'Bats');
+assert.deepEqual(extra.itemsByCategory.auras[0]!.equippedSlots, [0]);
+assert.equal(extra.itemsByCategory.pets[0]!.name, 'Squanchy');
+assert.deepEqual(extra.itemsByCategory.pets[0]!.equippedSlots, [0]);
+assert.equal(extra.itemsByCategory.shoes[0]!.name, 'Octopus Feet');
+assert.deepEqual(extra.itemsByCategory.shoes[0]!.equippedSlots, [0]);
 
 console.log('locker.selfcheck: ok');

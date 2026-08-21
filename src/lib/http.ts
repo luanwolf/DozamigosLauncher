@@ -38,7 +38,7 @@ export const tauriKy = ky.create({
 const manifest = await getFortniteManifest().catch(() => null);
 const defaultUserAgent = manifest?.appVersionString
   ? `Fortnite/${manifest.appVersionString.replace('-Windows', '')} Windows/10.0.26100.1.256.64bit`
-  : 'Fortnite/++Fortnite+Release-36.10-CL-59001174 Windows/10.0.26100.1.256.64bit';
+  : 'Fortnite/++Fortnite+Release-42.00-CL-56878558 Windows/10.0.26100.1.256.64bit';
 
 let userAgent = defaultUserAgent;
 
@@ -78,6 +78,14 @@ export const calendarService = epicService.extend({
 
 export const storefrontService = epicService.extend({
   prefix: 'https://fngw-mcp-gc-livefn.ol.epicgames.com/fortnite/api/storefront/v2'
+});
+
+export const eosInventoryService = epicService.extend({
+  prefix: 'https://fngw-svc-ds-livefn.ol.epicgames.com/api/inventory/v3'
+});
+
+export const magpieService = epicService.extend({
+  prefix: 'https://fngw-svc-ds-livefn.ol.epicgames.com/api/magpie/v1'
 });
 
 export const friendService = epicService.extend({

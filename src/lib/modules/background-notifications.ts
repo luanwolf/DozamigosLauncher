@@ -6,6 +6,7 @@ import { fetchShop } from '$lib/modules/fortnite-api';
 import { isLeavingSoon } from '$lib/modules/shop-history';
 import { fetchAvailableCardPacks } from '$lib/modules/free-llamas';
 import { fetchFreeGames } from '$lib/modules/free-games';
+import { refreshLiveBrData } from '$lib/modules/account-data';
 import { getLightswitch } from '$lib/modules/server-status';
 import { fetchSteamFreeGames } from '$lib/modules/steam-free-games';
 import { findNewSteamFreeAppIds } from '$lib/modules/steam-free-games-notify';
@@ -479,6 +480,10 @@ async function checkEpicFreeGames(state: PersistedState): Promise<string[] | nul
 
 async function runBackgroundChecks() {
   const { accounts } = accountStore.get();
+  const active = accountStore.getActive();
+  // TTL-aware: no-ops when still fresh; refreshes map/leaks even without a login.
+  await refreshLiveBrData(active ?? accounts[0] ?? null);
+
   if (!accounts.length && !steamNotificationsEnabled() && !notificationsEnabled()) return;
 
   const state = readState();
@@ -516,7 +521,8 @@ function runQuestDayCheck() {
 }
 
 /**
- * Polls llamas, item shop, STW mission alerts, free games, and server status.
+ * Polls llamas, item shop, STW mission alerts, free games, server status, and
+ * TTL-stale BR live data (map / leaks / locker / Status BR).
  * Sends native Windows toasts when "Notificações do Windows" is enabled.
  */
 export function startBackgroundNotifications() {

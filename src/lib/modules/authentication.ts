@@ -1,7 +1,7 @@
 import {
   defaultClient,
+  fortniteAndroidGameClient,
   fortniteNewSwitchGameClient,
-  fortnitePCGameClient,
   type ClientCredentials
 } from '$lib/constants/clients';
 import { oauthService } from '$lib/http';
@@ -18,6 +18,7 @@ export function getAccessTokenUsingDeviceAuth(
   deviceAuthData: DeviceAuthData,
   tokenType: EpicTokenType = 'eg1'
 ): Promise<EpicDeviceAuthLoginData> {
+  // PC client has no device_auth grant — Android is the refresh client, then we exchange to PC.
   return oauthService
     .post<EpicDeviceAuthLoginData>('token', {
       body: new URLSearchParams({
@@ -26,7 +27,10 @@ export function getAccessTokenUsingDeviceAuth(
         device_id: deviceAuthData.deviceId,
         secret: deviceAuthData.secret,
         token_type: tokenType
-      }).toString()
+      }).toString(),
+      headers: {
+        Authorization: `Basic ${fortniteAndroidGameClient.base64}`
+      }
     })
     .json();
 }
@@ -116,7 +120,7 @@ export function getAccessTokenUsingAuthorizationCode(
 const AUTH_CODE_CLIENT_CHAIN = [
   defaultClient,
   fortniteNewSwitchGameClient,
-  fortnitePCGameClient
+  fortniteAndroidGameClient
 ] as const;
 
 /**

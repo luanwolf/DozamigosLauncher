@@ -7,13 +7,26 @@
   let selectedAccounts = $state<string[]>([]);
   let isFetching = $state(false);
   let results = $state<VbucksState[]>([]);
+  let currentPlatform = $state<string>('');
+  let selectedPlatform = $state<string>('EpicPC');
+  let isLoadingPlatform = $state(false);
+  let isSavingPlatform = $state(false);
 </script>
 
 <script lang="ts">
   import CoinsIcon from '@lucide/svelte/icons/coins';
+  import { toast } from 'svelte-sonner';
   import { HUD_PAGE_WIDTH } from '$lib/constants/page-layout';
   import { language, t } from '$lib/i18n';
   import { queryProfile } from '$lib/modules/mcp';
+  import {
+    fetchMtxPlatform,
+    isMtxPlatform,
+    MTX_PLATFORMS,
+    setMtxPlatform,
+    type MtxPlatform
+  } from '$lib/modules/mtx-platform';
+  import { accountStore } from '$lib/storage';
   import {
     getAccountLabel,
     getAccountsFromSelection,
@@ -24,6 +37,10 @@
   import AccountCombobox from '$components/ui/AccountCombobox.svelte';
   import AccountResultCard from '$components/ui/AccountResultCard.svelte';
   import { Button } from '$components/ui/button';
+  import HudPanel from '$components/ui/hud/HudPanel.svelte';
+  import { Label } from '$components/ui/label';
+
+  const activeAccount = accountStore.getActiveStore(true);
 
   const total = $derived(
     results.reduce((sum, state) => ('error' in state.data ? sum : sum + state.data.total), 0)
@@ -59,6 +76,40 @@
     results = next.sort((a, b) => a.displayName.localeCompare(b.displayName, $language));
     isFetching = false;
   }
+
+  async function loadPlatform() {
+    if (!$activeAccount) {
+      currentPlatform = '';
+      return;
+    }
+    isLoadingPlatform = true;
+    try {
+      currentPlatform = await fetchMtxPlatform($activeAccount);
+      selectedPlatform = currentPlatform;
+    } catch (error) {
+      handleError({ error, message: $t('vbucksInformation.platformLoadFailed'), account: $activeAccount });
+    } finally {
+      isLoadingPlatform = false;
+    }
+  }
+
+  async function savePlatform() {
+    if (!$activeAccount || !isMtxPlatform(selectedPlatform)) return;
+    isSavingPlatform = true;
+    try {
+      await setMtxPlatform($activeAccount, selectedPlatform as MtxPlatform);
+      currentPlatform = selectedPlatform;
+      toast.success($t('vbucksInformation.platformSaved', { platform: selectedPlatform }));
+    } catch (error) {
+      handleError({ error, message: $t('vbucksInformation.platformSaveFailed'), account: $activeAccount });
+    } finally {
+      isSavingPlatform = false;
+    }
+  }
+
+  $effect(() => {
+    if ($activeAccount?.accountId) void loadPlatform();
+  });
 </script>
 
 <PageContent
@@ -67,6 +118,44 @@
   description={$t('vbucksInformation.page.description')}
   title={$t('vbucksInformation.page.title')}
 >
+  <HudPanel title={$t('vbucksInformation.platformTitle')}>
+    <p class="mb-3 text-sm text-muted-foreground">{$t('vbucksInformation.platformDescription')}</p>
+    {#if !$activeAccount}
+      <p class="text-sm text-muted-foreground">{$t('sidebar.loginRequired')}</p>
+    {:else}
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-end">
+        <div class="min-w-0 flex-1 space-y-1.5">
+          <Label for="mtx-platform">{$t('vbucksInformation.platformLabel')}</Label>
+          <select
+            id="mtx-platform"
+            class="border-input bg-background ring-offset-background focus-visible:ring-ring flex h-9 w-full rounded-md border px-3 text-sm focus-visible:ring-2 focus-visible:outline-none"
+            disabled={isLoadingPlatform || isSavingPlatform}
+            bind:value={selectedPlatform}
+          >
+            {#each MTX_PLATFORMS as platform (platform)}
+              <option value={platform}>
+                {$t(`vbucksInformation.platforms.${platform}`)}
+              </option>
+            {/each}
+          </select>
+          {#if currentPlatform}
+            <p class="text-xs text-muted-foreground">
+              {$t('vbucksInformation.platformCurrent', { platform: currentPlatform })}
+            </p>
+          {/if}
+        </div>
+        <Button
+          disabled={isLoadingPlatform || isSavingPlatform || selectedPlatform === currentPlatform}
+          loading={isSavingPlatform}
+          onclick={savePlatform}
+          type="button"
+        >
+          {$t('vbucksInformation.platformSave')}
+        </Button>
+      </div>
+    {/if}
+  </HudPanel>
+
   <AccountCombobox disabled={isFetching} type="multiple" bind:value={selectedAccounts} />
 
   <Button

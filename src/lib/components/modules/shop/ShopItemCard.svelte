@@ -1,10 +1,11 @@
 <script lang="ts">
   import CheckIcon from '@lucide/svelte/icons/check';
   import StarIcon from '@lucide/svelte/icons/star';
-  import { ItemColors } from '$lib/constants/item-colors';
   import { language, t } from '$lib/i18n';
   import { accountStore } from '$lib/storage';
   import { createDiscountedStore, createIsOwnedStore } from '$lib/stores';
+  import { onCosmeticImageError } from '$lib/modules/cosmetic-image';
+  import { rarityBackgroundStyle } from '$lib/modules/locker-export-rarity';
   import { isLeavingToday } from '$lib/modules/shop-history';
   import { getShopItemWishlistKey } from '$lib/modules/shop-item-key';
   import { shopWishlistStore, toggleShopWishlistKey } from '$lib/stores/shop-wishlist';
@@ -25,14 +26,13 @@
   const isWishlisted = $derived($shopWishlistStore.has(wishlistKey));
   const leavesToday = $derived(isLeavingToday(item));
 
-  const colors: Record<string, string> = { ...ItemColors.rarities, ...ItemColors.series };
-
   const imageUrl = $derived(item.assets.featured || item.assets.large || item.assets.small);
-  const backgroundColorHex = $derived.by(() => {
-    if (item.type.id === 'track') return colors.epic;
-    const seriesId = item.series?.id?.toLowerCase() || '';
-    const rarityId = item.rarity?.id?.toLowerCase();
-    return colors[seriesId] || colors[rarityId] || colors.common;
+  const tileBackground = $derived.by(() => {
+    if (item.type.id === 'track') return rarityBackgroundStyle({ rarity: 'epic' });
+    return rarityBackgroundStyle({
+      rarity: item.rarity?.id || 'common',
+      series: item.series?.id
+    });
   });
 
   function showItemModal() {
@@ -46,7 +46,7 @@
 </script>
 
 <div
-  style="background-color: {backgroundColorHex}"
+  style={tileBackground}
   class="relative w-full cursor-pointer overflow-hidden rounded-md border border-transparent pb-[100%] transition-colors hover:border-primary/40 focus-visible:border-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
   onclick={showItemModal}
   onkeydown={(event) => event.key === 'Enter' && showItemModal()}
@@ -60,6 +60,7 @@
       draggable="false"
       loading="lazy"
       src={imageUrl}
+      onerror={onCosmeticImageError}
     />
   {/if}
 

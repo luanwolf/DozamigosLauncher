@@ -29,11 +29,11 @@ export const fortnitePCGameClient = createClientCredentials({
   secret: 'e1f31c211f28413186262d37a13fc84d'
 });
 
-export const defaultClient = fortniteAndroidGameClient;
+export const defaultClient = fortnitePCGameClient;
 
-/** Opens Epic login, then returns an authorization code for the Android Fortnite client. */
+/** Opens Epic login, then returns an authorization code for the PC Fortnite client. */
 export const epicLoginAuthorizationCodeUrl = `https://www.epicgames.com/id/login?redirectUrl=${encodeURIComponent(
-  `https://www.epicgames.com/id/api/redirect?clientId=${fortniteAndroidGameClient.clientId}&responseType=code`
+  `https://www.epicgames.com/id/api/redirect?clientId=${fortnitePCGameClient.clientId}&responseType=code`
 )}`;
 
 function createClientCredentials({ name, clientId, secret }: Omit<ClientCredentials, 'base64'>): ClientCredentials {

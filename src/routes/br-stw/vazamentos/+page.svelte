@@ -8,7 +8,6 @@
   import LoaderCircleIcon from '@lucide/svelte/icons/loader-circle';
   import RefreshCwIcon from '@lucide/svelte/icons/refresh-cw';
   import { openPath } from '@tauri-apps/plugin-opener';
-  import { ItemColors } from '$lib/constants/item-colors';
   import { HUD_PAGE_WIDTH } from '$lib/constants/page-layout';
   import { language, t } from '$lib/i18n';
   import { leaksCache } from '$lib/modules/account-data';
@@ -18,6 +17,8 @@
     type LeakedCosmetic
   } from '$lib/modules/fortnite-leaks';
   import { exportLockerCategoryWebp, type LockerExportItem } from '$lib/modules/locker-export';
+  import { rarityBackgroundStyle } from '$lib/modules/locker-export-rarity';
+  import { onCosmeticImageError } from '$lib/modules/cosmetic-image';
   import { handleError } from '$lib/utils';
   import LeaksItemPreviewModal from '$components/modules/leaks/LeaksItemPreviewModal.svelte';
   import PageActionButton from '$components/layout/PageActionButton.svelte';
@@ -27,8 +28,6 @@
   import { Button } from '$components/ui/button';
   import HudPanel from '$components/ui/hud/HudPanel.svelte';
   import { Progress } from '$components/ui/progress';
-
-  const colors: Record<string, string> = { ...ItemColors.rarities, ...ItemColors.series };
 
   const cached = $derived(leaksCache.get($language));
   const leaksData = $derived(cached.data);
@@ -57,9 +56,10 @@
   });
 
   function cosmeticBackground(cosmetic: LeakedCosmetic) {
-    const seriesKey = cosmetic.series?.toLowerCase().replace(/\s+/g, '') ?? '';
-    const rarityKey = cosmetic.rarityValue;
-    return colors[seriesKey] || colors[rarityKey] || colors.common;
+    return rarityBackgroundStyle({
+      rarity: cosmetic.rarityValue,
+      series: cosmetic.series?.toLowerCase().replace(/\s+/g, '')
+    });
   }
 
   function formatBuildLabel(build: string) {
@@ -255,7 +255,7 @@
                 {#each group.items as cosmetic (cosmetic.id)}
                   <button
                     type="button"
-                    style="background-color: {cosmeticBackground(cosmetic)}"
+                    style={cosmeticBackground(cosmetic)}
                     class="overflow-hidden rounded-md border border-border/40 text-left transition hover:brightness-110 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                     onclick={() => {
                       previewItem = cosmetic;
@@ -267,6 +267,7 @@
                         alt={cosmetic.name}
                         loading="lazy"
                         src={cosmetic.image}
+                        onerror={onCosmeticImageError}
                       />
                     {/if}
 

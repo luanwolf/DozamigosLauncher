@@ -61,7 +61,11 @@
         aria-label="Dozamigos"
         href="/inicio"
       >
-        <img class="size-9 object-contain" alt="Dozamigos" decoding="async" src={appIcon} />
+        <span class="app-logo-glitch size-9">
+          <img class="app-logo-glitch-layer is-cyan" alt="" aria-hidden="true" decoding="async" src={appIcon} />
+          <img class="app-logo-glitch-layer is-magenta" alt="" aria-hidden="true" decoding="async" src={appIcon} />
+          <img class="app-logo-glitch-main size-9 object-contain" alt="Dozamigos" decoding="async" src={appIcon} />
+        </span>
       </a>
 
       <nav class="flex flex-1 flex-col gap-1 p-1.5" aria-label="Zonas Dozamigos">

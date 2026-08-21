@@ -1,3 +1,4 @@
+import { fortniteApiCosmeticIconUrl } from '$lib/modules/cosmetic-image';
 import { avatarService } from '$lib/http';
 import { getAuthedKy } from '$lib/modules/auth-session';
 import { avatarCache } from '$lib/stores';
@@ -19,7 +20,7 @@ export async function fetchAvatars(account: AccountData, friendIds: string[]): P
     const cosmeticId = avatar.avatarId.split(':')[1];
     if (!cosmeticId) continue;
 
-    avatarCache.set(avatar.accountId, `https://fortnite-api.com/images/cosmetics/br/${cosmeticId}/smallicon.png`);
+    avatarCache.set(avatar.accountId, fortniteApiCosmeticIconUrl(cosmeticId));
   }
 
   return avatarData;

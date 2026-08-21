@@ -12,7 +12,17 @@ export type LockerCosmeticMeta = {
   styles?: { name: string; image: string }[];
 };
 
-export const LOCKER_CATEGORIES = ['outfits', 'backpacks', 'pickaxes', 'gliders', 'emotes', 'wraps'] as const;
+export const LOCKER_CATEGORIES = [
+  'outfits',
+  'backpacks',
+  'pickaxes',
+  'gliders',
+  'emotes',
+  'wraps',
+  'auras',
+  'pets',
+  'shoes'
+] as const;
 
 export type LockerCategory = (typeof LOCKER_CATEGORIES)[number];
 
@@ -22,7 +32,10 @@ export const CATEGORY_META: Record<LockerCategory, { prefix: string; slotCategor
   pickaxes: { prefix: 'AthenaPickaxe:', slotCategory: 'Pickaxe', slotCount: 1 },
   gliders: { prefix: 'AthenaGlider:', slotCategory: 'Glider', slotCount: 1 },
   emotes: { prefix: 'AthenaDance:', slotCategory: 'Dance', slotCount: 6 },
-  wraps: { prefix: 'AthenaItemWrap:', slotCategory: 'ItemWrap', slotCount: 7 }
+  wraps: { prefix: 'AthenaItemWrap:', slotCategory: 'ItemWrap', slotCount: 7 },
+  auras: { prefix: 'SparksAura:', slotCategory: 'SparksAura', slotCount: 1 },
+  pets: { prefix: 'CosmeticCompanion:', slotCategory: 'CosmeticCompanion', slotCount: 1 },
+  shoes: { prefix: 'CosmeticShoes:', slotCategory: 'Shoes', slotCount: 1 }
 };
 
 export type LockerOwnedItem = {

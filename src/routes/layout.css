@@ -257,6 +257,80 @@
   }
 }
 
+/* Constant RGB-split jitter for the rail logo (Cube). */
+@keyframes logo-glitch-jitter {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  10% {
+    transform: translate(-1px, 1px);
+  }
+  20% {
+    transform: translate(1px, -1px);
+  }
+  35% {
+    transform: translate(-2px, 0);
+  }
+  50% {
+    transform: translate(2px, 1px);
+  }
+  65% {
+    transform: translate(0, -1px);
+  }
+  80% {
+    transform: translate(1px, 0);
+  }
+}
+
+@keyframes logo-glitch-cyan {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: translate(-2px, 0);
+    clip-path: inset(0 0 0 0);
+  }
+  25% {
+    opacity: 0.55;
+    transform: translate(-3px, 1px);
+    clip-path: inset(12% 0 58% 0);
+  }
+  50% {
+    opacity: 0.25;
+    transform: translate(-1px, -1px);
+    clip-path: inset(48% 0 18% 0);
+  }
+  75% {
+    opacity: 0.5;
+    transform: translate(-4px, 0);
+    clip-path: inset(8% 0 72% 0);
+  }
+}
+
+@keyframes logo-glitch-magenta {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: translate(2px, 0);
+    clip-path: inset(0 0 0 0);
+  }
+  25% {
+    opacity: 0.5;
+    transform: translate(3px, -1px);
+    clip-path: inset(55% 0 10% 0);
+  }
+  50% {
+    opacity: 0.3;
+    transform: translate(1px, 1px);
+    clip-path: inset(18% 0 52% 0);
+  }
+  75% {
+    opacity: 0.55;
+    transform: translate(4px, 0);
+    clip-path: inset(68% 0 8% 0);
+  }
+}
+
 /*
  * Idle surface fault. Most of the cycle is invisible; the burst lands in a
  * ~0.4s window. Durations are coprime per nth-of-type so panels drift out of
@@ -468,6 +542,103 @@
     display: block;
     flex-shrink: 0;
     object-fit: contain;
+  }
+
+  .cheat-admin-hero {
+    position: relative;
+  }
+
+  .cheat-admin-chip {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--glow-cyan) 70%, transparent);
+    background: color-mix(in srgb, #04151c 82%, transparent);
+    color: #9af7ff;
+    padding: 0.35rem 0.7rem 0.35rem 0.45rem;
+    font-family: ui-monospace, 'Cascadia Code', 'Segoe UI Mono', monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+    text-transform: lowercase;
+    box-shadow: 0 0 12px color-mix(in srgb, var(--glow-cyan) 35%, transparent);
+  }
+
+  @media (min-width: 640px) {
+    .cheat-admin-chip {
+      top: 1rem;
+      left: 1.25rem;
+    }
+  }
+
+  .cheat-admin-chip.is-locked {
+    opacity: 0.45;
+    box-shadow: none;
+  }
+
+  .cheat-admin-input,
+  .cheat-admin-action {
+    position: relative;
+    z-index: 1;
+    border: 1px solid color-mix(in srgb, var(--glow-cyan) 45%, transparent);
+    background: #071016;
+    color: #e8fbff;
+    font: inherit;
+    letter-spacing: 0.02em;
+  }
+
+  .cheat-admin-input {
+    width: 10.5rem;
+    padding: 0.15rem 0.4rem;
+    text-transform: none;
+  }
+
+  .cheat-admin-input:focus {
+    outline: 1px solid color-mix(in srgb, var(--glow-cyan) 80%, transparent);
+  }
+
+  .cheat-admin-action {
+    padding: 0.15rem 0.45rem;
+    text-transform: lowercase;
+  }
+
+  .cheat-admin-action:not(:disabled):hover {
+    background: color-mix(in srgb, #06303a 88%, transparent);
+  }
+
+  .cheat-admin-action:disabled {
+    opacity: 0.45;
+  }
+
+  .cheat-admin-chip::after {
+    content: '';
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 2px,
+      color-mix(in srgb, #9af7ff 8%, transparent) 3px
+    );
+    opacity: 0.55;
+  }
+
+  .cheat-admin-key {
+    display: inline-flex;
+    min-width: 1.15rem;
+    height: 1.15rem;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid color-mix(in srgb, var(--glow-cyan) 55%, transparent);
+    background: #071016;
+    color: #e8fbff;
+    font-size: 0.85rem;
+    line-height: 1;
   }
 
   .surface-tile {
@@ -875,6 +1046,45 @@
       1px 0 var(--glow-magenta);
   }
 
+  .app-logo-glitch {
+    position: relative;
+    display: inline-block;
+    isolation: isolate;
+    overflow: hidden;
+  }
+
+  .app-logo-glitch-main,
+  .app-logo-glitch-layer {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .app-logo-glitch-main {
+    position: relative;
+    z-index: 1;
+    animation: logo-glitch-jitter 1.05s steps(2, end) infinite;
+  }
+
+  .app-logo-glitch-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    mix-blend-mode: screen;
+  }
+
+  .app-logo-glitch-layer.is-cyan {
+    filter: sepia(1) saturate(8) hue-rotate(150deg) brightness(1.15);
+    animation: logo-glitch-cyan 1.35s steps(2, end) infinite;
+  }
+
+  .app-logo-glitch-layer.is-magenta {
+    filter: sepia(1) saturate(10) hue-rotate(280deg) brightness(1.1);
+    animation: logo-glitch-magenta 1.15s steps(2, end) infinite;
+  }
+
   .hud-panel::after,
   .surface-tile::after,
   .surface-tile-interactive::after,
@@ -1176,6 +1386,7 @@
   .hud-panel,
   .hud-toolbar,
   .hud-chip,
+  .cheat-admin-chip,
   .hud-cut,
   .surface-tile,
   .surface-tile-interactive,
@@ -1198,7 +1409,8 @@
     border-radius: 0 10px 0 10px;
   }
 
-  .hud-chip {
+  .hud-chip,
+  .cheat-admin-chip {
     border-radius: 0 6px 0 6px;
   }
 
@@ -1232,7 +1444,9 @@
   .launch-cta:hover:not(:disabled),
   .glitch-target:hover:not(:disabled):not([aria-disabled='true']),
   .glitch-target:focus-visible:not(:disabled):not([aria-disabled='true']),
-  .glitch-target:active:not(:disabled):not([aria-disabled='true']) {
+  .glitch-target:active:not(:disabled):not([aria-disabled='true']),
+  .app-logo-glitch-main,
+  .app-logo-glitch-layer {
     animation: none !important;
   }
 

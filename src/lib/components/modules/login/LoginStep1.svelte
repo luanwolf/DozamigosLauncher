@@ -109,9 +109,9 @@
       );
 
       const newSwitchExchangeCode = await getExchangeCodeUsingAccessToken(newSwitchAccessTokenData.access_token);
-      const androidAccessTokenData = await getAccessTokenUsingExchangeCode(newSwitchExchangeCode.code);
+      const pcAccessTokenData = await getAccessTokenUsingExchangeCode(newSwitchExchangeCode.code);
 
-      await handleLogin(androidAccessTokenData);
+      await handleLogin(pcAccessTokenData);
     } catch (error) {
       handleError({ error, message: $t('accountManager.confirmRequest') });
     } finally {

@@ -11,11 +11,18 @@ import {
   LOCKER_EXPORT_HEADER,
   LOCKER_EXPORT_PAD
 } from '$lib/modules/locker-export-layout';
+import { rarityBackgroundSlug } from '$lib/modules/locker-export-rarity';
 import { sortLockerItemsForExport } from '$lib/modules/locker-export-sort';
 import type { LockerOwnedItem } from '$lib/modules/locker-parse';
 import { dataDirectory } from '$lib/storage/file-store';
 
-export const WEBP_QUALITY = 0.88;
+export {
+  rarityBackgroundSlug,
+  rarityBackgroundStyle,
+  rarityBackgroundUrl
+} from '$lib/modules/locker-export-rarity';
+
+export const WEBP_QUALITY = 0.95;
 const NAME_BAND = 34;
 /** Fortnite display face — load from /fonts; falls back to Impact/Teko if missing. */
 export const DISPLAY_FONT = '"Burbank Big Condensed Black", Impact, Teko, sans-serif';
@@ -30,11 +37,20 @@ const FONT_CANDIDATES = [
 ];
 export const APP_ICON_URL = '/icons/app.png';
 export const APP_NAME = 'Dozamigos Launcher';
+/** fortnite-api.com mark — loaded at export time (shop/locker/leaks source). */
+export const FORTNITE_API_LOGO_URL = 'https://fortnite-api.com/assets/img/logo_128.png';
+export const FORTNITE_API_CREDIT = 'fortnite-api.com';
+
+/** Target print density; canvas is scaled vs CSS 96 DPI. */
+export const EXPORT_DPI = 300;
+export const EXPORT_SCALE = EXPORT_DPI / 96;
 
 const rarityColors: Record<string, string> = {
   ...ItemColors.rarities,
   ...ItemColors.series
 };
+
+const rarityBgCache = new Map<string, Promise<ImageBitmap | null>>();
 
 /** Optional second line (e.g. Sprite status) and dimming for entries the account does not own. */
 export type LockerExportItem = LockerOwnedItem & { note?: string; faded?: boolean };
@@ -68,6 +84,20 @@ function rarityKey(rarity: string) {
   return rarity.toLowerCase().replace(/\s+/g, '');
 }
 
+/** Cached load of `/rarities/{slug}.png` (null if missing). */
+export function loadRarityBackground(item: {
+  rarity: string;
+  series?: string;
+}): Promise<ImageBitmap | null> {
+  const slug = rarityBackgroundSlug(item);
+  let pending = rarityBgCache.get(slug);
+  if (!pending) {
+    pending = loadBitmap(`/rarities/${slug}.png`);
+    rarityBgCache.set(slug, pending);
+  }
+  return pending;
+}
+
 /** Trims to what actually fits, so names never squeeze or spill out of the tile. */
 export function fitText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number) {
   if (ctx.measureText(text).width <= maxWidth) return text;
@@ -87,14 +117,35 @@ function shadeHex(hex: string, factor: number): string {
   return `#${((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1)}`;
 }
 
+function drawCover(
+  ctx: CanvasRenderingContext2D,
+  bmp: ImageBitmap,
+  x: number,
+  y: number,
+  w: number,
+  h: number
+) {
+  const scale = Math.max(w / bmp.width, h / bmp.height);
+  const dw = bmp.width * scale;
+  const dh = bmp.height * scale;
+  ctx.drawImage(bmp, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
+}
+
+/** Prefer `/rarities/*.png`; solid gradient only if the asset failed to load. */
 export function fillRarityBackground(
   ctx: CanvasRenderingContext2D,
   x: number,
   y: number,
   w: number,
   h: number,
-  item: { rarity: string; series?: string }
+  item: { rarity: string; series?: string },
+  background?: ImageBitmap | null
 ) {
+  if (background) {
+    drawCover(ctx, background, x, y, w, h);
+    return;
+  }
+
   const tone = item.series || item.rarity;
   const base = rarityColors[rarityKey(tone)] || rarityColors.common;
   const grad = ctx.createLinearGradient(x, y, x, y + h);
@@ -165,6 +216,66 @@ export async function saveExportBlob(blob: Blob, filename: string): Promise<stri
   return filePath;
 }
 
+/** Logical layout coords; bitmap is EXPORT_SCALE× for ~300 DPI sharpness. */
+export function createExportCanvas(logicalWidth: number, logicalHeight: number) {
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.round(logicalWidth * EXPORT_SCALE);
+  canvas.height = Math.round(logicalHeight * EXPORT_SCALE);
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('Canvas 2D unavailable');
+  ctx.scale(EXPORT_SCALE, EXPORT_SCALE);
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+  return { canvas, ctx };
+}
+
+/** Bottom-left fortnite-api credit when the collage is built from that source. */
+export async function drawFortniteApiCredit(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+  footerHeight: number,
+  pad: number
+) {
+  const footerY = height - footerHeight / 2;
+  const iconSize = 26;
+  const logo = await loadBitmap(FORTNITE_API_LOGO_URL);
+  let x = pad;
+
+  if (logo) {
+    ctx.drawImage(logo, x, footerY - iconSize / 2, iconSize, iconSize);
+    x += iconSize + 8;
+    logo.close();
+  }
+
+  ctx.font = `600 16px ${UI_FONT}`;
+  ctx.fillStyle = 'rgba(255,255,255,0.72)';
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(FORTNITE_API_CREDIT, x, footerY);
+
+  // Right side: app mark (small), when there is room.
+  const appIcon = await loadBitmap(APP_ICON_URL);
+  ctx.font = `500 14px ${UI_FONT}`;
+  const appW = ctx.measureText(APP_NAME).width;
+  const appIconSize = 18;
+  const rightBlock = (appIcon ? appIconSize + 6 : 0) + appW;
+  let rightX = width - pad - rightBlock;
+  if (rightX > x + 120) {
+    if (appIcon) {
+      ctx.drawImage(appIcon, rightX, footerY - appIconSize / 2, appIconSize, appIconSize);
+      rightX += appIconSize + 6;
+      appIcon.close();
+    } else {
+      appIcon?.close();
+    }
+    ctx.fillStyle = 'rgba(255,255,255,0.45)';
+    ctx.fillText(APP_NAME, rightX, footerY);
+  } else {
+    appIcon?.close();
+  }
+}
+
 /**
  * Sequential WebP collage of one locker category, sorted by series → mythic → …
  * common, with skin names on each tile.
@@ -183,11 +294,7 @@ export async function exportLockerCategoryWebp(options: LockerExportOptions): Pr
   const header = LOCKER_EXPORT_HEADER;
   const { width, height } = gridPixelSize(ordered.length);
 
-  const canvas = document.createElement('canvas');
-  canvas.width = width;
-  canvas.height = height;
-  const ctx = canvas.getContext('2d');
-  if (!ctx) throw new Error('Canvas 2D unavailable');
+  const { canvas, ctx } = createExportCanvas(width, height);
 
   ctx.fillStyle = '#0a1628';
   ctx.fillRect(0, 0, width, height);
@@ -206,16 +313,18 @@ export async function exportLockerCategoryWebp(options: LockerExportOptions): Pr
   onProgress?.({ done: 0, total });
 
   let done = 0;
-  const bitmaps = await Promise.all(
-    ordered.map(async (item) => {
-      const bmp = await loadBitmap(item.imageUrl);
-      done += 1;
-      onProgress?.({ done, total });
-      return bmp;
-    })
-  );
+  const [bitmaps, backgrounds] = await Promise.all([
+    Promise.all(
+      ordered.map(async (item) => {
+        const bmp = await loadBitmap(item.imageUrl);
+        done += 1;
+        onProgress?.({ done, total });
+        return bmp;
+      })
+    ),
+    Promise.all(ordered.map((item) => loadRarityBackground(item)))
+  ]);
 
-  const appIcon = await loadBitmap(APP_ICON_URL);
   const gridTop = header + pad;
 
   for (let i = 0; i < ordered.length; i++) {
@@ -226,9 +335,9 @@ export async function exportLockerCategoryWebp(options: LockerExportOptions): Pr
     const y = gridTop + row * (cell + gap);
 
     ctx.save();
-    roundRect(ctx, x, y, cell, cell, 10);
+    roundRect(ctx, x, y, cell, cell, 12);
     ctx.clip();
-    fillRarityBackground(ctx, x, y, cell, cell, item);
+    fillRarityBackground(ctx, x, y, cell, cell, item, backgrounds[i]);
 
     const bmp = bitmaps[i];
     if (bmp) {
@@ -254,36 +363,19 @@ export async function exportLockerCategoryWebp(options: LockerExportOptions): Pr
     ctx.textAlign = 'left';
     ctx.textBaseline = 'alphabetic';
     ctx.fillStyle = '#ffffff';
-    ctx.font = `600 14px ${UI_FONT}`;
-    ctx.fillText(fitText(ctx, item.name, cell - 14), x + 7, y + cell - (item.note ? 24 : 10));
+    ctx.font = `600 15px ${UI_FONT}`;
+    ctx.fillText(fitText(ctx, item.name, cell - 16), x + 8, y + cell - (item.note ? 26 : 11));
 
     if (item.note) {
       ctx.fillStyle = 'rgba(255,255,255,0.85)';
-      ctx.font = `700 11px ${UI_FONT}`;
-      ctx.fillText(fitText(ctx, item.note, cell - 14), x + 7, y + cell - 9);
+      ctx.font = `700 12px ${UI_FONT}`;
+      ctx.fillText(fitText(ctx, item.note, cell - 16), x + 8, y + cell - 10);
     }
 
     ctx.restore();
   }
 
-  const footerY = height - LOCKER_EXPORT_FOOTER / 2;
-  const iconSize = 22;
-  ctx.font = `600 20px ${UI_FONT}`;
-  const brandWidth = ctx.measureText(APP_NAME).width;
-  const brandGap = 8;
-  const blockWidth = (appIcon ? iconSize + brandGap : 0) + brandWidth;
-  let brandX = (width - blockWidth) / 2;
-
-  if (appIcon) {
-    ctx.drawImage(appIcon, brandX, footerY - iconSize / 2, iconSize, iconSize);
-    brandX += iconSize + brandGap;
-    appIcon.close();
-  }
-
-  ctx.fillStyle = 'rgba(255,255,255,0.7)';
-  ctx.textAlign = 'left';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(APP_NAME, brandX, footerY);
+  await drawFortniteApiCredit(ctx, width, height, LOCKER_EXPORT_FOOTER, pad);
 
   const blob = await new Promise<Blob>((resolve, reject) => {
     canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('WebP encode failed'))), 'image/webp', WEBP_QUALITY);
