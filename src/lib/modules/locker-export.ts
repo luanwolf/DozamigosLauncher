@@ -107,6 +107,24 @@ export function fitText(ctx: CanvasRenderingContext2D, text: string, maxWidth: n
   return `${text.slice(0, end).trimEnd()}…`;
 }
 
+/** Thin black outline so header title/subtitle stay readable on any collage bg. */
+export function fillOutlinedText(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  x: number,
+  y: number,
+  maxWidth?: number
+) {
+  ctx.save();
+  ctx.lineJoin = 'round';
+  ctx.miterLimit = 2;
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = '#000000';
+  ctx.strokeText(text, x, y, maxWidth);
+  ctx.fillText(text, x, y, maxWidth);
+  ctx.restore();
+}
+
 function shadeHex(hex: string, factor: number): string {
   const raw = hex.replace('#', '');
   if (raw.length !== 6) return hex;
@@ -304,10 +322,10 @@ export async function exportLockerCategoryWebp(options: LockerExportOptions): Pr
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.font = `900 56px ${DISPLAY_FONT}`;
-  ctx.fillText(title.toUpperCase(), width / 2, header * 0.4, width - pad * 2);
+  fillOutlinedText(ctx, title.toUpperCase(), width / 2, header * 0.4, width - pad * 2);
   ctx.font = `900 34px ${DISPLAY_FONT}`;
   ctx.fillStyle = 'rgba(255,255,255,0.92)';
-  ctx.fillText(`${ordered.length} ${categoryLabel.toUpperCase()}`, width / 2, header * 0.78, width - pad * 2);
+  fillOutlinedText(ctx, `${ordered.length} ${categoryLabel.toUpperCase()}`, width / 2, header * 0.78, width - pad * 2);
 
   const total = ordered.length;
   onProgress?.({ done: 0, total });

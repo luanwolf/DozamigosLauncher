@@ -10,7 +10,7 @@
   import { platform } from '@tauri-apps/plugin-os';
   import { SidebarItems } from '$lib/constants/sidebar';
   import { language, t } from '$lib/i18n';
-  import { logger, setLogLevel } from '$lib/logger';
+  import { loggableError } from '$lib/modules/redact-secrets';
   import { warmAccountData } from '$lib/modules/account-data';
   import { initAutoKick } from '$lib/modules/autokick/base';
   import { initTaxiService } from '$lib/modules/taxi-service';
@@ -199,7 +199,7 @@
   onMount(() => {
     // logger.error gives more context than unhandled console.error
     on(window, 'error', (event) => {
-      logger.error('Unhandled error occurred', { error: event.error });
+      logger.error('Unhandled error occurred', { error: loggableError(event.error) });
     });
 
     language.subscribe((locale) => {

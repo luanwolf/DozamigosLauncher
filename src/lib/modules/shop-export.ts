@@ -3,6 +3,7 @@ import {
   DISPLAY_FONT,
   drawFortniteApiCredit,
   ensureDisplayFont,
+  fillOutlinedText,
   fillRarityBackground,
   fitText,
   loadBitmap,
@@ -128,10 +129,10 @@ export async function exportItemShopWebp(options: ShopExportOptions): Promise<Sh
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.font = `900 56px ${DISPLAY_FONT}`;
-  ctx.fillText(titleLabel.toUpperCase(), width / 2, HEADER * 0.4, width - PAD * 2);
+  fillOutlinedText(ctx, titleLabel.toUpperCase(), width / 2, HEADER * 0.4, width - PAD * 2);
   ctx.font = `900 30px ${DISPLAY_FONT}`;
   ctx.fillStyle = 'rgba(255,255,255,0.92)';
-  ctx.fillText(dateLabel.toUpperCase(), width / 2, HEADER * 0.78, width - PAD * 2);
+  fillOutlinedText(ctx, dateLabel.toUpperCase(), width / 2, HEADER * 0.78, width - PAD * 2);
 
   const total = items.length;
   onProgress?.({ done: 0, total });

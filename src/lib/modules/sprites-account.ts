@@ -71,47 +71,62 @@ function qty(item: ProfileItem) {
 const DUST_RE = /sprite[_\s.-]?dust|athenaspritedust|extractionpoints/i;
 
 const EOS_DEPLOYMENT_ID = '62a9473a2dca46b29ccf17577fcf42d7';
-const MAGPIE_INVENTORIES = ['/br', 'POIDiscoveryPlayerPersistence'];
+const SPRITE_MAGPIE_MODULE = '828c9446-3eb8-497e-a282-d95b92243c14';
+const GIZMO_MAGPIE_MODULE = '039e7691-eb2a-4ce2-99c5-63c831917870';
+const EOS_MAGPIE_UA =
+  'EOS-SDK/1.19.4200.0-56705564@Fortnite (Windows/10.0.26100.8972.64bit) Fortnite/++Fortnite+Release-42.00-CL-56878558';
 const RELIC_ID_RE = /^([A-Za-z0-9]+?)(?:Sprite)?_Variant_(A|Gold|CheatMaster)$/i;
 
 const GIZMO_ICON_ROOT = '/elementals/gizmos';
 
 /**
  * Override (Ch7S4) gizmos — match Epic plugin / WID names from the live inventory.
- * Order matches the in-game Dispositivos row when possible.
+ * Order matches the in-game Dispositivos row / Magpie Item00–04.
+ * ponytail: Magpie keys are slot paths, not item names. Ceiling: remap magpieKey if Epic reshuffles the wheel.
  */
-export const SPRITE_GIZMO_CATALOG: { id: string; label: string; match: RegExp; iconUrl: string }[] = [
+export const SPRITE_GIZMO_CATALOG: {
+  id: string;
+  label: string;
+  match: RegExp;
+  iconUrl: string;
+  magpieKey: string;
+}[] = [
   {
     id: 'portable-extractor',
     label: 'Extrator Portátil',
     match: /relic.?extractor|portable.?extractor|extractionrelic|wid_relicextractor|magpiereward_morningbell_relicextractor/i,
-    iconUrl: GIZMO_ICON_ROOT + '/portable-extractor.png'
+    iconUrl: GIZMO_ICON_ROOT + '/portable-extractor.png',
+    magpieKey: '/MorningBell/CosmicThunder/Item00'
   },
   {
     id: 'llama-supply-drop',
     label: 'Entrega de Suprimentos da Lhama',
     match: /llama.?supply|supply.?drop.?caller|llamasupplydrop|llama.?drop.?radio|magpiereward_morningbell_llamasupply/i,
-    iconUrl: GIZMO_ICON_ROOT + '/llama-supply-drop.png'
+    iconUrl: GIZMO_ICON_ROOT + '/llama-supply-drop.png',
+    magpieKey: '/MorningBell/CosmicThunder/Item01'
   },
   {
     id: 'extraction-accelerator',
     label: 'Acelerador de Extração',
     match:
       /smuggler|extraction.?key|extraction.?accel|smugglers.?key|site.?accel|extractionaccelerator|magpiereward_morningbell_smugglerextraction/i,
-    iconUrl: GIZMO_ICON_ROOT + '/extraction-accelerator.png'
+    iconUrl: GIZMO_ICON_ROOT + '/extraction-accelerator.png',
+    magpieKey: '/MorningBell/CosmicThunder/Item02'
   },
   {
     id: 'cheat-code-locator',
     label: 'Localizador de Códigos',
     match:
       /cheat.?code.?(finder|locator)|code.?(finder|locator)|cheatcodefinder|sprite.?locator|lucky.?locator|magpiereward_morningbell_cheatcode/i,
-    iconUrl: GIZMO_ICON_ROOT + '/cheat-code-locator.png'
+    iconUrl: GIZMO_ICON_ROOT + '/cheat-code-locator.png',
+    magpieKey: '/MorningBell/CosmicThunder/Item03'
   },
   {
     id: 'spicy-taco',
     label: 'Taco Apimentado',
     match: /spicy.?taco|taco.?tuesday|tacotuesday|spicytaco|magpiereward_morningbell_spicytaco/i,
-    iconUrl: GIZMO_ICON_ROOT + '/spicy-taco.png'
+    iconUrl: GIZMO_ICON_ROOT + '/spicy-taco.png',
+    magpieKey: '/MorningBell/CosmicThunder/Item04'
   }
 ];
 
@@ -197,6 +212,8 @@ function familyFromTemplate(templateId: string): { family: string; variant: Spri
 }
 
 function matchGizmo(templateId: string) {
+  const byKey = SPRITE_GIZMO_CATALOG.find((gizmo) => gizmo.magpieKey === templateId);
+  if (byKey) return byKey;
   // First hit wins — more specific Override names first (portable before generic "extractor").
   return SPRITE_GIZMO_CATALOG.find((gizmo) => gizmo.match.test(templateId)) ?? null;
 }
@@ -257,16 +274,52 @@ export function flattenMagpie(value: unknown, path = 'root', depth = 0): Profile
   return items;
 }
 
-function magpieAsProfile(contents: Record<string, unknown>): unknown {
+function itemsAsProfile(list: ProfileItem[]): unknown {
   const items: Record<string, ProfileItem> = {};
-  let i = 0;
-  for (const [key, raw] of Object.entries(contents)) {
-    if (key.endsWith('.meta')) continue;
-    for (const item of flattenMagpie(raw, key)) {
-      items[`magpie-${i++}`] = item;
+  list.forEach((item, i) => {
+    items[`magpie-${i}`] = item;
+  });
+  return { profileChanges: [{ profile: { items, stats: { attributes: {} } } }] };
+}
+
+/** ponytail: XP curve guessed from live metadata (ml at 4000). Ceiling: read SpriteBoons table if Epic retunes. */
+export function spriteXpToLevel(xp: number, mastered = false): number {
+  if (mastered || xp >= 4000) return 5;
+  if (xp >= 2000) return 4;
+  if (xp >= 1000) return 3;
+  if (xp >= 500) return 2;
+  return 1;
+}
+
+/** Magpie v2 GET inventory (`counts` + `entitlementMetadata` xp/ml). */
+export function parseMagpieV2Inventory(json: unknown): ProfileItem[] {
+  const bags = (json as { inventory?: unknown })?.inventory;
+  if (!Array.isArray(bags)) return [];
+  const items: ProfileItem[] = [];
+  for (const bag of bags) {
+    if (!bag || typeof bag !== 'object') continue;
+    const counts = (bag as { counts?: Record<string, unknown> }).counts ?? {};
+    const meta = (bag as { entitlementMetadata?: Record<string, string> }).entitlementMetadata ?? {};
+    for (const [id, rawQty] of Object.entries(counts)) {
+      if (/UnseenStatus$/i.test(id)) continue;
+      const quantity = asQty(rawQty);
+      if (quantity <= 0) continue;
+      let xp = 0;
+      let mastered = false;
+      const raw = meta[id];
+      if (typeof raw === 'string') {
+        try {
+          const parsed = JSON.parse(raw) as { xp?: unknown; ml?: unknown };
+          if (typeof parsed.xp === 'number' && Number.isFinite(parsed.xp)) xp = parsed.xp;
+          mastered = parsed.ml === true;
+        } catch {
+          /* ignore */
+        }
+      }
+      items.push({ templateId: id, quantity, attributes: { xp, ml: mastered, level: spriteXpToLevel(xp, mastered) } });
     }
   }
-  return { profileChanges: [{ profile: { items, stats: { attributes: {} } } }] };
+  return items;
 }
 
 export type FortniteEosSession = {
@@ -328,37 +381,39 @@ export async function getFortniteEosSession(account: AccountData): Promise<Fortn
   return null;
 }
 
+async function fetchMagpieBag(
+  magpieV2Service: Awaited<typeof import('$lib/http')>['magpieV2Service'],
+  session: FortniteEosSession,
+  accountId: string,
+  moduleId: string
+) {
+  return magpieV2Service
+    .get(`deployment/${EOS_DEPLOYMENT_ID}/domain/FN1/account/${accountId}/workspace/default/linkMode/live/inventory`, {
+      searchParams: {
+        moduleFilters: `${moduleId}:*`,
+        includeMetadata: 'true'
+      },
+      headers: {
+        Authorization: `Bearer ${session.accessToken}`,
+        'X-User-Agent': EOS_MAGPIE_UA
+      }
+    })
+    .json()
+    .catch(() => null);
+}
+
 async function fetchMagpieProfile(account: AccountData): Promise<unknown | null> {
   const session = await getFortniteEosSession(account).catch(() => null);
   if (!session) return null;
 
-  const { eosInventoryService, magpieService } = await import('$lib/http');
-  const contents: Record<string, unknown> = {};
+  const { magpieV2Service } = await import('$lib/http');
+  const [sprites, gizmos] = await Promise.all([
+    fetchMagpieBag(magpieV2Service, session, account.accountId, SPRITE_MAGPIE_MODULE),
+    fetchMagpieBag(magpieV2Service, session, account.accountId, GIZMO_MAGPIE_MODULE)
+  ]);
 
-  await Promise.all(
-    MAGPIE_INVENTORIES.map(async (name) => {
-      const json = await eosInventoryService
-        .get<{ inventory?: { contents?: Record<string, unknown> } }>(
-          `${EOS_DEPLOYMENT_ID}/players/${session.productUserId}/${encodeURIComponent(name)}`,
-          { headers: { Authorization: `Bearer ${session.accessToken}` } }
-        )
-        .json()
-        .catch(() => null);
-      Object.assign(contents, json?.inventory?.contents ?? {});
-    })
-  );
-
-  for (const path of ['inventory', 'rewards', `players/${session.productUserId}/inventory`]) {
-    const magpieJson = await magpieService
-      .get(path, { headers: { Authorization: `Bearer ${session.accessToken}` } })
-      .json()
-      .catch(() => null);
-    if (magpieJson && typeof magpieJson === 'object' && !('errorCode' in magpieJson)) {
-      contents[`/magpie-${path.replaceAll('/', '-')}`] = magpieJson;
-    }
-  }
-
-  return magpieAsProfile(contents);
+  const items = [...parseMagpieV2Inventory(sprites), ...parseMagpieV2Inventory(gizmos)];
+  return items.length ? itemsAsProfile(items) : null;
 }
 
 /**
@@ -435,9 +490,7 @@ export function parseSpriteLevels(...profiles: unknown[]): SpriteLevels {
 }
 
 /**
- * Athena Mastery quests + Magpie stacks (EOS inventory / magpie-live).
- * ponytail: Override gallery/dust/gizmos live in Magpie GetInventory (hotfix Mcp.Magpie.*).
- * EOS JWT works; magpie-live still 400s without the game's request schema. /br is accolades only.
+ * Athena Mastery quests + Magpie v2 inventory (gc.svc …/api/magpie/v2, EOS user token).
  */
 export async function fetchSpriteAccountState(account: AccountData): Promise<SpriteAccountState> {
   const { clientQuestLogin, queryProfile } = await import('$lib/modules/mcp');

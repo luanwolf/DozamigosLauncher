@@ -47,7 +47,7 @@
   </div>
 
   <div class="flex min-h-0 flex-1 flex-col gap-0.5 px-2.5 py-2">
-    <h3 class="line-clamp-2 text-xs leading-snug font-semibold sm:text-sm">{offer.title}</h3>
+    <h3 class="line-clamp-2 text-sm leading-snug font-semibold sm:text-base">{offer.title}</h3>
 
     <p class="text-[11px] text-muted-foreground">
       {#if showQuantity}
@@ -76,7 +76,7 @@
         <span class="text-base font-bold text-primary">{$t('stwStore.free')}</span>
       {:else}
         <img class="size-4 shrink-0" alt={currency.name} src={currency.imageUrl} />
-        <span class="text-base font-bold tabular-nums">{offer.price.finalPrice.toLocaleString($language)}</span>
+        <span class="text-lg font-bold tabular-nums">{offer.price.finalPrice.toLocaleString($language)}</span>
       {/if}
     </div>
 

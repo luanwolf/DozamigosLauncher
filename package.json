@@ -1,6 +1,6 @@
 {
   "name": "dozamigos-launcher",
-  "version": "0.1.3",
+  "version": "0.1.3-A",
   "type": "module",
   "scripts": {
     "dev": "vite dev",

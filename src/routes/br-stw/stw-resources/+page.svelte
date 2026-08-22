@@ -162,9 +162,9 @@
               style={rarityBackgroundStyle({ rarity: row.rarity })}
             >
               <img alt="" class="absolute inset-0 size-full object-contain p-2" src={row.imageUrl} />
-              <div class="absolute inset-x-0 bottom-0 bg-black/70 px-1.5 py-1">
-                <p class="truncate text-[10px] font-medium text-white">{row.name}</p>
-                <p class="text-xs font-semibold tabular-nums text-white">
+              <div class="absolute inset-x-0 bottom-0 bg-black/70 px-2 py-1.5">
+                <p class="truncate text-sm font-medium text-white">{row.name}</p>
+                <p class="text-lg font-semibold tabular-nums text-white">
                   {row.quantity.toLocaleString($language)}
                 </p>
               </div>

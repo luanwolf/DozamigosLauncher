@@ -1,4 +1,4 @@
-import { makeCanvas, encodeWebp, loadLocalOrUrl, fitText, roundRect, DISPLAY_FONT, UI_FONT, APP_NAME } from '@/canvas/grid';
+import { makeCanvas, encodeWebp, loadLocalOrUrl, fillOutlinedText, fitText, roundRect, DISPLAY_FONT, UI_FONT, APP_NAME } from '@/canvas/grid';
 import {
   SPRITE_ENTRIES,
   SPRITE_EXPORT_ORDER,
@@ -67,10 +67,10 @@ export async function renderSpriteAlbum(opts: {
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.font = `900 64px ${DISPLAY_FONT}`;
-  ctx.fillText(opts.accountLabel.toUpperCase(), width / 2, 48, width - PAD * 2 - 220);
+  fillOutlinedText(ctx, opts.accountLabel.toUpperCase(), width / 2, 48, width - PAD * 2 - 220);
   ctx.font = `900 36px ${DISPLAY_FONT}`;
   ctx.fillStyle = 'rgba(255,255,255,0.92)';
-  ctx.fillText(`${ownedCount}/24 SPRITES`, width / 2, 96, width - PAD * 2 - 220);
+  fillOutlinedText(ctx, `${ownedCount}/24 SPRITES`, width / 2, 96, width - PAD * 2 - 220);
 
   if (opts.resources) {
     const dustBmp = await loadLocalOrUrl('/elementals/gizmos/dust.png');

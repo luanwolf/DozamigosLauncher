@@ -136,6 +136,17 @@ export function fitText(ctx: SKRSContext2D, text: string, maxWidth: number) {
   return `${text.slice(0, end).trimEnd()}…`;
 }
 
+export function fillOutlinedText(ctx: SKRSContext2D, text: string, x: number, y: number, maxWidth?: number) {
+  ctx.save();
+  ctx.lineJoin = 'round';
+  ctx.miterLimit = 2;
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = '#000000';
+  ctx.strokeText(text, x, y, maxWidth);
+  ctx.fillText(text, x, y, maxWidth);
+  ctx.restore();
+}
+
 export function fillRarity(ctx: SKRSContext2D, x: number, y: number, w: number, h: number, item: { rarity: string; series?: string }, bg: Image | null) {
   if (bg) {
     const scale = Math.max(w / bg.width, h / bg.height);
@@ -290,10 +301,10 @@ export async function renderGrid(opts: {
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.font = `900 48px ${DISPLAY_FONT}`;
-  ctx.fillText(opts.title.toUpperCase(), size / 2, originY + header * 0.38, size - pad * 2);
+  fillOutlinedText(ctx, opts.title.toUpperCase(), size / 2, originY + header * 0.38, size - pad * 2);
   ctx.font = `700 22px ${UI_FONT}`;
   ctx.fillStyle = 'rgba(255,255,255,0.9)';
-  ctx.fillText(opts.subtitle.toUpperCase(), size / 2, originY + header * 0.72, size - pad * 2);
+  fillOutlinedText(ctx, opts.subtitle.toUpperCase(), size / 2, originY + header * 0.72, size - pad * 2);
 
   const [bitmaps, backgrounds] = await Promise.all([
     Promise.all(opts.items.map((i) => (i.imageUrls?.length ? loadFirst(i.imageUrls) : loadLocalOrUrl(i.imageUrl)))),

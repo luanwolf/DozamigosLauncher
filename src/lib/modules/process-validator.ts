@@ -1,4 +1,7 @@
 import { writable } from 'svelte/store';
+import { redactSecrets } from '$lib/modules/redact-secrets';
+
+export { redactSecrets };
 
 export type ProbeFailCode =
   | 'auth'
@@ -35,13 +38,6 @@ export const processValidatorLog = {
     update((list) => [entry, ...list].slice(0, MAX));
   }
 };
-
-const SECRET_RE =
-  /(authorization|bearer\s+[a-z0-9._~+/=-]+|eg1~[a-z0-9]+|device[_-]?auth|x-api-key\s*[:=]\s*\S+|api[_-]?key\s*[:=]\s*\S+)/gi;
-
-export function redactSecrets(text: string): string {
-  return text.replace(SECRET_RE, '[REDACTED]');
-}
 
 export function classifyHttpFail(status?: number, message?: string): ProbeFailCode {
   if (message && /(authorization|bearer\s+|eg1~|device[_-]?auth|x-api-key|api[_-]?key)/i.test(message)) {

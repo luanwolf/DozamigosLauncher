@@ -1,6 +1,5 @@
 <script lang="ts">
   import { ItemColors } from '$lib/constants/item-colors';
-  import { t } from '$lib/i18n';
   import { SPRITE_ENTRIES, type SpriteEntry, type SpriteVariant } from '$lib/modules/sprites';
   import CosmeticStyles, { type StyleOption } from '$components/modules/shop/CosmeticStyles.svelte';
   import { Badge } from '$components/ui/badge';
@@ -104,8 +103,6 @@
           </div>
 
           <CosmeticStyles {styles} bind:selected={selectedStyle} />
-
-          <p class="text-[10px] text-muted-foreground">{$t('sprites.source')}</p>
         </div>
       </div>
     </Dialog.Content>

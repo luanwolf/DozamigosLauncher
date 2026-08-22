@@ -7,6 +7,7 @@ import { legendaryService } from '$lib/http';
 import { getChildLogger } from '$lib/logger';
 import { getCachedToken } from '$lib/modules/auth-session';
 import { getExchangeCodeUsingAccessToken } from '$lib/modules/authentication';
+import { redactCliArgs, redactSecrets } from '$lib/modules/redact-secrets';
 import { dataDirectory } from '$lib/storage/file-store';
 import { ownedAppsCache } from '$lib/stores';
 import { runLegendary, launchApp as tauriLaunchApp } from '$lib/tauri';
@@ -37,10 +38,10 @@ async function executeLegendary<T>(args: string[]): Promise<ExecuteResult<T>> {
     const result = await runLegendary({ configPath, args });
 
     logger.debug('Command executed', {
-      args,
+      args: redactCliArgs(args),
       code: result.code,
       signal: result.signal,
-      stderr: result.stderr?.slice(-512)
+      stderr: redactSecrets(result.stderr?.slice(-512) ?? '')
     });
 
     let stdout = result.stdout as T;

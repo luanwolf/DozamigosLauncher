@@ -3,6 +3,7 @@
   APP_NAME,
   DISPLAY_FONT,
   ensureDisplayFont,
+  fillOutlinedText,
   fitText,
   loadBitmap,
   roundRect,
@@ -203,11 +204,11 @@ export async function exportSpriteAlbumWebp(options: SpriteExportOptions): Promi
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.font = '900 64px ' + DISPLAY_FONT;
-  ctx.fillText(title.toUpperCase(), width / 2, 48, width - PAD * 2 - 220);
+  fillOutlinedText(ctx, title.toUpperCase(), width / 2, 48, width - PAD * 2 - 220);
 
   ctx.font = '900 36px ' + DISPLAY_FONT;
   ctx.fillStyle = 'rgba(255,255,255,0.92)';
-  ctx.fillText(ownedCount + '/24 SPRITES', width / 2, 96, width - PAD * 2 - 220);
+  fillOutlinedText(ctx, ownedCount + '/24 SPRITES', width / 2, 96, width - PAD * 2 - 220);
 
   if (resources) {
     const dustBmp = await loadBitmap(SPRITE_DUST_ICON);

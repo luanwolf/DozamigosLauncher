@@ -12,6 +12,7 @@ import {
 } from '$lib/constants/stw/world-info';
 import { ingredients, resources, survivors, survivorsMythicLeads, traps } from '$lib/data';
 import { resolveGenericTemplateBody } from '$lib/utils/stw-generic-names';
+import { stwResourceImageUrl } from '$lib/utils/stw-resource-image';
 import { baseGameService } from '$lib/http';
 import { aggregateMissionAlerts } from '$lib/modules/mission-alerts-buckets';
 import { recordDailyVbucks } from '$lib/modules/stw-vbucks-history';
@@ -265,15 +266,7 @@ function parseResource(key: string, quantity: number): ParsedResourceData {
   for (const [id, resource] of Object.entries(resources)) {
     if (!newKey.includes(id)) continue;
 
-    const isEventCurrency =
-      (newKey !== 'eventcurrency_scaling' &&
-        newKey !== 'eventcurrency_founders' &&
-        newKey.startsWith('eventcurrency_')) ||
-      newKey === 'campaign_event_currency';
-
-    const isUnknown =
-      id === 'campaign_event_currency' || id === 'eventcurrency_spring' || id === 'eventcurrency_summer';
-    data.imageUrl = `${isEventCurrency ? '/currency' : '/resources'}/${id}.${isUnknown ? 'gif' : 'png'}`;
+    data.imageUrl = stwResourceImageUrl(id);
     data.name = resource.name;
     data.type = 'resource';
 

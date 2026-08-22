@@ -4,6 +4,7 @@ import {
   createExportCanvas,
   DISPLAY_FONT,
   ensureDisplayFont,
+  fillOutlinedText,
   fillRarityBackground,
   fitText,
   loadBitmap,
@@ -92,10 +93,11 @@ export async function exportStwResourcesWebp(
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.font = `900 48px ${DISPLAY_FONT}`;
-  ctx.fillText(titleLabel.toUpperCase(), width / 2, HEADER * 0.38, width - PAD * 2);
+  fillOutlinedText(ctx, titleLabel.toUpperCase(), width / 2, HEADER * 0.38, width - PAD * 2);
   ctx.font = `700 22px ${UI_FONT}`;
   ctx.fillStyle = 'rgba(255,255,255,0.88)';
-  ctx.fillText(
+  fillOutlinedText(
+    ctx,
     `${accountLabel} · ${powerLabel}`.toUpperCase(),
     width / 2,
     HEADER * 0.72,
