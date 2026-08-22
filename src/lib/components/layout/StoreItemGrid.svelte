@@ -13,17 +13,10 @@
   let { variant, class: className, children }: StoreItemGridProps = $props();
 </script>
 
-<!--
-  auto-fill reflows columns as the main content area grows or shrinks
-  (sidebar open/collapsed, window resize on desktop).
--->
 <div
   class={cn(
-    'grid w-full gap-5 sm:gap-6',
-    variant === 'br' &&
-      '[grid-template-columns:repeat(auto-fill,minmax(min(100%,14rem),1fr))]',
-    variant === 'stw' &&
-      'items-stretch gap-3 sm:gap-4 [grid-template-columns:repeat(auto-fill,minmax(min(100%,14.5rem),1fr))]',
+    'grid w-full grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 xl:grid-cols-6',
+    variant === 'stw' && 'items-stretch',
     className
   )}
 >

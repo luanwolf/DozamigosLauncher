@@ -5,7 +5,6 @@
   import { page } from '$app/state';
   import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
   import RefreshCwIcon from '@lucide/svelte/icons/refresh-cw';
-  import SearchIcon from '@lucide/svelte/icons/search';
   import { HUD_PAGE_WIDTH } from '$lib/constants/page-layout';
   import { NavZones } from '$lib/constants/sidebar';
   import { getWeeklySuperchargerInfo } from '$lib/constants/stw/weekly-supercharger';
@@ -203,8 +202,6 @@
           redeemTypedHack();
         }}
       >
-        <span class="cheat-admin-key" aria-hidden="true">.</span>
-        <SearchIcon class="size-3.5" />
         <span>{isRedeemingHacks ? $t('home.adminPanel.busy') : $t('home.adminPanel.label')}</span>
         <input
           class="cheat-admin-input"

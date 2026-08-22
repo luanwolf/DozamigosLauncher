@@ -628,19 +628,6 @@
     opacity: 0.55;
   }
 
-  .cheat-admin-key {
-    display: inline-flex;
-    min-width: 1.15rem;
-    height: 1.15rem;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid color-mix(in srgb, var(--glow-cyan) 55%, transparent);
-    background: #071016;
-    color: #e8fbff;
-    font-size: 0.85rem;
-    line-height: 1;
-  }
-
   .surface-tile {
     position: relative;
     overflow: hidden;

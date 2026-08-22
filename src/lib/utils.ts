@@ -4,6 +4,7 @@ import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { t } from '$lib/i18n';
 import { logger } from '$lib/logger';
+import { loggableError } from '$lib/modules/redact-secrets';
 import { accountStore } from '$lib/storage';
 import type { AccountData } from '$types/account';
 import type { FullQueryProfile } from '$types/game/mcp';
@@ -118,7 +119,7 @@ type HandleErrorOptions = {
 
 export function handleError({ error, message, toastId, account } = {} as HandleErrorOptions) {
   const accountId = typeof account === 'string' ? account : account?.accountId;
-  logger.error(message, { accountId, error });
+  logger.error(message, { accountId, error: loggableError(error) });
 
   if (toastId !== false) {
     toast.error(message, { id: toastId });

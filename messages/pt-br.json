@@ -677,7 +677,7 @@
   "sprites": {
     "page": {
       "title": "Elementais",
-      "description": "Veja, gerencie e exporte os Elementais e variantes da temporada atual."
+      "description": "Veja e exporte os Elementais e variantes da temporada atual."
     },
     "summary": "{count} Elementais e variantes no catálogo",
     "extractedSummary": "{count} extraído(s)",
@@ -1112,7 +1112,7 @@
       "open": "Comprar V-Bucks"
     },
     "adminPanel": {
-      "label": "./ admin panel",
+      "label": "./admin panel",
       "placeholder": "GottaGoFast",
       "submit": "Resgatar",
       "all": "Todos",

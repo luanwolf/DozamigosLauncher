@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "Administrator": "Administrador",
+    "ManageGuild": "Gerenciar servidor",
+    "ManageRoles": "Gerenciar cargos",
+    "ManageChannels": "Gerenciar canais",
+    "BanMembers": "Banir",
+    "KickMembers": "Expulsar",
+    "ModerateMembers": "Castigar",
+    "ManageMessages": "Gerenciar mensagens",
+    "ManageNicknames": "Gerenciar apelidos"
+  },
+  "embedTitles": {
+    "error": ["Erro", "Ops"],
+    "success": ["Pronto", "Feito"]
+  }
+}

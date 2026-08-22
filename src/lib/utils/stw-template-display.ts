@@ -7,6 +7,7 @@ import { heroDisplayName, resolveHeroCatalogKey } from '$lib/utils/stw-hero-loca
 import { localizedStwItemName } from '$lib/utils/stw-item-names';
 import { resolveSchematicStoreTitle } from '$lib/utils/stw-schematic-locale';
 import { localizedTokenGrant } from '$lib/utils/stw-store-offers';
+import { stwResourceImageUrl } from '$lib/utils/stw-resource-image';
 import type { RarityType } from '$types/game/stw/resources';
 
 export type StwTemplateDisplay = {
@@ -136,13 +137,9 @@ export function resolveStwTemplateDisplay(templateId: string, locale: Locale = '
   const resourceKey = templateId.replace('AccountResource:', '').replace('Item:', '');
   for (const [id, resource] of Object.entries(resources)) {
     if (resourceKey.includes(id)) {
-      const isEventCurrency =
-        id.startsWith('eventcurrency_') || id === 'campaign_event_currency' || id === 'eventcurrency_scaling';
-      const isUnknown =
-        id === 'campaign_event_currency' || id === 'eventcurrency_spring' || id === 'eventcurrency_summer';
       return {
         name: localizedStwItemName(id, locale, resource.name),
-        imageUrl: `${isEventCurrency ? '/currency' : '/resources'}/${id}.${isUnknown ? 'gif' : 'png'}`,
+        imageUrl: stwResourceImageUrl(id),
         rarity,
         kind: 'resource'
       };
@@ -193,14 +190,8 @@ export function resolveStwTemplateDisplay(templateId: string, locale: Locale = '
 export function currencyDisplay(subType: string) {
   const id = subType.replace('AccountResource:', '');
   const resource = resources[id as keyof typeof resources];
-  const isEventCurrency =
-    id.startsWith('eventcurrency_') || id === 'campaign_event_currency' || id === 'eventcurrency_scaling';
-  const isUnknown = id === 'campaign_event_currency' || id === 'eventcurrency_spring' || id === 'eventcurrency_summer';
-
   return {
     name: resource?.name ?? id,
-    imageUrl: resource
-      ? `${isEventCurrency ? '/currency' : '/resources'}/${id}.${isUnknown ? 'gif' : 'png'}`
-      : '/resources/eventcurrency_scaling.png'
+    imageUrl: resource ? stwResourceImageUrl(id) : '/resources/eventcurrency_scaling.png'
   };
 }

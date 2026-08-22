@@ -88,6 +88,11 @@ export const magpieService = epicService.extend({
   prefix: 'https://fngw-svc-ds-livefn.ol.epicgames.com/api/magpie/v1'
 });
 
+/** Magpie v2 — Sprite Dust / relics / gizmos. Host from Fortnite.exe (not magpie/v1). */
+export const magpieV2Service = epicService.extend({
+  prefix: 'https://gc.svc.live.fngw.ol.epicgames.com/api/magpie/v2'
+});
+
 export const friendService = epicService.extend({
   prefix: 'https://friends-public-service-prod.ol.epicgames.com/friends/api/v1'
 });

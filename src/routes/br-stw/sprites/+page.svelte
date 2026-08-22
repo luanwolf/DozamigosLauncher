@@ -1,7 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import { toast } from 'svelte-sonner';
-  import { SvelteSet } from 'svelte/reactivity';
   import CheckIcon from '@lucide/svelte/icons/check';
   import CrownIcon from '@lucide/svelte/icons/crown';
   import DownloadIcon from '@lucide/svelte/icons/download';
@@ -15,9 +13,7 @@
   import { fetchSpriteAccountState, SPRITE_DUST_ICON, type SpriteResources } from '$lib/modules/sprites-account';
   import { exportSpriteAlbumWebp } from '$lib/modules/sprites-export';
   import {
-    readSpriteCollection,
     SPRITE_ENTRIES,
-    writeSpriteCollection,
     type SpriteEntry,
     type SpriteProgress,
     type SpriteRarity,
@@ -27,8 +23,8 @@
   import { handleError } from '$lib/utils';
   import PageActionButton from '$components/layout/PageActionButton.svelte';
   import PageContent from '$components/layout/PageContent.svelte';
+  import PageLoading from '$components/layout/PageLoading.svelte';
   import SpritePreviewModal from '$components/modules/sprites/SpritePreviewModal.svelte';
-  import * as Dialog from '$components/ui/dialog';
   import { Input } from '$components/ui/input';
   import { Progress } from '$components/ui/progress';
 
@@ -37,24 +33,19 @@
   type StatusFilter = 'all' | 'extracted' | 'mastered' | 'missing';
 
   const activeAccount = accountStore.getActiveStore(false);
-  const extracted = new SvelteSet<string>();
-  const mastered = new SvelteSet<string>();
 
   let progress = $state<SpriteProgress>({ mastered: new Set(), extracted: new Set() });
   let search = $state('');
   let rarity = $state<RarityFilter>('all');
   let variant = $state<VariantFilter>('all');
-  let status = $state<StatusFilter>('extracted');
-  let showCollectionInfo = $state(false);
-  let hideCollectionInfo = $state(false);
+  let status = $state<StatusFilter>('all');
+  let isLoadingAccount = $state(true);
   let isExporting = $state(false);
   let exportPercent = $state(0);
   let lastExportPath = $state<string | null>(null);
   let previewEntry = $state<SpriteEntry | null>(null);
   let resources = $state<SpriteResources>({ dust: 0, gizmos: [] });
   let levels = $state<Record<string, number>>({});
-
-  const COLLECTION_INFO_DISMISSED = 'dozamigos:elementals-info-dismissed';
 
   const variantLabels: Record<SpriteVariant, string> = {
     base: 'Base',
@@ -69,15 +60,12 @@
     mythic: 'Mítico'
   };
 
-  /** Epic only proves extraction for the base Sprite; variants stay on manual marks. */
-  const isAutoExtracted = (entry: (typeof SPRITE_ENTRIES)[number]) =>
+  const isExtracted = (entry: (typeof SPRITE_ENTRIES)[number]) =>
     progress.mastered.has(entry.key) ||
     (entry.variant === 'base' && progress.extracted.has(entry.slug)) ||
     levels[entry.key] != null;
 
-  const isExtracted = (entry: (typeof SPRITE_ENTRIES)[number]) => extracted.has(entry.key) || isAutoExtracted(entry);
-  const isMastered = (entry: (typeof SPRITE_ENTRIES)[number]) =>
-    mastered.has(entry.key) || progress.mastered.has(entry.key);
+  const isMastered = (entry: (typeof SPRITE_ENTRIES)[number]) => progress.mastered.has(entry.key);
 
   const filtered = $derived.by(() => {
     const query = search.trim().toLowerCase();
@@ -95,31 +83,6 @@
     );
   });
 
-  function save() {
-    writeSpriteCollection($activeAccount?.accountId, extracted, mastered);
-  }
-
-  function toggleExtracted(key: string) {
-    if (extracted.has(key)) {
-      extracted.delete(key);
-      mastered.delete(key);
-    } else {
-      extracted.add(key);
-    }
-    save();
-  }
-
-  function toggleMastered(key: string) {
-    if (progress.mastered.has(key)) return;
-    if (mastered.has(key)) {
-      mastered.delete(key);
-    } else {
-      extracted.add(key);
-      mastered.add(key);
-    }
-    save();
-  }
-
   function cardBackground(rarity: SpriteRarity) {
     return rarity === 'mythic' ? '#c89b28' : ItemColors.rarities[rarity];
   }
@@ -128,7 +91,6 @@
     if (!$activeAccount || isExporting) return;
 
     const ownedKeys = new Set<string>([
-      ...extracted,
       ...progress.mastered,
       ...[...progress.extracted].map((slug) => `${slug}:base`),
       ...Object.keys(levels)
@@ -166,32 +128,17 @@
     }
   }
 
-  function closeCollectionInfo(open: boolean) {
-    if (open) return;
-    if (hideCollectionInfo) localStorage.setItem(COLLECTION_INFO_DISMISSED, 'true');
-    else localStorage.removeItem(COLLECTION_INFO_DISMISSED);
-  }
-
-  onMount(() => {
-    showCollectionInfo = localStorage.getItem(COLLECTION_INFO_DISMISSED) !== 'true';
-  });
-
-  $effect(() => {
-    const accountId = $activeAccount?.accountId;
-    const collection = readSpriteCollection(accountId);
-    extracted.clear();
-    mastered.clear();
-    for (const key of collection.extracted) extracted.add(key);
-    for (const key of collection.mastered) mastered.add(key);
-  });
-
   $effect(() => {
     const account = $activeAccount;
     progress = { mastered: new Set(), extracted: new Set() };
     resources = { dust: 0, gizmos: [] };
     levels = {};
-    if (!account) return;
+    if (!account) {
+      isLoadingAccount = false;
+      return;
+    }
 
+    isLoadingAccount = true;
     let cancelled = false;
     fetchSpriteAccountState(account)
       .then((result) => {
@@ -199,8 +146,12 @@
         progress = { mastered: result.mastered, extracted: result.extracted };
         resources = result.resources;
         levels = result.levels;
+        isLoadingAccount = false;
       })
-      .catch((error) => handleError({ error, message: $t('sprites.mastery.failed'), account }));
+      .catch((error) => {
+        handleError({ error, message: $t('sprites.mastery.failed'), account });
+        if (!cancelled) isLoadingAccount = false;
+      });
 
     return () => {
       cancelled = true;
@@ -208,27 +159,11 @@
   });
 </script>
 
-<PageContent center centerClass={HUD_PAGE_WIDTH} description={$t('sprites.page.description')}>
-  {#snippet title()}
-    <div class="flex items-center gap-2">
-      <h2 class="font-display text-2xl leading-none text-foreground sm:text-3xl md:text-4xl">
-        {$t('sprites.page.title')}
-      </h2>
-      <button
-        type="button"
-        aria-label={$t('sprites.collection.title')}
-        title={$t('sprites.collection.title')}
-        onclick={() => (showCollectionInfo = true)}
-        class="flex size-6 animate-pulse items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground shadow transition hover:animate-none hover:brightness-110"
-      >
-        !
-      </button>
-    </div>
-  {/snippet}
+<PageContent center centerClass={HUD_PAGE_WIDTH} description={$t('sprites.page.description')} title={$t('sprites.page.title')}>
   {#snippet actions()}
     {#if $activeAccount}
       <PageActionButton
-        disabled={isExporting}
+        disabled={isExporting || isLoadingAccount}
         label={$t('sprites.export.button')}
         loading={isExporting}
         onclick={() => exportCollection()}
@@ -256,26 +191,9 @@
       </p>
       <Progress class="h-2 w-full max-w-xs" value={exportPercent} />
     </div>
+  {:else if isLoadingAccount}
+    <PageLoading label={$t('loading')} />
   {:else}
-    <Dialog.Root bind:open={showCollectionInfo} onOpenChangeComplete={closeCollectionInfo}>
-      <Dialog.Content class="max-w-md">
-        <Dialog.Header>
-          <Dialog.Title class="flex items-center gap-2">
-            <CrownIcon class="size-5 text-primary" />
-            {$t('sprites.collection.title')}
-          </Dialog.Title>
-          <Dialog.Description class="space-y-3 text-left leading-relaxed whitespace-normal">
-            <span class="block">{$t('sprites.collection.perAccount')}</span>
-            <span class="block">{$t('sprites.collection.explanation')}</span>
-          </Dialog.Description>
-        </Dialog.Header>
-        <label class="flex cursor-pointer items-center gap-2 text-sm">
-          <input class="size-4 accent-primary" type="checkbox" bind:checked={hideCollectionInfo} />
-          {$t('sprites.collection.dontShowAgain')}
-        </label>
-      </Dialog.Content>
-    </Dialog.Root>
-
     <div class="grid gap-2 md:grid-cols-[minmax(0,1fr)_160px_160px_160px]">
       <div class="relative">
         <SearchIcon class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -304,7 +222,6 @@
     <div class="flex flex-wrap items-center justify-between gap-2">
       <p class="text-xs text-muted-foreground">{$t('sprites.results', { count: filtered.length })}</p>
       {#if $activeAccount}
-        {#if resources.dust > 0 || resources.gizmos.some((gizmo) => gizmo.quantity > 0)}
         <div class="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
           <span
             class="inline-flex items-center gap-1 rounded-md border border-border/50 bg-background/60 px-1.5 py-0.5"
@@ -325,16 +242,11 @@
             </span>
           {/each}
         </div>
-        {:else}
-          <p class="max-w-xl text-xs text-muted-foreground">{$t('sprites.resources.magpieLocked')}</p>
-        {/if}
       {/if}
     </div>
 
     <div class="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
       {#each filtered as entry (entry.key)}
-        {@const isDetectedMastery = progress.mastered.has(entry.key)}
-        {@const isDetectedExtracted = isAutoExtracted(entry)}
         {@const owned = isExtracted(entry)}
         {@const hasMastery = isMastered(entry)}
         <article
@@ -388,37 +300,9 @@
               </p>
             </div>
           </button>
-          <div class="grid grid-cols-2 gap-1 bg-black/75 p-2 pt-0 text-white">
-            <button
-              type="button"
-              aria-pressed={owned}
-              disabled={isDetectedExtracted}
-              onclick={() => toggleExtracted(entry.key)}
-              class="flex items-center justify-center gap-1 rounded border border-white/20 px-1 py-1 text-[10px] transition hover:bg-white/10 disabled:cursor-default {owned
-                ? 'bg-primary text-primary-foreground'
-                : ''}"
-            >
-              <DownloadIcon class="size-3" />
-              {$t('sprites.extracted')}
-            </button>
-            <button
-              type="button"
-              aria-pressed={hasMastery}
-              disabled={isDetectedMastery}
-              onclick={() => toggleMastered(entry.key)}
-              class="flex items-center justify-center gap-1 rounded border border-white/20 px-1 py-1 text-[10px] transition hover:bg-white/10 disabled:cursor-default {hasMastery
-                ? 'bg-amber-400 text-black'
-                : ''}"
-            >
-              <CrownIcon class="size-3" />
-              {$t('sprites.mastery.mastered')}
-            </button>
-          </div>
         </article>
       {/each}
     </div>
-
-    <p class="text-center text-[10px] text-muted-foreground">{$t('sprites.source')}</p>
   {/if}
 </PageContent>
 

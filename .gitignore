@@ -2,6 +2,9 @@
 .idea
 node_modules
 
+.cursor/*.log
+.cursor/debug-*.log
+
 /build
 /.svelte-kit
 /package

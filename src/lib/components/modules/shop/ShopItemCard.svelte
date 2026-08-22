@@ -91,7 +91,7 @@
   <div class="absolute right-0 bottom-0 left-0 bg-linear-to-t from-black/85 via-black/40 to-transparent px-3 pt-8 pb-3">
     <h3
       style="text-shadow: 0 2px 4px #000000"
-      class="mb-2 line-clamp-2 text-left text-sm leading-snug font-semibold text-white sm:text-base"
+      class="mb-2 line-clamp-2 text-left text-base leading-snug font-semibold text-white sm:text-lg"
     >
       {item.name}
     </h3>
@@ -110,7 +110,7 @@
 
       <span
         style="text-shadow: 0 2px 4px #000000"
-        class="pb-0.5 text-sm font-bold"
+        class="pb-0.5 text-base font-bold"
         class:text-green-500={$isItemOwned}
         class:text-white={!$isItemOwned}
       >

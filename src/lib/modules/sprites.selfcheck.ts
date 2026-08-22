@@ -13,6 +13,8 @@ import {
   flattenMagpie,
   parseCreatureSpriteId,
   parseRelicId,
+  parseMagpieV2Inventory,
+  spriteXpToLevel,
   SPRITE_GIZMO_CATALOG
 } from './sprites-account';
 
@@ -304,5 +306,69 @@ assert.equal(
   false
 );
 assert.ok(flattenMagpie({ Klombo_Variant_Gold: 2 }).some((item) => item.templateId === 'Klombo_Variant_Gold'));
+
+assert.equal(spriteXpToLevel(0), 1);
+assert.equal(spriteXpToLevel(300), 1);
+assert.equal(spriteXpToLevel(800), 2);
+assert.equal(spriteXpToLevel(1275), 3);
+assert.equal(spriteXpToLevel(2010), 4);
+assert.equal(spriteXpToLevel(4000, true), 5);
+
+const v2Items = parseMagpieV2Inventory({
+  inventory: [
+    {
+      counts: {
+        Jonesy_Variant_A: 2,
+        Currency_ExtractionPoints: 8765,
+        NarrowFleaSprite_Variant_A: 2
+      },
+      entitlementMetadata: {
+        Jonesy_Variant_A: '{"xp":4000,"ml":true}',
+        NarrowFleaSprite_Variant_A: '{"xp":2000,"ml":false}'
+      }
+    }
+  ]
+});
+assert.equal(v2Items.find((item) => item.templateId === 'Currency_ExtractionPoints')?.quantity, 8765);
+assert.equal(v2Items.find((item) => item.templateId === 'Jonesy_Variant_A')?.attributes?.level, 5);
+assert.equal(v2Items.find((item) => item.templateId === 'NarrowFleaSprite_Variant_A')?.attributes?.level, 4);
+assert.equal(
+  parseSpriteLevels(itemsAsProfileForCheck(v2Items))['jonesy:base'],
+  5
+);
+assert.equal(parseSpriteResources(itemsAsProfileForCheck(v2Items)).dust, 8765);
+
+function itemsAsProfileForCheck(list: { templateId?: string; quantity?: number; attributes?: Record<string, unknown> }[]) {
+  const items: Record<string, (typeof list)[number]> = {};
+  list.forEach((item, i) => {
+    items[`m-${i}`] = item;
+  });
+  return { profileChanges: [{ profile: { items, stats: { attributes: {} } } }] };
+}
+
+const gizmoV2 = parseMagpieV2Inventory({
+  inventory: [
+    {
+      counts: {
+        '/MorningBell/CosmicThunder/Item00': 4,
+        '/MorningBell/CosmicThunder/Item01': 2,
+        '/MorningBell/CosmicThunder/Item02': 3,
+        '/MorningBell/CosmicThunder/Item03': 3,
+        '/MorningBell/CosmicThunder/Item04': 2,
+        '/MorningBell/CosmicThunder/Item00/UnseenStatus': 1
+      }
+    }
+  ]
+});
+assert.equal(
+  gizmoV2.some((item) => /UnseenStatus/i.test(item.templateId ?? '')),
+  false
+);
+const gizmoRes = parseSpriteResources(itemsAsProfileForCheck(gizmoV2));
+assert.ok(gizmoRes.gizmos.some((g) => g.id === 'portable-extractor' && g.quantity === 4));
+assert.ok(gizmoRes.gizmos.some((g) => g.id === 'llama-supply-drop' && g.quantity === 2));
+assert.ok(gizmoRes.gizmos.some((g) => g.id === 'extraction-accelerator' && g.quantity === 3));
+assert.ok(gizmoRes.gizmos.some((g) => g.id === 'cheat-code-locator' && g.quantity === 3));
+assert.ok(gizmoRes.gizmos.some((g) => g.id === 'spicy-taco' && g.quantity === 2));
 
 console.log('sprites-account self-check passed');
