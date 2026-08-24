@@ -413,8 +413,7 @@
       "claim": "Resgatar Recompensas",
       "transferMaterials": "Transferir Materiais",
       "invite": "Convidar"
-    },
-    "conflictTaxi": "Desligue o Taxi Service nesta conta antes de ativar o Auto-kick.",
+  },
     "notifications": {
       "leftBase": {
         "title": "Saiu da base STW",
@@ -476,65 +475,6 @@
     "claimed": "Resgatou {count} missão(ões)",
     "autoPin": "Fixar Urnas / Mini-Boss automaticamente",
     "pinned": "Missões fixadas"
-  },
-  "ssdUnlock": {
-    "page": {
-      "title": "Desbloquear SSD",
-      "description": "Resgata recompensas de Storm Shield que já estão prontas no perfil, sem completar a defesa no jogo."
-    },
-    "load": "Procurar recompensas",
-    "unlock": "Desbloquear selecionadas",
-    "empty": "Nenhuma recompensa de SSD pendente encontrada",
-    "warningTitle": "Ação irreversível",
-    "warning": "Isso resgata as recompensas listadas sem você ter feito a defesa. V-Bucks de SSD não entram aqui. Confirme só se souber o que está fazendo.",
-    "confirm": "Entendi, desbloquear",
-    "done": "Desbloqueou {count} recompensa(s)"
-  },
-  "taxiService": {
-    "page": {
-      "title": "Taxi Service",
-      "description": "Contas que aceitam convites para a party e saem automaticamente no lobby."
-    },
-    "addCurrent": "Adicionar conta atual",
-    "autoAcceptFriends": "Aceitar pedidos de amizade",
-    "active": "Ativo",
-    "busy": "Ocupado",
-    "conflictAutoKick": "Desligue o Auto-kick nesta conta antes de ativar o Taxi.",
-    "removed": "Taxi removido",
-    "started": "Taxi iniciado"
-  },
-  "matchmakingTrack": {
-    "page": {
-      "title": "Matchmaking Track",
-      "description": "Procura a sessão de um jogador e salva o JSON de matchmaking."
-    },
-    "player": "Jogador",
-    "placeholder": "Nome ou ID",
-    "search": "Buscar sessão",
-    "save": "Salvar arquivo",
-    "notInMission": "Jogador provavelmente não está em missão",
-    "saved": "Arquivo salvo em {path}",
-    "openStwNews": "Abrir no STW News"
-  },
-  "devTools": {
-    "page": {
-      "title": "Ferramentas de Dev",
-      "description": "Simule notificações e inspecione o ambiente. Só aparece em builds de desenvolvimento."
-    }
-  },
-  "worldInfoVault": {
-    "page": {
-      "title": "World Info",
-      "description": "Salve e importe snapshots da rotação. A tela de alertas continua usando a rotação ao vivo."
-    },
-    "saveCurrent": "Salvar rotação atual",
-    "import": "Importar JSON",
-    "empty": "Nenhum snapshot ainda",
-    "saved": "Snapshot salvo",
-    "deleted": "Snapshot apagado",
-    "delete": "Excluir",
-    "exported": "Snapshot exportado",
-    "invalid": "JSON inválido de World Info"
   },
   "supportCreator": {
     "page": {
@@ -699,7 +639,7 @@
       "title": "Sua coleção",
       "perAccount": "Extraído só conta token de Mastery já ganho na conta — a Epic lista a quest de todo Elemental mesmo sem você ter extraído. Dust, dispositivos e nível (Lv) ficam no Magpie do Fortnite — o launcher público não tem a permissão que o jogo no PC tem.",
       "noAccount": "Entre em uma conta para separar as marcações por perfil.",
-      "explanation": "A imagem exportada segue o álbum Base + Cheat Master (24 slots). Dust e bugigangas no topo só aparecem se o Magpie da conta for legível.",
+      "explanation": "A imagem exportada segue o álbum Base + Gold + Cheat Master (36 slots). Dust e bugigangas no topo só aparecem se o Magpie da conta for legível.",
       "dontShowAgain": "Não mostrar novamente"
     },
     "mastery": {
@@ -712,7 +652,7 @@
       "open": "Abrir imagem",
       "empty": "Nada para exportar.",
       "pending": "Pendente",
-      "done": "{count}/24 Elementais na imagem.",
+      "done": "{count}/36 Elementais na imagem.",
       "failed": "Não foi possível exportar os Elementais.",
       "progress": "Baixando imagens… {percent}%"
     },

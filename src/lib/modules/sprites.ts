@@ -20,6 +20,8 @@ export type SpriteEntry = SpriteFamily & {
 
 const IMAGE_ROOT = '/elementals';
 const S4_VARIANTS: Exclude<SpriteVariant, 'base'>[] = ['gold', 'cheat-master'];
+/** Album rows: common, gold, then cheat. */
+export const SPRITE_EXPORT_VARIANTS: SpriteVariant[] = ['base', 'gold', 'cheat-master'];
 
 /** Chapter 7 Season 4 (Override) — season id 42 on fortnite.gg. */
 export const SPRITE_FAMILIES: SpriteFamily[] = [

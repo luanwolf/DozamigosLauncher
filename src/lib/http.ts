@@ -68,10 +68,6 @@ export const baseGameService = epicService.extend({
   prefix: 'https://fngw-mcp-gc-livefn.ol.epicgames.com/fortnite/api/game/v2'
 });
 
-export const matchmakingService = epicService.extend({
-  prefix: 'https://fngw-mcp-gc-livefn.ol.epicgames.com/fortnite/api/matchmaking'
-});
-
 export const calendarService = epicService.extend({
   prefix: 'https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/calendar/v1'
 });

@@ -1,4 +1,4 @@
-﻿import {
+import {
   APP_ICON_URL,
   APP_NAME,
   DISPLAY_FONT,
@@ -14,6 +14,7 @@
 import { SPRITE_DUST_ICON, type SpriteResources } from '$lib/modules/sprites-account';
 import {
   SPRITE_ENTRIES,
+  SPRITE_EXPORT_VARIANTS,
   SPRITE_FAMILIES,
   spriteShortName,
   type SpriteEntry,
@@ -37,7 +38,13 @@ export const SPRITE_EXPORT_ORDER = [
   'crown'
 ] as const;
 
-const EXPORT_VARIANTS: SpriteVariant[] = ['base', 'cheat-master'];
+const VARIANT_ROW_LABEL: Record<SpriteVariant, string> = {
+  base: 'BASE',
+  gold: 'GOLD',
+  'cheat-master': 'CHEAT MASTER'
+};
+
+const GOLD_BAR = '#f5c542';
 
 const RARITY_BAR: Record<SpriteRarity, string> = {
   rare: '#3d9bf7',
@@ -92,14 +99,14 @@ function isOwned(entry: SpriteEntry, ownedKeys: ReadonlySet<string>) {
   return false;
 }
 
-/** Fixed 2×12 BASE + CHEAT MASTER grid (24 slots). */
+/** Fixed 3×12 BASE + GOLD + CHEAT MASTER grid (36 slots). */
 export function buildSpriteExportSlots(
   ownedKeys: ReadonlySet<string>,
   levels: Record<string, number> = {}
 ): SpriteExportSlot[] {
   const slots: SpriteExportSlot[] = [];
   let slot = 1;
-  for (const variant of EXPORT_VARIANTS) {
+  for (const variant of SPRITE_EXPORT_VARIANTS) {
     for (const slug of SPRITE_EXPORT_ORDER) {
       const entry = entryFor(slug, variant);
       slots.push({
@@ -169,7 +176,7 @@ function paintChip(
 }
 
 /**
- * Fortniters-style album: username, X/24, dust + gizmos, BASE + CHEAT MASTER rows.
+ * Fortniters-style album: username, X/36, dust + gizmos, BASE + GOLD + CHEAT MASTER rows.
  * Rendered at 3× so 512px sprite art stays sharp on the card.
  */
 export async function exportSpriteAlbumWebp(options: SpriteExportOptions): Promise<SpriteExportResult> {
@@ -180,7 +187,8 @@ export async function exportSpriteAlbumWebp(options: SpriteExportOptions): Promi
   const ownedCount = slots.filter((slot) => slot.owned).length;
 
   const cols = SPRITE_EXPORT_ORDER.length;
-  const rows = EXPORT_VARIANTS.length;
+  const rows = SPRITE_EXPORT_VARIANTS.length;
+  const slotCount = cols * rows;
   const gridW = cols * CELL + (cols - 1) * GAP;
   const gridH = rows * CELL + (rows - 1) * GAP;
   const width = PAD * 2 + LABEL_COL + gridW;
@@ -208,7 +216,7 @@ export async function exportSpriteAlbumWebp(options: SpriteExportOptions): Promi
 
   ctx.font = '900 36px ' + DISPLAY_FONT;
   ctx.fillStyle = 'rgba(255,255,255,0.92)';
-  fillOutlinedText(ctx, ownedCount + '/24 SPRITES', width / 2, 96, width - PAD * 2 - 220);
+  fillOutlinedText(ctx, ownedCount + '/' + slotCount + ' SPRITES', width / 2, 96, width - PAD * 2 - 220);
 
   if (resources) {
     const dustBmp = await loadBitmap(SPRITE_DUST_ICON);
@@ -267,8 +275,15 @@ export async function exportSpriteAlbumWebp(options: SpriteExportOptions): Promi
     ctx.fillText(fitText(ctx, label, CELL - 6), x, HEADER + PAD + NAME_ROW / 2);
   });
 
-  drawVerticalLabel(ctx, 'BASE', PAD + LABEL_COL / 2, gridTop, CELL);
-  drawVerticalLabel(ctx, 'CHEAT MASTER', PAD + LABEL_COL / 2, gridTop + CELL + GAP, CELL);
+  SPRITE_EXPORT_VARIANTS.forEach((variant, row) => {
+    drawVerticalLabel(
+      ctx,
+      VARIANT_ROW_LABEL[variant],
+      PAD + LABEL_COL / 2,
+      gridTop + row * (CELL + GAP),
+      CELL
+    );
+  });
 
   for (let i = 0; i < slots.length; i++) {
     const slot = slots[i];
@@ -317,6 +332,9 @@ export async function exportSpriteAlbumWebp(options: SpriteExportOptions): Promi
 
     if (slot.entry.variant === 'cheat-master') {
       drawRainbowBar(ctx, x, y + CELL - BAR_H, CELL, BAR_H);
+    } else if (slot.entry.variant === 'gold') {
+      ctx.fillStyle = GOLD_BAR;
+      ctx.fillRect(x, y + CELL - BAR_H, CELL, BAR_H);
     } else {
       ctx.fillStyle = RARITY_BAR[slot.entry.rarity];
       ctx.fillRect(x, y + CELL - BAR_H, CELL, BAR_H);

@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/luanwolf/DozamigosLauncher/releases/latest"><img alt="Versão" src="https://img.shields.io/badge/vers%C3%A3o-0.1.3-a855f7"></a>
+  <a href="https://github.com/luanwolf/DozamigosLauncher/releases/latest"><img alt="Versão" src="https://img.shields.io/badge/vers%C3%A3o-0.1.4-a855f7"></a>
   <img alt="Plataforma" src="https://img.shields.io/badge/plataforma-Windows-2b3140">
   <a href="LICENSE"><img alt="Licença" src="https://img.shields.io/badge/licen%C3%A7a-GPL--3.0-2b3140"></a>
 </p>
@@ -23,7 +23,7 @@ Feito por **Heyash**.
 3. Na primeira vez, uma tela de boas-vindas pede sua conta Epic e a pasta onde o Fortnite está instalado. Feito isso, você já cai na home.
 
 > [!TIP]
-> Não precisa se preocupar com atualização: ao abrir, o app confere a última release, baixa e instala sozinho.
+> Atualização automática: ao abrir, o launcher consulta a última release no GitHub, avisa se tem versão nova e instala quando você confirmar. Depois é só reiniciar.
 
 ## O que dá pra fazer
 
@@ -40,11 +40,11 @@ Feito por **Heyash**.
 ### Salve o Mundo (STW)
 
 - **Alertas de missão** com as recompensas da rotação atual (carregam com a conta logada).
-- **Elementais (Sprites)** da temporada atual, com prévia e variantes locais.
+- **Elementais (Sprites)** da temporada atual, com prévia, variantes (Base, Gold, Cheat Master) e exportação do álbum.
 - **Lhamas grátis** com resgate automático: o launcher varre as contas de hora em hora (no horário UTC) e resgata para todo mundo que deixou a opção ligada, com histórico dos itens recebidos.
 - **Loja do STW** (incluindo lhamas com Fichas Raio-X) e **missões diárias**.
 - **Auto-kick**: sai da missão na hora, resgata as recompensas, transfere materiais e convida seus amigos quando a missão acaba.
-- Ferramentas extras: Party, Taxi Service, Boosts de XP, Matchmaking Track, World Info e desbloqueio de SSD.
+- Ferramentas extras: Party e Boosts de XP.
 
 ### Notificações do Windows
 
@@ -110,10 +110,11 @@ de novo sempre que o ícone ou a marca mudar.
 
 ### Atualização automática
 
-O app consulta `https://github.com/luanwolf/DozamigosLauncher/releases/latest/download/latest.json` ao iniciar.
-Builds de release precisam da variável `TAURI_SIGNING_PRIVATE_KEY` com a chave privada correspondente ao
-`pubkey` de `src-tauri/tauri.conf.json`. O GitHub Actions lê essa chave do secret de mesmo nome e publica o
-instalador assinado, a assinatura e o `latest.json`.
+O app consulta `https://github.com/luanwolf/DozamigosLauncher/releases/latest/download/latest.json` ao iniciar
+(só em build de release; o `tauri:dev` não instala update). Builds de release precisam da variável
+`TAURI_SIGNING_PRIVATE_KEY` com a chave privada correspondente ao `pubkey` de `src-tauri/tauri.conf.json`.
+O GitHub Actions lê essa chave do secret de mesmo nome e publica o instalador assinado, a assinatura e o
+`latest.json` na release — é esse arquivo que o updater usa.
 
 </details>
 

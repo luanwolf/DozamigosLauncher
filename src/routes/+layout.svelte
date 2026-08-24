@@ -14,7 +14,6 @@
   import { loggableError } from '$lib/modules/redact-secrets';
   import { warmAccountData } from '$lib/modules/account-data';
   import { initAutoKick } from '$lib/modules/autokick/base';
-  import { initTaxiService } from '$lib/modules/taxi-service';
   import { fetchAvatars } from '$lib/modules/avatar';
   import { addToQueue, initDownloader } from '$lib/modules/download.svelte';
   import { ensureLibrary, getAppInfo } from '$lib/modules/legendary';
@@ -217,7 +216,6 @@
     Promise.allSettled([
       setupDiscordRPC(),
       initAutoKick(),
-      initTaxiService(),
       initDownloader(),
       setWorldInfoCache(),
       syncAccountNames(),

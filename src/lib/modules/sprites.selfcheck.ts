@@ -3,6 +3,7 @@ import {
   parseSpriteProgress,
   readSpriteCollection,
   SPRITE_ENTRIES,
+  SPRITE_EXPORT_VARIANTS,
   SPRITE_FAMILIES,
   spriteShortName,
   writeSpriteCollection
@@ -24,7 +25,10 @@ assert.equal(new Set(SPRITE_ENTRIES.map((entry) => entry.key)).size, SPRITE_ENTR
 assert.equal(SPRITE_FAMILIES.find((f) => f.slug === 'sonic')?.name, 'Elemental Sonic');
 assert.equal(SPRITE_FAMILIES.find((f) => f.slug === 'klombo')?.rarity, 'mythic');
 assert.equal(SPRITE_FAMILIES.every((f) => f.name.startsWith('Elemental')), true);
+assert.equal(SPRITE_FAMILIES.every((f) => f.variants.includes('gold')), true);
 assert.equal(SPRITE_FAMILIES.every((f) => f.variants.includes('cheat-master')), true);
+assert.deepEqual(SPRITE_EXPORT_VARIANTS, ['base', 'gold', 'cheat-master']);
+assert.equal(SPRITE_FAMILIES.length * SPRITE_EXPORT_VARIANTS.length, 36);
 assert.equal(spriteShortName('Elemental Sonic'), 'Sonic');
 assert.equal(spriteShortName('Elemental Storm Scout'), 'Storm Scout');
 assert.equal(spriteShortName('Elemental 8-Bit'), '8-Bit');

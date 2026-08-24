@@ -2,7 +2,6 @@ import { clientQuestLogin, composeMCP } from '$lib/modules/mcp';
 import {
   bucketQuest,
   isAutoPinQuest,
-  isSsdRewardQuest,
   mergePinnedQuestIds,
   parseCampaignQuests,
   type StwQuestBucket,
@@ -14,7 +13,6 @@ export type { StwQuestBucket, StwQuestEntry };
 export {
   bucketQuest,
   isAutoPinQuest,
-  isSsdRewardQuest,
   mergePinnedQuestIds,
   parseCampaignQuests
 };
@@ -51,8 +49,4 @@ export async function autoPinUrnAndMiniBoss(account: AccountData) {
   const next = mergePinnedQuestIds(pinned, targets);
   await setPinnedQuests(account, next);
   return { pinned: next, changed: true };
-}
-
-export function listClaimableSsdRewards(quests: StwQuestEntry[]) {
-  return quests.filter((q) => q.state === 'Completed' && isSsdRewardQuest(q.templateId));
 }

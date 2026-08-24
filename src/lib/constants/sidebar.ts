@@ -8,7 +8,6 @@ import CrosshairIcon from '@lucide/svelte/icons/crosshair';
 import DownloadIcon from '@lucide/svelte/icons/download';
 import EyeIcon from '@lucide/svelte/icons/eye';
 import FileTextIcon from '@lucide/svelte/icons/file-text';
-import FolderArchiveIcon from '@lucide/svelte/icons/folder-archive';
 import GiftIcon from '@lucide/svelte/icons/gift';
 import MedalIcon from '@lucide/svelte/icons/medal';
 import HeartHandshakeIcon from '@lucide/svelte/icons/heart-handshake';
@@ -20,19 +19,16 @@ import MapIcon from '@lucide/svelte/icons/map';
 import MapPinnedIcon from '@lucide/svelte/icons/map-pinned';
 import MonitorSmartphone from '@lucide/svelte/icons/monitor-smartphone';
 import PackageIcon from '@lucide/svelte/icons/package';
-import RadarIcon from '@lucide/svelte/icons/radar';
 import ServerIcon from '@lucide/svelte/icons/server';
 import SettingsIcon from '@lucide/svelte/icons/settings';
 import ShirtIcon from '@lucide/svelte/icons/shirt';
 import ShoppingBagIcon from '@lucide/svelte/icons/shopping-bag';
 import SparklesIcon from '@lucide/svelte/icons/sparkles';
-import ShieldIcon from '@lucide/svelte/icons/shield';
 import TagIcon from '@lucide/svelte/icons/tag';
 import TrendingUpIcon from '@lucide/svelte/icons/trending-up';
 import UserXIcon from '@lucide/svelte/icons/user-x';
 import UsersIcon from '@lucide/svelte/icons/users';
 import ZapIcon from '@lucide/svelte/icons/zap';
-import CarTaxiFrontIcon from '@lucide/svelte/icons/car-taxi-front';
 import { platform } from '@tauri-apps/plugin-os';
 import type { LucideIcon } from '$types/lucide';
 
@@ -206,34 +202,10 @@ export const NavZones = Object.freeze([
         requiresLogin: true
       },
       {
-        id: 'taxiService',
-        href: '/br-stw/taxi-service',
-        icon: CarTaxiFrontIcon,
-        requiresLogin: true
-      },
-      {
         id: 'xpBoosts',
         href: '/br-stw/xp-boosts',
         icon: ZapIcon,
         requiresLogin: true
-      },
-      {
-        id: 'ssdUnlock',
-        href: '/br-stw/ssd-unlock',
-        icon: ShieldIcon,
-        requiresLogin: true
-      },
-      {
-        id: 'matchmakingTrack',
-        href: '/br-stw/matchmaking-track',
-        icon: RadarIcon,
-        requiresLogin: true
-      },
-      {
-        id: 'worldInfoVault',
-        href: '/br-stw/world-info',
-        icon: FolderArchiveIcon,
-        requiresLogin: false
       },
       {
         id: 'autoKick',

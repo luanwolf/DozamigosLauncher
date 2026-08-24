@@ -53,7 +53,7 @@ type AccountOptions = AccountData & {
   accessToken: string;
 };
 
-type Purpose = 'autoKick' | 'friends' | 'party' | 'taxiService';
+type Purpose = 'autoKick' | 'friends' | 'party';
 
 const MAX_RECONNECT_ATTEMPTS = 50;
 const logger = getChildLogger('XMPPManager');

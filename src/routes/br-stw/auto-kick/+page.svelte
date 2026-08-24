@@ -35,13 +35,7 @@
   function addCurrentAccount() {
     if (!$activeAccount || autoKickAccounts.has($activeAccount.accountId)) return;
 
-    void addAutoKickAccount($activeAccount, { autoKick: true }).catch((error) => {
-      if (error instanceof Error && error.message === 'TAXI_CONFLICT') {
-        toast.error($t('autoKick.conflictTaxi'));
-        return;
-      }
-      throw error;
-    });
+    void addAutoKickAccount($activeAccount, { autoKick: true });
   }
 
   const settings: { id: AutomationSetting; label: string }[] = $derived([

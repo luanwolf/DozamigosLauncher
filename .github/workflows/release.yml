@@ -57,27 +57,24 @@ jobs:
           tagName: v__VERSION__
           releaseName: 'v__VERSION__'
           releaseBody: |
-            ## Dozamigos Launcher v0.1.3A
+            ## Dozamigos Launcher v0.1.4
 
-            Baixe o instalador **Windows NSIS** (`.exe`) abaixo. Quem já tem o launcher instalado recebe a atualização automaticamente na próxima abertura.
+            Baixe o instalador **Windows NSIS** (`.exe`) abaixo. Quem já tem o launcher instalado recebe o aviso de atualização na próxima abertura.
 
             ### Arquivos desta release
-            - `Dozamigos Launcher_0.1.3-A_x64-setup.exe` — instalador Windows (recomendado)
+            - `Dozamigos Launcher_0.1.4_x64-setup.exe` — instalador Windows (recomendado)
             - `latest.json` — manifesto da atualização automática
             - assinatura do instalador (usada pelo updater)
 
             ### Elementais
-            - Tela de carregamento ao abrir a página, até o Magpie/Athena responder
-            - Extraído e Dominado só da conta — sem marcação manual
-            - Dust, bugigangas e nível lidos ao vivo no Magpie v2
-
-            ### Exportações
-            - Título e subtítulo das colagens (vestiário, loja, recursos STW, Elementais) com borda preta fina
+            - Álbum exportado agora inclui a linha Gold entre Base e Cheat Master (36 slots)
 
             ### Salve o Mundo
-            - Grade de 6 colunas na loja STW, loja BR e recursos
-            - Ícones de ouro / tickets de Road Trip e demais currencies alinhados com os arquivos locais
-          releaseDraft: true
+            - Removidos Taxi Service, Desbloquear SSD, World Info e Matchmaking Track
+
+            ### Visual
+            - Sem glitch no fundo do launcher e no cubo da barra lateral
+          releaseDraft: false
           prerelease: false
           uploadUpdaterJson: true
           updaterJsonPreferNsis: true
