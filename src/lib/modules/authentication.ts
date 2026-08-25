@@ -118,9 +118,9 @@ export function getAccessTokenUsingAuthorizationCode(
 }
 
 const AUTH_CODE_CLIENT_CHAIN = [
-  defaultClient,
+  fortniteAndroidGameClient,
   fortniteNewSwitchGameClient,
-  fortniteAndroidGameClient
+  defaultClient
 ] as const;
 
 /**
@@ -156,16 +156,20 @@ export async function getAccessTokenFromEpicLoginCode(code: string): Promise<Epi
 
   for (const client of AUTH_CODE_CLIENT_CHAIN) {
     try {
-      const token = await getAccessTokenUsingAuthorizationCode(normalized, client);
-      if (token.client_id === defaultClient.clientId) {
-        return token;
-      }
-      const exchange = await getExchangeCodeUsingAccessToken(token.access_token);
-      return await getAccessTokenUsingExchangeCode(exchange.code);
+      return await getAccessTokenUsingAuthorizationCode(normalized, client);
     } catch {
       continue;
     }
   }
 
   return getAccessTokenUsingExchangeCode(normalized);
+}
+
+/** PC/Switch tokens cannot CREATE device auths — only mobile clients can. */
+export async function exchangeAccessTokenToClient(
+  accessToken: string,
+  client: ClientCredentials
+): Promise<EpicExchangeCodeLoginData> {
+  const { code } = await getExchangeCodeUsingAccessToken(accessToken);
+  return getAccessTokenUsingExchangeCode(code, client);
 }

@@ -1,20 +1,28 @@
-import { fortnitePCGameClient } from '$lib/constants/clients';
+import { fortniteAndroidGameClient, fortnitePCGameClient } from '$lib/constants/clients';
 import { publicAccountService } from '$lib/http';
-import { getAuthedKy } from '$lib/modules/auth-session';
+import { getAuthedKy, getCachedToken } from '$lib/modules/auth-session';
+import { exchangeAccessTokenToClient } from '$lib/modules/authentication';
 import type { AccountData } from '$types/account';
 import type { EpicDeviceAuthData } from '$types/game/authorizations';
 
-export function createDeviceAuth(
+async function androidAccessToken(
+  account: AccountData | { accountId: string; accessToken: string }
+): Promise<string> {
+  if ('accessToken' in account) {
+    const android = await exchangeAccessTokenToClient(account.accessToken, fortniteAndroidGameClient);
+    return android.access_token;
+  }
+  return getCachedToken(account, fortniteAndroidGameClient);
+}
+
+export async function createDeviceAuth(
   account: AccountData | { accountId: string; accessToken: string }
 ): Promise<EpicDeviceAuthData> {
-  const token = 'accessToken' in account ? account.accessToken : null;
-  const service = 'accessToken' in account ? publicAccountService : getAuthedKy(account, publicAccountService);
-
-  return service
-    .post<EpicDeviceAuthData>(
-      `${account.accountId}/deviceAuth`,
-      token ? { headers: { Authorization: `Bearer ${token}` } } : {}
-    )
+  const token = await androidAccessToken(account);
+  return publicAccountService
+    .post<EpicDeviceAuthData>(`${account.accountId}/deviceAuth`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
     .json();
 }
 

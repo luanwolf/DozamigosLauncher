@@ -57,23 +57,19 @@ jobs:
           tagName: v__VERSION__
           releaseName: 'v__VERSION__'
           releaseBody: |
-            ## Dozamigos Launcher v0.1.4
+            ## Dozamigos Launcher v0.1.5
 
             Baixe o instalador **Windows NSIS** (`.exe`) abaixo. Quem já tem o launcher instalado recebe o aviso de atualização na próxima abertura.
 
             ### Arquivos desta release
-            - `Dozamigos Launcher_0.1.4_x64-setup.exe` — instalador Windows (recomendado)
+            - `Dozamigos Launcher_0.1.5_x64-setup.exe` — instalador Windows (recomendado)
             - `latest.json` — manifesto da atualização automática
             - assinatura do instalador (usada pelo updater)
 
-            ### Elementais
-            - Álbum exportado agora inclui a linha Gold entre Base e Cheat Master (36 slots)
-
-            ### Salve o Mundo
-            - Removidos Taxi Service, Desbloquear SSD, World Info e Matchmaking Track
-
-            ### Visual
-            - Sem glitch no fundo do launcher e no cubo da barra lateral
+            ### Correções
+            - Login por código de autorização e por confirmação na Epic Games
+            - Dispositivos (gizmos) dos Elementais atualizam junto com a Poeira Elemental
+            - Loja: removida a borda colorida em volta dos cosméticos; estilos com muitos itens passam a ter rolagem
           releaseDraft: false
           prerelease: false
           uploadUpdaterJson: true

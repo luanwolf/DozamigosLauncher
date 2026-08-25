@@ -9,7 +9,6 @@
   import { ItemColors } from '$lib/constants/item-colors';
   import { t } from '$lib/i18n';
   import type { LeakedCosmetic } from '$lib/modules/fortnite-leaks';
-  import { rarityBackgroundStyle } from '$lib/modules/locker-export-rarity';
   import {
     mergeStyles,
     resolveCosmeticPreview,
@@ -40,14 +39,6 @@
   const styles = $derived<StyleOption[]>(mergeStyles(item?.styles ?? [], preview));
   const previewVideoUrl = $derived(selectedStyle ? (selectedStyle.video ?? null) : preview.video);
   const previewImage = $derived(selectedStyle?.image || item?.image || '');
-  const previewBg = $derived(
-    item
-      ? rarityBackgroundStyle({
-          rarity: item.rarityValue,
-          series: item.series?.toLowerCase().replace(/\s+/g, '')
-        })
-      : ''
-  );
 
   $effect(() => {
     isOpen = !!item;
@@ -90,15 +81,14 @@
       class="flex w-[min(96vw,56rem)] !max-w-none flex-col gap-0 overflow-hidden p-0 sm:w-[min(96vw,64rem)]"
     >
       <div
-        class="grid max-h-[min(90vh,52rem)] grid-cols-1 overflow-y-auto sm:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]"
+        class="grid max-h-[min(90vh,52rem)] grid-cols-1 overflow-y-auto sm:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] sm:overflow-hidden"
       >
         <div
-          class="relative flex min-h-72 flex-col items-center justify-center gap-3 p-4 sm:min-h-[28rem] sm:border-r sm:border-border/80"
-          style={previewBg}
+          class="relative min-h-72 overflow-hidden bg-[#121218] sm:min-h-[28rem] sm:border-r sm:border-border/80"
         >
           {#if previewVideoUrl && !previewVideoFailed}
             <video
-              class="max-h-[min(70vh,36rem)] w-full object-contain"
+              class="absolute inset-0 size-full object-contain"
               autoplay
               loop
               muted
@@ -118,7 +108,7 @@
               }}
             ></video>
             <a
-              class="text-center text-xs text-muted-foreground underline-offset-2 hover:text-primary hover:underline"
+              class="absolute inset-x-0 bottom-2 z-10 text-center text-xs text-white/70 underline-offset-2 hover:text-white hover:underline"
               href="https://fortnite.gg"
               onclick={(e) => {
                 e.preventDefault();
@@ -130,16 +120,16 @@
             </a>
           {:else if previewImage}
             <img
-              class="max-h-[min(70vh,36rem)] w-full object-contain"
+              class="absolute inset-0 size-full object-contain"
               alt={item.name}
               src={previewImage}
             />
           {:else}
-            <p class="text-sm text-muted-foreground">{item.name}</p>
+            <p class="relative z-10 p-4 text-sm text-muted-foreground">{item.name}</p>
           {/if}
         </div>
 
-        <div class="flex flex-col gap-y-5 overflow-y-auto p-5 sm:p-6">
+        <div class="flex min-h-0 flex-col gap-y-5 overflow-y-auto p-5 sm:p-6">
           <div class="space-y-3">
             <div>
               <h2 class="text-xl leading-tight font-semibold tracking-tight">{item.name}</h2>

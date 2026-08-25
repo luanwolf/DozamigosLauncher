@@ -5,15 +5,13 @@
   import ExternalLinkIcon from '@lucide/svelte/icons/external-link';
   import { readText, writeText } from '@tauri-apps/plugin-clipboard-manager';
   import { openUrl } from '@tauri-apps/plugin-opener';
-  import { defaultClient, epicLoginAuthorizationCodeUrl, fortniteNewSwitchGameClient } from '$lib/constants/clients';
+  import { epicLoginAuthorizationCodeUrl, fortniteNewSwitchGameClient } from '$lib/constants/clients';
   import { oauthService } from '$lib/http';
   import { t } from '$lib/i18n';
   import {
     getAccessTokenUsingClientCredentials,
     getAccessTokenUsingDeviceCode,
     getAccessTokenFromEpicLoginCode,
-    getAccessTokenUsingExchangeCode,
-    getExchangeCodeUsingAccessToken,
     parseEpicLoginCodeInput
   } from '$lib/modules/authentication';
   import { createDeviceAuth } from '$lib/modules/device-auth';
@@ -103,15 +101,11 @@
     isLoggingIn = true;
 
     try {
-      const newSwitchAccessTokenData = await getAccessTokenUsingDeviceCode(
+      const accessTokenData = await getAccessTokenUsingDeviceCode(
         deviceCodeData!.code,
         fortniteNewSwitchGameClient
       );
-
-      const newSwitchExchangeCode = await getExchangeCodeUsingAccessToken(newSwitchAccessTokenData.access_token);
-      const pcAccessTokenData = await getAccessTokenUsingExchangeCode(newSwitchExchangeCode.code);
-
-      await handleLogin(pcAccessTokenData);
+      await handleLogin(accessTokenData);
     } catch (error) {
       handleError({ error, message: $t('accountManager.confirmRequest') });
     } finally {
@@ -120,11 +114,6 @@
   }
 
   async function handleLogin(accessTokenData: EpicOAuthData) {
-    if (accessTokenData.client_id !== defaultClient.clientId) {
-      toast.error('Invalid client ID');
-      return;
-    }
-
     const accounts = accountStore.get().accounts;
     if (accounts.some((account) => account.accountId === accessTokenData.account_id)) {
       toast.error($t('accountManager.alreadyLoggedIn', { name: accessTokenData.displayName }));

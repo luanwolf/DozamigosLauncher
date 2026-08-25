@@ -212,8 +212,19 @@ function familyFromTemplate(templateId: string): { family: string; variant: Spri
 }
 
 function matchGizmo(templateId: string) {
-  const byKey = SPRITE_GIZMO_CATALOG.find((gizmo) => gizmo.magpieKey === templateId);
+  if (/UnseenStatus/i.test(templateId)) return null;
+
+  const byKey = SPRITE_GIZMO_CATALOG.find((gizmo) => {
+    if (templateId === gizmo.magpieKey || templateId.endsWith(gizmo.magpieKey)) return true;
+    const noSlash = gizmo.magpieKey.replace(/^\//, '');
+    return templateId.endsWith(noSlash) || templateId.endsWith(`/${noSlash}`);
+  });
   if (byKey) return byKey;
+
+  // Magpie parent folders change per season (CosmicThunder → …); slots stay Item00–04.
+  const slot = templateId.match(/Item0([0-4])(?![0-9])/i);
+  if (slot) return SPRITE_GIZMO_CATALOG[Number(slot[1])] ?? null;
+
   // First hit wins — more specific Override names first (portable before generic "extractor").
   return SPRITE_GIZMO_CATALOG.find((gizmo) => gizmo.match.test(templateId)) ?? null;
 }
@@ -385,13 +396,13 @@ async function fetchMagpieBag(
   magpieV2Service: Awaited<typeof import('$lib/http')>['magpieV2Service'],
   session: FortniteEosSession,
   accountId: string,
-  moduleId: string
+  moduleId?: string
 ) {
   return magpieV2Service
     .get(`deployment/${EOS_DEPLOYMENT_ID}/domain/FN1/account/${accountId}/workspace/default/linkMode/live/inventory`, {
       searchParams: {
-        moduleFilters: `${moduleId}:*`,
-        includeMetadata: 'true'
+        includeMetadata: 'true',
+        ...(moduleId ? { moduleFilters: `${moduleId}:*` } : {})
       },
       headers: {
         Authorization: `Bearer ${session.accessToken}`,
@@ -412,7 +423,11 @@ async function fetchMagpieProfile(account: AccountData): Promise<unknown | null>
     fetchMagpieBag(magpieV2Service, session, account.accountId, GIZMO_MAGPIE_MODULE)
   ]);
 
-  const items = [...parseMagpieV2Inventory(sprites), ...parseMagpieV2Inventory(gizmos)];
+  let items = [...parseMagpieV2Inventory(sprites), ...parseMagpieV2Inventory(gizmos)];
+  if (!items.some((item) => matchGizmo(item.templateId ?? ''))) {
+    const full = await fetchMagpieBag(magpieV2Service, session, account.accountId);
+    items = [...items, ...parseMagpieV2Inventory(full)];
+  }
   return items.length ? itemsAsProfile(items) : null;
 }
 

@@ -157,14 +157,14 @@ function mapEntry(entry: FnApiShopEntry, locale?: string): ShopItem {
       ? pickCosmeticImage(track.albumArt, renderImage)
       : pickCosmeticImage(
           brItem?.images?.featured,
-          renderImage,
           brItem?.images?.icon,
           car?.images?.large,
           brItem?.images?.smallIcon,
           car?.images?.small,
           car?.images?.icon,
           bundle?.image,
-          track?.albumArt
+          track?.albumArt,
+          renderImage
         );
 
   const shopHistory = brItem?.shopHistory ?? [];

@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/luanwolf/DozamigosLauncher/releases/latest"><img alt="Versão" src="https://img.shields.io/badge/vers%C3%A3o-0.1.4-a855f7"></a>
+  <a href="https://github.com/luanwolf/DozamigosLauncher/releases/latest"><img alt="Versão" src="https://img.shields.io/badge/vers%C3%A3o-0.1.5-a855f7"></a>
   <img alt="Plataforma" src="https://img.shields.io/badge/plataforma-Windows-2b3140">
   <a href="LICENSE"><img alt="Licença" src="https://img.shields.io/badge/licen%C3%A7a-GPL--3.0-2b3140"></a>
 </p>
@@ -40,7 +40,7 @@ Feito por **Heyash**.
 ### Salve o Mundo (STW)
 
 - **Alertas de missão** com as recompensas da rotação atual (carregam com a conta logada).
-- **Elementais (Sprites)** da temporada atual, com prévia, variantes (Base, Gold, Cheat Master) e exportação do álbum.
+- **Elementais (Sprites)** da temporada atual: Poeira Elemental, dispositivos, prévia, variantes (Base, Gold, Cheat Master) e exportação do álbum.
 - **Lhamas grátis** com resgate automático: o launcher varre as contas de hora em hora (no horário UTC) e resgata para todo mundo que deixou a opção ligada, com histórico dos itens recebidos.
 - **Loja do STW** (incluindo lhamas com Fichas Raio-X) e **missões diárias**.
 - **Auto-kick**: sai da missão na hora, resgata as recompensas, transfere materiais e convida seus amigos quando a missão acaba.

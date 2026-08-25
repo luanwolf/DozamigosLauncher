@@ -375,4 +375,28 @@ assert.ok(gizmoRes.gizmos.some((g) => g.id === 'extraction-accelerator' && g.qua
 assert.ok(gizmoRes.gizmos.some((g) => g.id === 'cheat-code-locator' && g.quantity === 3));
 assert.ok(gizmoRes.gizmos.some((g) => g.id === 'spicy-taco' && g.quantity === 2));
 
+const renamedSlots = parseSpriteResources(
+  itemsAsProfileForCheck(
+    parseMagpieV2Inventory({
+      inventory: [
+        {
+          counts: {
+            '039e7691-eb2a-4ce2-99c5-63c831917870:/MorningBell/Override/Item00': 5,
+            '/MorningBell/Override/Item01': 1,
+            '/MorningBell/Override/Item02': 7,
+            '/MorningBell/Override/Item03': 2,
+            '/MorningBell/Override/Item04': 9,
+            '/MorningBell/Override/Item00/UnseenStatus': 1
+          }
+        }
+      ]
+    })
+  )
+);
+assert.ok(renamedSlots.gizmos.some((g) => g.id === 'portable-extractor' && g.quantity === 5));
+assert.ok(renamedSlots.gizmos.some((g) => g.id === 'llama-supply-drop' && g.quantity === 1));
+assert.ok(renamedSlots.gizmos.some((g) => g.id === 'extraction-accelerator' && g.quantity === 7));
+assert.ok(renamedSlots.gizmos.some((g) => g.id === 'cheat-code-locator' && g.quantity === 2));
+assert.ok(renamedSlots.gizmos.some((g) => g.id === 'spicy-taco' && g.quantity === 9));
+
 console.log('sprites-account self-check passed');
