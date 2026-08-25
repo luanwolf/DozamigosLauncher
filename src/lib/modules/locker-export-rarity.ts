@@ -36,13 +36,29 @@ const RARITY_BG_SLUG: Record<string, string> = {
   icon: 'icon',
   iconseries: 'icon',
   creatorcollabseries: 'icon',
+  serieicones: 'icon',
   lambskin: 'lambskin',
   crew: 'crew',
-  crewseries: 'crew'
+  crewseries: 'crew',
+  seriedoclube: 'crew',
+  serielendasdosjogos: 'gaminglegends',
+  seriemarvel: 'marvel',
+  seriedc: 'dc',
+  serieslurp: 'slurp',
+  seriesombra: 'shadow',
+  seriecubo: 'dark',
+  seriedark: 'dark',
+  serielava: 'lava',
+  seriecongelada: 'frozen',
+  seriestarwars: 'starwars'
 };
 
 function rarityKey(value: string) {
-  return value.toLowerCase().replace(/\s+/g, '');
+  return value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/\p{M}/gu, '')
+    .replace(/[^a-z0-9]/g, '');
 }
 
 /** Stem under `/rarities/` for the Fortnite tile backdrop. */

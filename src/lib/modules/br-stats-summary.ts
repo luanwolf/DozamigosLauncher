@@ -1,5 +1,13 @@
 /** Normalized BR stats shared by fortnite-api and Epic Stats Proxy. */
 
+export type BrModeStats = {
+  wins: number;
+  kills: number;
+  matches: number;
+  kd: number;
+  winRate: number;
+};
+
 export type BrStatsSummary = {
   accountId: string;
   displayName: string;
@@ -10,6 +18,17 @@ export type BrStatsSummary = {
   kd: number;
   winRate: number;
   source: 'fortnite-api' | 'epic';
+  minutesPlayed?: number;
+  score?: number;
+  top10?: number;
+  playersOutlived?: number;
+  lastModified?: string;
+  battlePassLevel?: number;
+  modes?: {
+    solo?: BrModeStats;
+    duo?: BrModeStats;
+    squad?: BrModeStats;
+  };
 };
 
 export function summarizeFromOverall(input: {

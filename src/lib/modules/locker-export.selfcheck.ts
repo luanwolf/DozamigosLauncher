@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { gridColumns, gridPixelSize } from './locker-export-layout';
+import { EXPORT_SCALE, gridColumns, gridPixelSize } from './locker-export-layout';
 import { rarityBackgroundSlug } from './locker-export-rarity';
 import { sortLockerItemsForExport } from './locker-export-sort';
 import type { LockerOwnedItem } from './locker-parse';
@@ -57,7 +57,6 @@ assert.equal(rarityBackgroundSlug({ rarity: 'starwars' }), 'starwars');
 assert.equal(rarityBackgroundSlug({ rarity: 'rare', series: 'crewseries' }), 'crew');
 assert.equal(rarityBackgroundSlug({ rarity: 'crew' }), 'crew');
 
-// Print-density scale: 300 DPI / CSS 96 DPI.
-assert.equal(300 / 96, 3.125);
+assert.equal(EXPORT_SCALE, 2);
 
 console.log('locker-export.selfcheck: ok');

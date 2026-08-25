@@ -2,9 +2,11 @@ import * as path from '@tauri-apps/api/path';
 import { mkdir, writeFile } from '@tauri-apps/plugin-fs';
 import { ItemColors } from '$lib/constants/item-colors';
 import { tauriKy } from '$lib/http';
+import { mapPool } from '$lib/modules/map-pool';
 import {
   gridColumns,
   gridPixelSize,
+  EXPORT_SCALE,
   LOCKER_EXPORT_CELL,
   LOCKER_EXPORT_FOOTER,
   LOCKER_EXPORT_GAP,
@@ -22,7 +24,7 @@ export {
   rarityBackgroundUrl
 } from '$lib/modules/locker-export-rarity';
 
-export const WEBP_QUALITY = 0.95;
+export const WEBP_QUALITY = 0.85;
 const NAME_BAND = 34;
 /** Fortnite display face — load from /fonts; falls back to Impact/Teko if missing. */
 export const DISPLAY_FONT = '"Burbank Big Condensed Black", Impact, Teko, sans-serif';
@@ -41,16 +43,16 @@ export const APP_NAME = 'Dozamigos Launcher';
 export const FORTNITE_API_LOGO_URL = 'https://fortnite-api.com/assets/img/logo_128.png';
 export const FORTNITE_API_CREDIT = 'fortnite-api.com';
 
-/** Target print density; canvas is scaled vs CSS 96 DPI. */
-export const EXPORT_DPI = 300;
-export const EXPORT_SCALE = EXPORT_DPI / 96;
-
 const rarityColors: Record<string, string> = {
   ...ItemColors.rarities,
   ...ItemColors.series
 };
 
 const rarityBgCache = new Map<string, Promise<ImageBitmap | null>>();
+/** Bytes stay cached so a second export of the same category doesn't re-download. ImageBitmaps are closed after draw. */
+const imageBufCache = new Map<string, Promise<ArrayBuffer | null>>();
+/** Unlimited parallel tauri HTTP stalls the plugin on big lockers; 12 keeps the pipe full. */
+const EXPORT_FETCH_CONCURRENCY = 12;
 
 /** Optional second line (e.g. Sprite status) and dimming for entries the account does not own. */
 export type LockerExportItem = LockerOwnedItem & { note?: string; faded?: boolean };
@@ -68,7 +70,7 @@ export type LockerExportResult = {
   path: string;
 };
 
-export { gridColumns, gridPixelSize } from '$lib/modules/locker-export-layout';
+export { gridColumns, gridPixelSize, EXPORT_SCALE } from '$lib/modules/locker-export-layout';
 export { sortLockerItemsForExport, lockerSortRank } from '$lib/modules/locker-export-sort';
 
 export function sanitizeFilename(value: string) {
@@ -174,17 +176,55 @@ export function fillRarityBackground(
   ctx.fillRect(x, y, w, h);
 }
 
+async function downloadBuffer(url: string): Promise<ArrayBuffer> {
+  if (url.startsWith('/') || url.startsWith('blob:')) {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return res.arrayBuffer();
+  }
+  try {
+    const res = await fetch(url);
+    if (res.ok) return res.arrayBuffer();
+  } catch {
+    // CORS / cache — Tauri HTTP still reaches fortnite-api.com
+  }
+  return tauriKy.get(url).arrayBuffer();
+}
+
 export async function loadBitmap(url: string): Promise<ImageBitmap | null> {
   if (!url) return null;
+  let pending = imageBufCache.get(url);
+  if (!pending) {
+    pending = downloadBuffer(url).catch(() => null);
+    imageBufCache.set(url, pending);
+  }
+  const buf = await pending;
+  if (!buf) return null;
   try {
-    const buf =
-      url.startsWith('/') || url.startsWith('blob:')
-        ? await (await fetch(url)).arrayBuffer()
-        : await tauriKy.get(url).arrayBuffer();
     return await createImageBitmap(new Blob([buf]));
   } catch {
     return null;
   }
+}
+
+export async function loadBitmaps(
+  urls: string[],
+  onProgress?: (progress: { done: number; total: number }) => void
+): Promise<(ImageBitmap | null)[]> {
+  const total = urls.length;
+  onProgress?.({ done: 0, total });
+  let done = 0;
+  const settled = await mapPool(
+    urls,
+    async (url) => {
+      const bmp = await loadBitmap(url);
+      done += 1;
+      onProgress?.({ done, total });
+      return bmp;
+    },
+    EXPORT_FETCH_CONCURRENCY
+  );
+  return settled.map((result) => (result.status === 'fulfilled' ? result.value : null));
 }
 
 export function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
@@ -234,16 +274,16 @@ export async function saveExportBlob(blob: Blob, filename: string): Promise<stri
   return filePath;
 }
 
-/** Logical layout coords; bitmap is EXPORT_SCALE× for ~300 DPI sharpness. */
+/** Logical layout coords; bitmap is EXPORT_SCALE× for screen sharpness. */
 export function createExportCanvas(logicalWidth: number, logicalHeight: number) {
   const canvas = document.createElement('canvas');
   canvas.width = Math.round(logicalWidth * EXPORT_SCALE);
   canvas.height = Math.round(logicalHeight * EXPORT_SCALE);
-  const ctx = canvas.getContext('2d');
+  const ctx = canvas.getContext('2d', { alpha: false });
   if (!ctx) throw new Error('Canvas 2D unavailable');
   ctx.scale(EXPORT_SCALE, EXPORT_SCALE);
   ctx.imageSmoothingEnabled = true;
-  ctx.imageSmoothingQuality = 'high';
+  ctx.imageSmoothingQuality = 'medium';
   return { canvas, ctx };
 }
 
@@ -327,18 +367,10 @@ export async function exportLockerCategoryWebp(options: LockerExportOptions): Pr
   ctx.fillStyle = 'rgba(255,255,255,0.92)';
   fillOutlinedText(ctx, `${ordered.length} ${categoryLabel.toUpperCase()}`, width / 2, header * 0.78, width - pad * 2);
 
-  const total = ordered.length;
-  onProgress?.({ done: 0, total });
-
-  let done = 0;
   const [bitmaps, backgrounds] = await Promise.all([
-    Promise.all(
-      ordered.map(async (item) => {
-        const bmp = await loadBitmap(item.imageUrl);
-        done += 1;
-        onProgress?.({ done, total });
-        return bmp;
-      })
+    loadBitmaps(
+      ordered.map((item) => item.imageUrl),
+      onProgress
     ),
     Promise.all(ordered.map((item) => loadRarityBackground(item)))
   ]);

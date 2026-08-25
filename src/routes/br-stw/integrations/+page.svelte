@@ -3,6 +3,6 @@
   import { goto } from '$app/navigation';
 
   onMount(() => {
-    void goto('/settings?tab=integrations', { replaceState: true });
+    void goto(import.meta.env.DEV ? '/settings?tab=integrations' : '/settings', { replaceState: true });
   });
 </script>

@@ -7,7 +7,7 @@
   import appIcon from '$lib/assets/app-icon.png';
   import { NavZones, zoneForPath, type NavZone } from '$lib/constants/sidebar';
   import { t } from '$lib/i18n';
-  import { accountStore, settingsStore } from '$lib/storage';
+  import { accountStore } from '$lib/storage';
   import { pendingLauncherUpdate } from '$lib/stores/pending-launcher-update';
   import { cn } from '$lib/utils';
   import { Button } from '$components/ui/button';
@@ -31,19 +31,11 @@
     return on(mq, 'change', onChange);
   });
 
-  function isItemVisible(id: string) {
-    if (id === 'settings') return true;
-    const menu = $settingsStore.customizableMenu as Record<string, boolean | undefined> | undefined;
-    return menu?.[id] !== false;
-  }
-
   function isZoneVisible(zone: NavZone) {
-    if (zone.hidden) return false;
-    if (zone.deck) return true;
-    return zone.items.some((item) => isItemVisible(item.id));
+    return !zone.hidden;
   }
 
-  const panelItems = $derived(activeZone.deck ? [] : activeZone.items.filter((item) => isItemVisible(item.id)));
+  const panelItems = $derived(activeZone.deck ? [] : activeZone.items);
 
   const showPanel = $derived(panelItems.length > 0 && wideEnough);
   const shellWidth = $derived(showPanel ? '18.25rem' : '3.75rem');

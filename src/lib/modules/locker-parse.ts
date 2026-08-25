@@ -7,6 +7,10 @@ export type LockerCosmeticMeta = {
   description: string;
   rarity: string;
   series?: string;
+  /** fortnite-api `type.backendValue`, e.g. CosmeticCompanion. */
+  typeBackend?: string;
+  /** fortnite-api `type.value`, e.g. sidekick. */
+  typeValue?: string;
   smallIcon: string;
   icon: string;
   styles?: { name: string; image: string }[];
@@ -68,6 +72,58 @@ export type LockerData = {
 function cosmeticIdFromTemplate(templateId: string) {
   const idx = templateId.indexOf(':');
   return (idx >= 0 ? templateId.slice(idx + 1) : templateId).toLowerCase();
+}
+
+const BACKEND_CATEGORY: Record<string, LockerCategory> = {
+  athenacharacter: 'outfits',
+  athenabackpack: 'backpacks',
+  athenapickaxe: 'pickaxes',
+  athenaglider: 'gliders',
+  athenadance: 'emotes',
+  athenaitemwrap: 'wraps',
+  sparksaura: 'auras',
+  cosmeticcompanion: 'pets',
+  athenapet: 'pets',
+  cosmeticshoes: 'shoes',
+  outfit: 'outfits',
+  backpack: 'backpacks',
+  pickaxe: 'pickaxes',
+  glider: 'gliders',
+  emote: 'emotes',
+  wrap: 'wraps',
+  aura: 'auras',
+  sidekick: 'pets',
+  pet: 'pets',
+  shoe: 'shoes'
+};
+
+function lockerCategoryFor(templateId: string, meta?: LockerCosmeticMeta): LockerCategory | null {
+  for (const key of [meta?.typeBackend, meta?.typeValue]) {
+    const category = key ? BACKEND_CATEGORY[key.toLowerCase()] : undefined;
+    if (category) return category;
+  }
+
+  const suffix = cosmeticIdFromTemplate(templateId);
+  if (/^(companion|mimosa)_/.test(suffix)) return 'pets';
+
+  const id = templateId.toLowerCase();
+  for (const category of LOCKER_CATEGORIES) {
+    if (id.startsWith(CATEGORY_META[category].prefix.toLowerCase())) return category;
+  }
+  if (
+    id.startsWith('athenapet:') ||
+    id.startsWith('companion:') ||
+    id.startsWith('athenasidekick:') ||
+    id.startsWith('sidekick:')
+  ) {
+    return 'pets';
+  }
+  return null;
+}
+
+function slotLookupKeys(category: LockerCategory) {
+  const key = CATEGORY_META[category].slotCategory.toLowerCase();
+  return category === 'pets' ? [key, 'pet', 'athenapet', 'sidekick', 'companion'] : [key];
 }
 
 function findActiveLocker(
@@ -135,8 +191,14 @@ function readEquippedSlots(
   const slotKeys = Object.fromEntries(Object.entries(slots).map(([key, value]) => [key.toLowerCase(), value]));
 
   for (const category of LOCKER_CATEGORIES) {
-    const key = CATEGORY_META[category].slotCategory.toLowerCase();
-    const slotItems = slotKeys[key]?.items ?? [];
+    let slotItems: unknown[] = [];
+    for (const key of slotLookupKeys(category)) {
+      const found = slotKeys[key]?.items;
+      if (found?.length) {
+        slotItems = found;
+        break;
+      }
+    }
     empty[category] = slotItems
       .map((entry) => {
         if (typeof entry === 'string') return resolveEquippedTemplate(entry, items);
@@ -169,36 +231,36 @@ export function parseLockerData(
   >;
 
   for (const [itemId, item] of Object.entries(profile.items)) {
-    for (const category of LOCKER_CATEGORIES) {
-      const { prefix } = CATEGORY_META[category];
-      if (!item.templateId.toLowerCase().startsWith(prefix.toLowerCase())) continue;
+    const cosmeticId = cosmeticIdFromTemplate(item.templateId);
+    const meta = cosmetics.get(cosmeticId);
+    const category = lockerCategoryFor(item.templateId, meta);
+    if (!category) continue;
 
-      const cosmeticId = cosmeticIdFromTemplate(item.templateId);
-      const meta = cosmetics.get(cosmeticId);
-      const equippedSlots = equippedByCategory[category]
-        .map((t, index) => (templatesMatch(t, item.templateId) || t === itemId.toLowerCase() ? index : -1))
-        .filter((index) => index >= 0);
+    const equippedSlots = equippedByCategory[category]
+      .map((t, index) => (templatesMatch(t, item.templateId) || t === itemId.toLowerCase() ? index : -1))
+      .filter((index) => index >= 0);
 
-      itemsByCategory[category].push({
-        itemId,
-        templateId: item.templateId,
-        // The catalog id keeps its original casing — fortnite.gg previews 404 on
-        // the lowercased template id.
-        cosmeticId: meta?.id || cosmeticId,
-        name: meta?.name || cosmeticId,
-        description: meta?.description || '',
-        rarity: meta?.rarity || 'common',
-        series: meta?.series,
-        styles: meta?.styles ?? [],
-        imageUrl: meta?.icon || meta?.smallIcon || '',
-        favorite: !!item.attributes?.favorite,
-        equippedSlots
-      });
-      break;
-    }
+    itemsByCategory[category].push({
+      itemId,
+      templateId: item.templateId,
+      // The catalog id keeps its original casing — fortnite.gg previews 404 on
+      // the lowercased template id.
+      cosmeticId: meta?.id || cosmeticId,
+      name: meta?.name || cosmeticId,
+      description: meta?.description || '',
+      rarity: meta?.rarity || 'common',
+      series: meta?.series,
+      styles: meta?.styles ?? [],
+      imageUrl: meta?.icon || meta?.smallIcon || '',
+      favorite: !!item.attributes?.favorite,
+      equippedSlots
+    });
   }
 
   for (const category of LOCKER_CATEGORIES) {
+    if (category === 'pets') {
+      itemsByCategory.pets = dedupePets(itemsByCategory.pets.filter(isRenderablePet));
+    }
     itemsByCategory[category].sort((a, b) => {
       if (a.equippedSlots.length !== b.equippedSlots.length) {
         return b.equippedSlots.length - a.equippedSlots.length;
@@ -218,6 +280,29 @@ export function parseLockerData(
       : null,
     itemsByCategory
   };
+}
+
+function isRenderablePet(item: LockerOwnedItem) {
+  if (!item.imageUrl) return false;
+  const id = item.cosmeticId.toLowerCase();
+  const template = item.templateId.toLowerCase();
+  if (id.includes('reactfx') || template.includes('reactfx')) return false;
+  return item.name.toLowerCase() !== id;
+}
+
+function dedupePets(items: LockerOwnedItem[]) {
+  const byKey = new Map<string, LockerOwnedItem>();
+  for (const item of items) {
+    const key = (item.imageUrl || item.cosmeticId).toLowerCase();
+    const prev = byKey.get(key);
+    if (!prev) {
+      byKey.set(key, item);
+      continue;
+    }
+    const score = (entry: LockerOwnedItem) => (entry.equippedSlots.length ? 2 : 0) + (entry.favorite ? 1 : 0);
+    if (score(item) > score(prev)) byKey.set(key, item);
+  }
+  return [...byKey.values()];
 }
 
 export function slotCategoryFor(category: LockerCategory) {

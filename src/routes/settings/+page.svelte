@@ -7,7 +7,6 @@
   import GlobeIcon from '@lucide/svelte/icons/globe';
   import PaletteIcon from '@lucide/svelte/icons/palette';
   import SettingsIcon from '@lucide/svelte/icons/settings';
-  import SlidersVertical from '@lucide/svelte/icons/sliders-vertical';
   import UsersIcon from '@lucide/svelte/icons/users';
   import { platform } from '@tauri-apps/plugin-os';
   import { t } from '$lib/i18n';
@@ -16,7 +15,6 @@
   import PageContent from '$components/layout/PageContent.svelte';
   import AccountSettings from '$components/modules/settings/categories/AccountSettings.svelte';
   import AdvancedSettings from '$components/modules/settings/categories/AdvancedSettings.svelte';
-  import CustomizableMenu from '$components/modules/settings/categories/CustomizableMenu.svelte';
   import CustomizationSettings from '$components/modules/settings/categories/CustomizationSettings.svelte';
   import DownloaderSettings from '$components/modules/settings/categories/DownloaderSettings.svelte';
   import GeneralSettings from '$components/modules/settings/categories/GeneralSettings.svelte';
@@ -56,12 +54,6 @@
         disabled: !$accountStore.accounts.length,
         component: AccountSettings
       },
-      {
-        id: 'customizableMenu',
-        name: $t('settings.tabs.customizableMenu'),
-        icon: SlidersVertical,
-        component: CustomizableMenu
-      },
       platform() === 'windows' && {
         id: 'downloader',
         name: $t('settings.tabs.downloader'),
@@ -74,7 +66,7 @@
         icon: CodeXmlIcon,
         component: AdvancedSettings
       },
-      {
+      import.meta.env.DEV && {
         id: 'integrations',
         name: $t('settings.tabs.integrations'),
         icon: GlobeIcon,

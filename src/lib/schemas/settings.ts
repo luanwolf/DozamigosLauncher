@@ -35,10 +35,13 @@ export const customizableMenuSchema = z
   )
   .optional();
 
+export const menuOrderSchema = z.record(z.string(), z.array(z.string())).optional();
+
 export const allSettingsSchema = z
   .object({
     app: appSettingsSchema,
-    customizableMenu: customizableMenuSchema
+    customizableMenu: customizableMenuSchema,
+    menuOrder: menuOrderSchema
   })
   .partial();
 

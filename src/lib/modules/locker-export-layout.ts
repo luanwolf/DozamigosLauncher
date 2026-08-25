@@ -11,6 +11,9 @@ export const LOCKER_EXPORT_PAD = PAD;
 export const LOCKER_EXPORT_HEADER = HEADER;
 export const LOCKER_EXPORT_FOOTER = FOOTER;
 
+/** 2× CSS px — sharp on screen, ~2.4× fewer pixels to encode than 300 DPI. */
+export const EXPORT_SCALE = 2;
+
 export function gridWidth(cols: number): number {
   return PAD * 2 + cols * CELL + Math.max(0, cols - 1) * GAP;
 }

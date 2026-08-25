@@ -3,7 +3,7 @@
   import { page } from '$app/state';
   import { zoneForPath } from '$lib/constants/sidebar';
   import { t } from '$lib/i18n';
-  import { accountStore, settingsStore } from '$lib/storage';
+  import { accountStore } from '$lib/storage';
   import { cn } from '$lib/utils';
 
   const activeAccount = accountStore.getActiveStore(true);
@@ -22,15 +22,7 @@
     return () => mq.removeEventListener('change', onChange);
   });
 
-  const chips = $derived(
-    zone.deck
-      ? []
-      : zone.items.filter((item) => {
-          if (item.id === 'settings') return true;
-          const menu = $settingsStore.customizableMenu as Record<string, boolean | undefined> | undefined;
-          return menu?.[item.id] !== false;
-        })
-  );
+  const chips = $derived(zone.deck ? [] : zone.items);
 </script>
 
 {#if narrow && chips.length}

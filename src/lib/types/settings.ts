@@ -5,6 +5,7 @@ import {
   automationSettingSchema,
   automationSettingsSchema,
   customizableMenuSchema,
+  menuOrderSchema,
   deviceAuthsSettingsSchema,
   downloaderSettingsSchema
 } from '$lib/schemas/settings';

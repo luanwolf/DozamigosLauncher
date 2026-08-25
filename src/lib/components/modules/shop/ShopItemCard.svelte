@@ -5,6 +5,7 @@
   import { accountStore } from '$lib/storage';
   import { createDiscountedStore, createIsOwnedStore } from '$lib/stores';
   import { onCosmeticImageError } from '$lib/modules/cosmetic-image';
+  import { rarityBackgroundStyle } from '$lib/modules/locker-export-rarity';
   import { isLeavingToday } from '$lib/modules/shop-history';
   import { getShopItemWishlistKey } from '$lib/modules/shop-item-key';
   import { shopWishlistStore, toggleShopWishlistKey } from '$lib/stores/shop-wishlist';
@@ -26,6 +27,7 @@
   const leavesToday = $derived(isLeavingToday(item));
 
   const imageUrl = $derived(item.assets.featured || item.assets.large || item.assets.small);
+  const rarityStyle = $derived(rarityBackgroundStyle({ rarity: item.rarity?.id || 'common', series: item.series?.id }));
 
   function showItemModal() {
     modalOfferId = item.offerId;
@@ -38,7 +40,8 @@
 </script>
 
 <div
-  class="relative w-full cursor-pointer overflow-hidden rounded-md bg-[#17171f] pb-[100%] transition-colors hover:ring-2 hover:ring-primary/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+  class="relative w-full cursor-pointer overflow-hidden rounded-md pb-[100%] transition-colors hover:ring-2 hover:ring-primary/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+  style={rarityStyle}
   onclick={showItemModal}
   onkeydown={(event) => event.key === 'Enter' && showItemModal()}
   role="button"

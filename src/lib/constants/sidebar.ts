@@ -7,16 +7,12 @@ import CoinsIcon from '@lucide/svelte/icons/coins';
 import CrosshairIcon from '@lucide/svelte/icons/crosshair';
 import DownloadIcon from '@lucide/svelte/icons/download';
 import EyeIcon from '@lucide/svelte/icons/eye';
-import FileTextIcon from '@lucide/svelte/icons/file-text';
 import GiftIcon from '@lucide/svelte/icons/gift';
-import MedalIcon from '@lucide/svelte/icons/medal';
 import HeartHandshakeIcon from '@lucide/svelte/icons/heart-handshake';
 import HomeIcon from '@lucide/svelte/icons/home';
-import IdCardIcon from '@lucide/svelte/icons/id-card';
 import LibraryIcon from '@lucide/svelte/icons/library';
 import ListChecksIcon from '@lucide/svelte/icons/list-checks';
 import MapIcon from '@lucide/svelte/icons/map';
-import MapPinnedIcon from '@lucide/svelte/icons/map-pinned';
 import MonitorSmartphone from '@lucide/svelte/icons/monitor-smartphone';
 import PackageIcon from '@lucide/svelte/icons/package';
 import ServerIcon from '@lucide/svelte/icons/server';
@@ -27,7 +23,6 @@ import SparklesIcon from '@lucide/svelte/icons/sparkles';
 import TagIcon from '@lucide/svelte/icons/tag';
 import TrendingUpIcon from '@lucide/svelte/icons/trending-up';
 import UserXIcon from '@lucide/svelte/icons/user-x';
-import UsersIcon from '@lucide/svelte/icons/users';
 import ZapIcon from '@lucide/svelte/icons/zap';
 import { platform } from '@tauri-apps/plugin-os';
 import type { LucideIcon } from '$types/lucide';
@@ -73,12 +68,6 @@ export const NavZones = Object.freeze([
     deck: false,
     items: [
       {
-        id: 'accountOverview',
-        href: '/br-stw/overview',
-        icon: IdCardIcon,
-        requiresLogin: true
-      },
-      {
         id: 'itemShop',
         href: '/br-stw/item-shop',
         icon: ShoppingBagIcon,
@@ -103,15 +92,15 @@ export const NavZones = Object.freeze([
         requiresLogin: true
       },
       {
+        id: 'brMap',
+        href: '/br-stw/map',
+        icon: MapIcon,
+        requiresLogin: false
+      },
+      {
         id: 'brStats',
         href: '/br-stw/stats',
         icon: ChartColumnIcon,
-        requiresLogin: true
-      },
-      {
-        id: 'buyVbucks',
-        href: '/br-stw/buy-vbucks',
-        icon: CoinsIcon,
         requiresLogin: true
       },
       {
@@ -121,10 +110,10 @@ export const NavZones = Object.freeze([
         requiresLogin: true
       },
       {
-        id: 'battlePassRewards',
-        href: '/br-stw/battle-pass-rewards',
-        icon: MedalIcon,
-        requiresLogin: true
+        id: 'leaks',
+        href: '/br-stw/vazamentos',
+        icon: EyeIcon,
+        requiresLogin: false
       },
       {
         id: 'supportCreator',
@@ -133,22 +122,16 @@ export const NavZones = Object.freeze([
         requiresLogin: true
       },
       {
-        id: 'brMap',
-        href: '/br-stw/map',
-        icon: MapIcon,
-        requiresLogin: false
-      },
-      {
         id: 'serverStatus',
         href: '/br-stw/server-status',
         icon: ServerIcon,
         requiresLogin: false
       },
       {
-        id: 'leaks',
-        href: '/br-stw/vazamentos',
-        icon: EyeIcon,
-        requiresLogin: false
+        id: 'buyVbucks',
+        href: '/br-stw/buy-vbucks',
+        icon: CoinsIcon,
+        requiresLogin: true
       }
     ]
   },
@@ -166,9 +149,9 @@ export const NavZones = Object.freeze([
         requiresLogin: false
       },
       {
-        id: 'freeLlamas',
-        href: '/br-stw/free-llamas',
-        icon: GiftIcon,
+        id: 'dailyQuests',
+        href: '/br-stw/daily-quests',
+        icon: ListChecksIcon,
         requiresLogin: true
       },
       {
@@ -178,27 +161,15 @@ export const NavZones = Object.freeze([
         requiresLogin: true
       },
       {
+        id: 'freeLlamas',
+        href: '/br-stw/free-llamas',
+        icon: GiftIcon,
+        requiresLogin: true
+      },
+      {
         id: 'stwResources',
         href: '/br-stw/stw-resources',
         icon: PackageIcon,
-        requiresLogin: true
-      },
-      {
-        id: 'dailyQuests',
-        href: '/br-stw/daily-quests',
-        icon: ListChecksIcon,
-        requiresLogin: true
-      },
-      {
-        id: 'saveQuests',
-        href: '/br-stw/save-quests',
-        icon: MapPinnedIcon,
-        requiresLogin: true
-      },
-      {
-        id: 'stwParty',
-        href: '/br-stw/party',
-        icon: UsersIcon,
         requiresLogin: true
       },
       {
@@ -241,12 +212,6 @@ export const NavZones = Object.freeze([
         requiresLogin: true
       },
       {
-        id: 'eula',
-        href: '/account-management/eula',
-        icon: FileTextIcon,
-        requiresLogin: true
-      },
-      {
         id: 'settings',
         href: '/settings',
         icon: SettingsIcon,
@@ -256,11 +221,17 @@ export const NavZones = Object.freeze([
   },
   {
     id: 'epicLibrary',
-    href: '/downloader/library',
+    href: '/downloader/free-games',
     icon: LibraryIcon,
     hidden: platform() !== 'windows',
     deck: false,
     items: [
+      {
+        id: 'freeGames',
+        href: '/downloader/free-games',
+        icon: TagIcon,
+        requiresLogin: true
+      },
       {
         id: 'library',
         href: '/downloader/library',
@@ -271,12 +242,6 @@ export const NavZones = Object.freeze([
         id: 'downloads',
         href: '/downloader/downloads',
         icon: DownloadIcon,
-        requiresLogin: true
-      },
-      {
-        id: 'freeGames',
-        href: '/downloader/free-games',
-        icon: TagIcon,
         requiresLogin: true
       }
     ]

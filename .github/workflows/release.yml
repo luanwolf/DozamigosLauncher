@@ -57,19 +57,34 @@ jobs:
           tagName: v__VERSION__
           releaseName: 'v__VERSION__'
           releaseBody: |
-            ## Dozamigos Launcher v0.1.5
+            ## Dozamigos Launcher v0.1.6
 
             Baixe o instalador **Windows NSIS** (`.exe`) abaixo. Quem já tem o launcher instalado recebe o aviso de atualização na próxima abertura.
 
             ### Arquivos desta release
-            - `Dozamigos Launcher_0.1.5_x64-setup.exe` — instalador Windows (recomendado)
+            - `Dozamigos Launcher_0.1.6_x64-setup.exe` — instalador Windows (recomendado)
             - `latest.json` — manifesto da atualização automática
             - assinatura do instalador (usada pelo updater)
 
-            ### Correções
-            - Login por código de autorização e por confirmação na Epic Games
-            - Dispositivos (gizmos) dos Elementais atualizam junto com a Poeira Elemental
-            - Loja: removida a borda colorida em volta dos cosméticos; estilos com muitos itens passam a ter rolagem
+            ### Loja, vestiário e vazamentos
+            - Fundos de raridade nos cards e nas prévias
+            - Prévia em vídeo sem barras pretas; mudo em emote e música
+            - Vestiário: aba Mascote, categorias em dropdown, exportação mais rápida com popup e Abrir imagem
+            - Exportação da loja ignora Jam Tracks e a seção Mais da loja
+
+            ### Navegação
+            - BR abre na Loja de Itens, SaM nos Alertas, Conta em Conta, Epic/Steam em Jogos Gratuitos
+            - Removidos Passe de Batalha, Visão geral, Missões de campanha, EULA e Party
+            - Aba Menu saiu das configurações; Integrações só aparece em DEV
+
+            ### Salve o Mundo
+            - Loja STW: lhamas invisíveis filtradas; ícones corretos de Plano Raro e Épico
+            - Taco e extrator portátil dos Elementais com os ícones certos
+
+            ### Outros
+            - Status dos servidores volta a funcionar
+            - Status BR pela Fortnite-API
+            - ./admin panel com lista de códigos no estilo do painel
           releaseDraft: false
           prerelease: false
           uploadUpdaterJson: true

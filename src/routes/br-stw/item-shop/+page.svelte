@@ -12,10 +12,7 @@
   import { SvelteMap } from 'svelte/reactivity';
   import Fuse from 'fuse.js';
   import DownloadIcon from '@lucide/svelte/icons/download';
-  import ExternalLinkIcon from '@lucide/svelte/icons/external-link';
-  import LoaderCircleIcon from '@lucide/svelte/icons/loader-circle';
   import RefreshCwIcon from '@lucide/svelte/icons/refresh-cw';
-  import { openPath } from '@tauri-apps/plugin-opener';
   import { HUD_PAGE_WIDTH } from '$lib/constants/page-layout';
   import { language, t } from '$lib/i18n';
   import { logger } from '$lib/logger';
@@ -24,6 +21,7 @@
   import { fetchUsersByIds } from '$lib/modules/lookup';
   import { queryProfile } from '$lib/modules/mcp';
   import { exportItemShopWebp } from '$lib/modules/shop-export';
+  import { beginExportToast } from '$lib/modules/export-toast';
   import { getShopItemWishlistKey } from '$lib/modules/shop-item-key';
   import { accountStore } from '$lib/storage';
   import {
@@ -43,7 +41,6 @@
   import ShopTypeFilter from '$components/modules/shop/ShopTypeFilter.svelte';
   import ShopSectionSkeleton from '$components/modules/shop/skeletons/ShopSectionSkeleton.svelte';
   import { Input } from '$components/ui/input';
-  import { Progress } from '$components/ui/progress';
   import type { ShopSection as ShopSectionType } from '$types/shop';
 
   /** fortnite-api.com layout id for the Jam Tracks / Músicas section. */
@@ -68,8 +65,6 @@
   let remainingTime = $state(msUntilNextUtcMidnight());
   let isFetchingShop = $state(false);
   let isExporting = $state(false);
-  let exportPercent = $state(0);
-  let lastExportPath = $state<string | null>(null);
   let shopSections = $state<ShopSectionType[] | null>(null);
   let errorOccurred = $state(false);
   let modalOfferId = $state<string>('');
@@ -78,9 +73,9 @@
 
   async function exportShop() {
     if (!shopSections?.length || isExporting) return;
-    // Jam Tracks clutter the collage — leave them on the page, drop them from the image.
+    // Jam Tracks and the catch-all "Mais da loja" row stay on the page, not in the collage.
     const items = shopSections
-      .filter((section) => !isMusicSection(section))
+      .filter((section) => !isMusicSection(section) && !isOtherShopSection(section))
       .flatMap((section) => section.items)
       .filter((item) => item.type.id !== 'track');
     if (!items.length) {
@@ -89,8 +84,8 @@
     }
 
     isExporting = true;
-    exportPercent = 0;
-    lastExportPath = null;
+    const exportToast = beginExportToast();
+    exportToast.progress($t('itemShop.exportProgress', { percent: 0 }));
     try {
       const updatedAt = $brShopCache?.lastUpdated ? new Date($brShopCache.lastUpdated) : new Date();
       const date = updatedAt.toLocaleDateString($language, {
@@ -105,12 +100,19 @@
         onlyTodayLabel: $t('itemShop.onlyToday'),
         locale: $language,
         onProgress: ({ done, total }) => {
-          exportPercent = total > 0 ? Math.round((done / total) * 100) : 0;
+          exportToast.progress(
+            $t('itemShop.exportProgress', { percent: total > 0 ? Math.round((done / total) * 100) : 0 })
+          );
         }
       });
-      lastExportPath = result.path || null;
-      toast.success($t('itemShop.exported', { count: result.count }));
+      if (result.path) {
+        exportToast.done($t('itemShop.exported', { count: result.count }), result.path, $t('itemShop.openExport'));
+      } else {
+        exportToast.fail();
+        toast.success($t('itemShop.exported', { count: result.count }));
+      }
     } catch (error) {
+      exportToast.fail();
       handleError({
         error,
         message: $t('itemShop.exportFailed'),
@@ -118,20 +120,6 @@
       });
     } finally {
       isExporting = false;
-      exportPercent = 0;
-    }
-  }
-
-  async function openLastExport() {
-    if (!lastExportPath) return;
-    try {
-      await openPath(lastExportPath);
-    } catch (error) {
-      handleError({
-        error,
-        message: $t('itemShop.exportFailed'),
-        account: $activeAccount ?? undefined
-      });
     }
   }
 
@@ -228,6 +216,14 @@
 
   function isMusicSection(section: ShopSectionType) {
     return section.id === MUSIC_SECTION_LAYOUT_ID || section.items.every((item) => item.type.id === 'track');
+  }
+
+  function isOtherShopSection(section: ShopSectionType) {
+    return (
+      section.id === UNCATEGORIZED_LAYOUT_ID ||
+      section.name === UNCATEGORIZED_LAYOUT_ID ||
+      section.name === '__uncategorized__'
+    );
   }
 
   /** Named rows first, then the catch-all row, then the Jam Tracks at the bottom. */
@@ -375,11 +371,6 @@
     >
       <DownloadIcon class="size-4" />
     </PageActionButton>
-    {#if lastExportPath}
-      <PageActionButton disabled={isExporting} label={$t('itemShop.openExport')} onclick={() => openLastExport()}>
-        <ExternalLinkIcon class="size-4" />
-      </PageActionButton>
-    {/if}
     <PageActionButton
       disabled={isFetchingShop || isExporting}
       label={$t('itemShop.refresh')}
@@ -393,24 +384,7 @@
     </PageActionButton>
   {/snippet}
 
-  {#if isExporting}
-    <div
-      class="flex flex-col items-center justify-center gap-4 py-16 text-center"
-      aria-busy="true"
-      aria-live="polite"
-      role="status"
-    >
-      <div class="relative flex size-12 items-center justify-center">
-        <span class="absolute inset-0 rounded-full bg-primary/10" aria-hidden="true"></span>
-        <LoaderCircleIcon class="relative size-8 animate-spin text-primary" strokeWidth={2.25} />
-      </div>
-      <p class="text-sm text-muted-foreground">
-        {$t('itemShop.exportProgress', { percent: exportPercent })}
-      </p>
-      <Progress class="h-2 w-full max-w-xs" value={exportPercent} />
-    </div>
-  {:else}
-    <div class="flex flex-wrap items-center gap-3 sm:gap-4">
+  <div class="flex flex-wrap items-center gap-3 sm:gap-4">
       <Input
         class="h-8 w-full rounded-md sm:max-w-xs"
         placeholder={$t('itemShop.searchPlaceholder')}
@@ -445,7 +419,6 @@
         <p>{$t('itemShop.noItems')}</p>
       {/if}
     </div>
-  {/if}
 
   {#if modalOfferId}
     <ShopItemModal bind:offerId={modalOfferId} />

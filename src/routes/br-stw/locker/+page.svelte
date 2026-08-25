@@ -1,14 +1,12 @@
 <script lang="ts">
   import { toast } from 'svelte-sonner';
   import DownloadIcon from '@lucide/svelte/icons/download';
-  import ExternalLinkIcon from '@lucide/svelte/icons/external-link';
-  import LoaderCircleIcon from '@lucide/svelte/icons/loader-circle';
   import RefreshCwIcon from '@lucide/svelte/icons/refresh-cw';
   import SearchIcon from '@lucide/svelte/icons/search';
-  import { openPath } from '@tauri-apps/plugin-opener';
   import { HUD_PAGE_WIDTH } from '$lib/constants/page-layout';
   import { t } from '$lib/i18n';
   import { lockerCache } from '$lib/modules/account-data';
+  import { beginExportToast } from '$lib/modules/export-toast';
   import { LOCKER_CATEGORIES, type LockerCategory, type LockerData, type LockerOwnedItem } from '$lib/modules/locker';
   import { isLockerExclusiveId } from '$lib/modules/locker-exclusives';
   import { exportLockerCategoryWebp } from '$lib/modules/locker-export';
@@ -23,15 +21,12 @@
   import LockerItemPreviewModal from '$components/modules/locker/LockerItemPreviewModal.svelte';
   import { Input } from '$components/ui/input';
   import { Label } from '$components/ui/label';
-  import { Progress } from '$components/ui/progress';
+  import * as Select from '$components/ui/select';
   import { Switch } from '$components/ui/switch';
-  import * as Tabs from '$components/ui/tabs';
 
   const activeAccount = accountStore.getActiveStore(true);
 
   let isExporting = $state(false);
-  let exportPercent = $state(0);
-  let lastExportPath = $state<string | null>(null);
   let category = $state<LockerCategory>('outfits');
   let search = $state('');
   let exclusivesOnly = $state(false);
@@ -86,8 +81,8 @@
     }
 
     isExporting = true;
-    exportPercent = 0;
-    lastExportPath = null;
+    const exportToast = beginExportToast();
+    exportToast.progress($t('locker.exportProgress', { percent: 0 }));
     try {
       const result = await exportLockerCategoryWebp({
         items: list,
@@ -97,25 +92,20 @@
           : categoryLabel(category),
         accountLabel: $activeAccount?.displayName,
         onProgress: ({ done, total }) => {
-          exportPercent = total > 0 ? Math.round((done / total) * 100) : 0;
+          exportToast.progress($t('locker.exportProgress', { percent: total > 0 ? Math.round((done / total) * 100) : 0 }));
         }
       });
-      lastExportPath = result.path || null;
-      toast.success($t('locker.exported', { count: result.count }));
+      if (result.path) {
+        exportToast.done($t('locker.exported', { count: result.count }), result.path, $t('locker.openExport'));
+      } else {
+        exportToast.fail();
+        toast.success($t('locker.exported', { count: result.count }));
+      }
     } catch (error) {
+      exportToast.fail();
       handleError({ error, message: $t('locker.exportFailed'), account: $activeAccount ?? undefined });
     } finally {
       isExporting = false;
-      exportPercent = 0;
-    }
-  }
-
-  async function openLastExport() {
-    if (!lastExportPath) return;
-    try {
-      await openPath(lastExportPath);
-    } catch (error) {
-      handleError({ error, message: $t('locker.exportFailed'), account: $activeAccount ?? undefined });
     }
   }
 
@@ -140,11 +130,6 @@
       >
         <DownloadIcon class="size-4" />
       </PageActionButton>
-      {#if lastExportPath}
-        <PageActionButton disabled={isExporting} label={$t('locker.openExport')} onclick={() => openLastExport()}>
-          <ExternalLinkIcon class="size-4" />
-        </PageActionButton>
-      {/if}
       <PageActionButton
         disabled={isLoading || isExporting}
         label={$t('locker.refresh')}
@@ -158,49 +143,40 @@
 
   {#if !$activeAccount}
     <p class="text-center text-sm text-muted-foreground">{$t('sidebar.loginRequired')}</p>
-  {:else if isExporting}
-    <div
-      class="flex flex-col items-center justify-center gap-4 py-16 text-center"
-      role="status"
-      aria-live="polite"
-      aria-busy="true"
-    >
-      <div class="relative flex size-12 items-center justify-center">
-        <span class="absolute inset-0 rounded-full bg-primary/10" aria-hidden="true"></span>
-        <LoaderCircleIcon class="relative size-8 animate-spin text-primary" strokeWidth={2.25} />
-      </div>
-      <p class="text-sm text-muted-foreground">
-        {$t('locker.exportProgress', { percent: exportPercent })}
-      </p>
-      <Progress class="h-2 w-full max-w-xs" value={exportPercent} />
-    </div>
   {:else if isLoading && !locker}
     <PageLoading label={$t('loading')} />
   {:else if locker}
     <div class="space-y-4">
       <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div class="relative max-w-md flex-1">
-          <SearchIcon class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input class="pl-9" placeholder={$t('locker.search')} bind:value={search} />
+        <div class="flex min-w-0 flex-1 flex-col gap-3 sm:flex-row sm:items-center">
+          <div class="relative min-w-0 flex-1">
+            <SearchIcon class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Input class="pl-9" placeholder={$t('locker.search')} bind:value={search} />
+          </div>
+          <Select.Root type="single" bind:value={category}>
+            <Select.Trigger class="h-10 w-full rounded-none sm:w-52">
+              <span class="truncate">
+                {categoryLabel(category)}
+                {#if locker}
+                  <span class="text-muted-foreground tabular-nums">({locker.itemsByCategory[category].length})</span>
+                {/if}
+              </span>
+            </Select.Trigger>
+            <Select.Content>
+              {#each LOCKER_CATEGORIES as id (id)}
+                <Select.Item value={id}>
+                  {categoryLabel(id)}
+                  <span class="ml-1 text-muted-foreground tabular-nums">({locker.itemsByCategory[id].length})</span>
+                </Select.Item>
+              {/each}
+            </Select.Content>
+          </Select.Root>
         </div>
         <div class="flex items-center gap-2">
           <Switch id="locker-exclusives" bind:checked={exclusivesOnly} />
           <Label class="text-sm" for="locker-exclusives">{$t('locker.exclusivesOnly')}</Label>
         </div>
       </div>
-
-      <Tabs.Root bind:value={category}>
-        <Tabs.List class="flex h-auto w-full flex-wrap justify-start gap-1">
-          {#each LOCKER_CATEGORIES as id (id)}
-            <Tabs.Trigger class="text-xs sm:text-sm" value={id}>
-              {categoryLabel(id)}
-              <span class="ml-1 text-muted-foreground tabular-nums">
-                ({locker.itemsByCategory[id].length})
-              </span>
-            </Tabs.Trigger>
-          {/each}
-        </Tabs.List>
-      </Tabs.Root>
 
       {#if !filtered.length}
         <p class="text-center text-sm text-muted-foreground">

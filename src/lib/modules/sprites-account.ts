@@ -96,7 +96,7 @@ export const SPRITE_GIZMO_CATALOG: {
     label: 'Extrator Portátil',
     match: /relic.?extractor|portable.?extractor|extractionrelic|wid_relicextractor|magpiereward_morningbell_relicextractor/i,
     iconUrl: GIZMO_ICON_ROOT + '/portable-extractor.png',
-    magpieKey: '/MorningBell/CosmicThunder/Item00'
+    magpieKey: '/MorningBell/CosmicThunder/Item04'
   },
   {
     id: 'llama-supply-drop',
@@ -126,7 +126,7 @@ export const SPRITE_GIZMO_CATALOG: {
     label: 'Taco Apimentado',
     match: /spicy.?taco|taco.?tuesday|tacotuesday|spicytaco|magpiereward_morningbell_spicytaco/i,
     iconUrl: GIZMO_ICON_ROOT + '/spicy-taco.png',
-    magpieKey: '/MorningBell/CosmicThunder/Item04'
+    magpieKey: '/MorningBell/CosmicThunder/Item00'
   }
 ];
 
@@ -221,9 +221,11 @@ function matchGizmo(templateId: string) {
   });
   if (byKey) return byKey;
 
-  // Magpie parent folders change per season (CosmicThunder → …); slots stay Item00–04.
+  // Magpie parent folders change per season; slots stay Item00–04 — look up by key, not catalog index.
   const slot = templateId.match(/Item0([0-4])(?![0-9])/i);
-  if (slot) return SPRITE_GIZMO_CATALOG[Number(slot[1])] ?? null;
+  if (slot) {
+    return SPRITE_GIZMO_CATALOG.find((gizmo) => gizmo.magpieKey.endsWith(`Item0${slot[1]}`)) ?? null;
+  }
 
   // First hit wins — more specific Override names first (portable before generic "extractor").
   return SPRITE_GIZMO_CATALOG.find((gizmo) => gizmo.match.test(templateId)) ?? null;

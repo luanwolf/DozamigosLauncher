@@ -13,7 +13,7 @@ type FnApiCosmetic = {
   name: string;
   type: { displayValue: string };
   rarity: { value: string; displayValue: string };
-  series?: { value: string };
+  series?: { value: string; backendValue?: string };
   images: { smallIcon?: string; icon?: string; featured?: string };
   variants?: { options?: FnApiVariantOption[] }[];
   added: string;
@@ -82,7 +82,7 @@ function mapCosmetic(item: FnApiCosmetic): LeakedCosmetic {
     type: item.type.displayValue,
     rarity: item.rarity.displayValue,
     rarityValue: item.rarity.value.toLowerCase(),
-    series: item.series?.value,
+    series: item.series?.backendValue?.toLowerCase() || item.series?.value,
     image: item.images.featured ?? item.images.icon ?? item.images.smallIcon ?? '',
     styles: mapStyles(item),
     added: item.added

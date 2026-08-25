@@ -369,11 +369,11 @@ assert.equal(
   false
 );
 const gizmoRes = parseSpriteResources(itemsAsProfileForCheck(gizmoV2));
-assert.ok(gizmoRes.gizmos.some((g) => g.id === 'portable-extractor' && g.quantity === 4));
+assert.ok(gizmoRes.gizmos.some((g) => g.id === 'spicy-taco' && g.quantity === 4));
 assert.ok(gizmoRes.gizmos.some((g) => g.id === 'llama-supply-drop' && g.quantity === 2));
 assert.ok(gizmoRes.gizmos.some((g) => g.id === 'extraction-accelerator' && g.quantity === 3));
 assert.ok(gizmoRes.gizmos.some((g) => g.id === 'cheat-code-locator' && g.quantity === 3));
-assert.ok(gizmoRes.gizmos.some((g) => g.id === 'spicy-taco' && g.quantity === 2));
+assert.ok(gizmoRes.gizmos.some((g) => g.id === 'portable-extractor' && g.quantity === 2));
 
 const renamedSlots = parseSpriteResources(
   itemsAsProfileForCheck(
@@ -393,10 +393,10 @@ const renamedSlots = parseSpriteResources(
     })
   )
 );
-assert.ok(renamedSlots.gizmos.some((g) => g.id === 'portable-extractor' && g.quantity === 5));
+assert.ok(renamedSlots.gizmos.some((g) => g.id === 'spicy-taco' && g.quantity === 5));
 assert.ok(renamedSlots.gizmos.some((g) => g.id === 'llama-supply-drop' && g.quantity === 1));
 assert.ok(renamedSlots.gizmos.some((g) => g.id === 'extraction-accelerator' && g.quantity === 7));
 assert.ok(renamedSlots.gizmos.some((g) => g.id === 'cheat-code-locator' && g.quantity === 2));
-assert.ok(renamedSlots.gizmos.some((g) => g.id === 'spicy-taco' && g.quantity === 9));
+assert.ok(renamedSlots.gizmos.some((g) => g.id === 'portable-extractor' && g.quantity === 9));
 
 console.log('sprites-account self-check passed');

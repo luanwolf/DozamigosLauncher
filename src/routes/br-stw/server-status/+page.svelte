@@ -24,8 +24,9 @@
   import LoaderCircleIcon from '@lucide/svelte/icons/loader-circle';
   import RefreshCwIcon from '@lucide/svelte/icons/refresh-cw';
   import { language, t } from '$lib/i18n';
+  import { fetchFortniteStatus } from '$lib/modules/fortnite-api';
   import { requestNotificationPermission, sendNotificationMessage } from '$lib/modules/notification';
-  import { getLightswitch, getStatusPage, getWaitingRoom } from '$lib/modules/server-status';
+  import { getStatusPage, getWaitingRoom, statusFromFortniteApi, statusFromStatusPage } from '$lib/modules/server-status';
   import { accountStore, settingsStore } from '$lib/storage';
   import { get } from 'svelte/store';
   import { formatRemainingDuration, handleError } from '$lib/utils';
@@ -40,7 +41,6 @@
   import { Separator } from '$components/ui/separator';
   import { Switch } from '$components/ui/switch';
   import * as Tooltip from '$components/ui/tooltip';
-  import type { LightswitchData } from '$types/game/server-status';
 
   $effect(() => {
     if (notifyUser) {
@@ -70,44 +70,49 @@
     const activeAccount = accountStore.getActive() || undefined;
 
     try {
-      const [lightswitchData, queueData, statusPageData] = await Promise.all([
-        getLightswitch(),
+      const fortnitePromise = activeAccount ? fetchFortniteStatus(activeAccount) : Promise.resolve(null);
+      const [fortniteResult, queueResult, statusPageResult] = await Promise.allSettled([
+        fortnitePromise,
         getWaitingRoom(),
         getStatusPage()
       ]);
 
       lastUpdated = new Date();
-      expectedWait = queueData?.expectedWait || 0;
-      serviceStatus = {
-        status: getStatusFromLightswitch(lightswitchData),
-        message: lightswitchData.message
-      };
+      expectedWait = queueResult.status === 'fulfilled' ? queueResult.value?.expectedWait || 0 : 0;
 
-      const fnComponentIds = statusPageData.components?.find((x) => x.name === 'Fortnite')?.components || [];
+      const statusPageData = statusPageResult.status === 'fulfilled' ? statusPageResult.value : null;
+      const fortniteStatus =
+        fortniteResult.status === 'fulfilled' && fortniteResult.value ? fortniteResult.value : null;
+      if (fortniteStatus) {
+        serviceStatus = {
+          status: statusFromFortniteApi(fortniteStatus),
+          message: fortniteStatus.message
+        };
+      } else if (statusPageData) {
+        serviceStatus = {
+          status: statusFromStatusPage(statusPageData.status?.indicator),
+          message: statusPageData.status?.description ?? ''
+        };
+      }
+
+      const fnComponentIds =
+        statusPageData?.components?.find((x) => x.name.toLowerCase() === 'fortnite')?.components || [];
       statusPageServices = fnComponentIds.map((id) => {
-        const component = statusPageData.components.find((x) => x.id === id);
+        const component = statusPageData!.components.find((x) => x.id === id);
         return {
           name: component!.name,
           status: component!.status as StatusPageStatus['status']
         };
       });
+
+      if (!serviceStatus && !statusPageServices.length) {
+        handleError({ error: new Error('server status empty'), message: $t('serverStatus.failedToFetch'), account: activeAccount });
+      }
     } catch (error) {
       handleError({ error, message: $t('serverStatus.failedToFetch'), account: activeAccount });
     } finally {
       isLoading = false;
     }
-  }
-
-  function getStatusFromLightswitch(data: LightswitchData): ServiceStatus['status'] {
-    if (data.status !== 'UP') {
-      if (data.allowedActions && data.allowedActions.includes('PLAY')) {
-        return 'PARTIAL_OUTAGE';
-      }
-
-      return data.message?.includes('maintenance') ? 'UNDER_MAINTENANCE' : 'MAJOR_OUTAGE';
-    }
-
-    return 'UP';
   }
 
   function getStatusData(status: ServiceStatus['status'] | StatusPageStatus['status']): {

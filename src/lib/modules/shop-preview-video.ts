@@ -47,11 +47,18 @@ export function parseCosmeticPreview(html: string): CosmeticPreview {
   const base = `https://fnggcdn.com/items/${id}`;
   const video = `${base}/video.mp4${query}`;
 
-  const entries = [...html.matchAll(STYLE_RE)].map(([, idx, name, image]) => ({
-    idx: Number(idx),
-    name: decodeEntities(name!),
-    image: image!.startsWith('http') ? image! : `https://fortnite.gg${image}`
-  }));
+  const entries = [...html.matchAll(STYLE_RE)].flatMap(([, idx, name, image]) => {
+    // Wrap pages expose WEAPON/OUTFIT preview modes with shared site icons
+    // (`/img/style-weapon.jpg`) — those aren't styles and 404 in the modal.
+    if (!image || !/\/items\//.test(image)) return [];
+    return [
+      {
+        idx: Number(idx),
+        name: decodeEntities(name!),
+        image: image.startsWith('http') ? image : `https://fortnite.gg${image}`
+      }
+    ];
+  });
 
   let groups = 0;
   const channelOf = entries.map((entry) => (entry.idx === 1 ? groups++ : groups - 1));

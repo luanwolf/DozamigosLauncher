@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/luanwolf/DozamigosLauncher/releases/latest"><img alt="Versão" src="https://img.shields.io/badge/vers%C3%A3o-0.1.5-a855f7"></a>
+  <a href="https://github.com/luanwolf/DozamigosLauncher/releases/latest"><img alt="Versão" src="https://img.shields.io/badge/vers%C3%A3o-0.1.6-a855f7"></a>
   <img alt="Plataforma" src="https://img.shields.io/badge/plataforma-Windows-2b3140">
   <a href="LICENSE"><img alt="Licença" src="https://img.shields.io/badge/licen%C3%A7a-GPL--3.0-2b3140"></a>
 </p>
@@ -31,20 +31,20 @@ Feito por **Heyash**.
 
 | Recurso | Detalhe |
 | --- | --- |
-| Loja de itens | Prévia em vídeo, áudio das músicas e emotes, estilos de cada cosmético, tag “Só até hoje” e exportação da loja em imagem |
+| Loja de itens | Fundos de raridade, prévia em vídeo, áudio das músicas e emotes, estilos com rolagem, tag “Só até hoje” e exportação da loja em imagem |
 | Ofertas especiais | Promoções em dinheiro real da Epic e da PSN |
-| Vestiário | Filtro por categoria, prévia em vídeo do item e exportação do vestiário em imagem 1:1 |
+| Vestiário | Categorias em dropdown, aba Mascote, prévia em vídeo e exportação em imagem (popup com Abrir imagem) |
+| Elementais | Poeira Elemental, dispositivos, prévia, variantes (Base, Gold, Cheat Master) e exportação do álbum |
 | Estatísticas e XP | Suas stats de BR e o XP ganho na temporada |
 | Extras | Mapa atual, status dos servidores, vazamentos (por dia, com prévia e exportação), compra de V-Bucks e apoiar um criador |
 
 ### Salve o Mundo (STW)
 
 - **Alertas de missão** com as recompensas da rotação atual (carregam com a conta logada).
-- **Elementais (Sprites)** da temporada atual: Poeira Elemental, dispositivos, prévia, variantes (Base, Gold, Cheat Master) e exportação do álbum.
 - **Lhamas grátis** com resgate automático: o launcher varre as contas de hora em hora (no horário UTC) e resgata para todo mundo que deixou a opção ligada, com histórico dos itens recebidos.
 - **Loja do STW** (incluindo lhamas com Fichas Raio-X) e **missões diárias**.
 - **Auto-kick**: sai da missão na hora, resgata as recompensas, transfere materiais e convida seus amigos quando a missão acaba.
-- Ferramentas extras: Party e Boosts de XP.
+- Ferramentas extras: Recursos STW e Boosts de XP.
 
 ### Notificações do Windows
 
@@ -59,9 +59,9 @@ Com a opção ligada em _Ajustes_, o launcher avisa no Windows (mesmo visual dos
 
 - Várias contas cadastradas, com troca rápida. O login de todas acontece quando o app abre, então trocar de aba não faz você esperar de novo.
 - Apelido, tags e o que aparece na barra (V-Bucks, Tickets de Raio-X, Ouro) em Configurações → Customização.
-- Perfil, lista de amigos, EULA e ajustes num lugar só.
+- Perfil, lista de amigos e ajustes num lugar só.
 - Autenticação: gera tokens de acesso, exchange codes e device auths.
-- Biblioteca da Epic: baixe, atualize e inicie seus jogos.
+- Biblioteca da Epic: baixe, atualize e inicie seus jogos. A zona Epic / Steam abre nos jogos grátis da semana.
 - Jogos grátis da Epic e promoções com 100% de desconto na Steam, com aviso opcional.
 
 ## Dicas do dia a dia

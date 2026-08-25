@@ -2,12 +2,12 @@ import { get } from 'svelte/store';
 import { openUrl } from '@tauri-apps/plugin-opener';
 import { language, t } from '$lib/i18n';
 import { logger } from '$lib/logger';
-import { fetchShop } from '$lib/modules/fortnite-api';
+import { fetchFortniteStatus, fetchShop } from '$lib/modules/fortnite-api';
 import { isLeavingSoon } from '$lib/modules/shop-history';
 import { fetchAvailableCardPacks } from '$lib/modules/free-llamas';
 import { fetchFreeGames } from '$lib/modules/free-games';
 import { refreshLiveBrData } from '$lib/modules/account-data';
-import { getLightswitch } from '$lib/modules/server-status';
+import { getStatusPage, statusFromFortniteApi, statusFromStatusPage } from '$lib/modules/server-status';
 import { fetchSteamFreeGames } from '$lib/modules/steam-free-games';
 import { findNewSteamFreeAppIds } from '$lib/modules/steam-free-games-notify';
 import { setWorldInfoCache } from '$lib/modules/world-info';
@@ -18,7 +18,6 @@ import { notify } from '$lib/stores/activity-log';
 import { worldInfoCache } from '$lib/stores';
 import { isMcpBusy } from '$lib/modules/startup-actions';
 import type { AccountData } from '$types/account';
-import type { LightswitchData } from '$types/game/server-status';
 import type { ParsedWorldInfo } from '$types/game/stw/world-info';
 
 const STORAGE_KEY = 'backgroundNotificationState';
@@ -96,13 +95,6 @@ function notificationsEnabled(): boolean {
 
 function steamNotificationsEnabled(): boolean {
   return notificationsEnabled() && get(settingsStore).app?.steamFreeGamesNotifications === true;
-}
-
-function getStatusFromLightswitch(data: LightswitchData): ServerStatusKey {
-  if (data.status === 'UP') return 'UP';
-
-  if (data.allowedActions?.includes('PLAY')) return 'PARTIAL_OUTAGE';
-  return data.message?.toLowerCase().includes('maintenance') ? 'UNDER_MAINTENANCE' : 'MAJOR_OUTAGE';
 }
 
 function serverStatusLabel(status: ServerStatusKey): string {
@@ -259,8 +251,10 @@ async function checkServerStatus(state: PersistedState) {
   let serverStatus = state.serverStatus;
 
   try {
-    const lightswitch = await getLightswitch();
-    const current = getStatusFromLightswitch(lightswitch);
+    const account = accountStore.getActive();
+    const current = account
+      ? statusFromFortniteApi(await fetchFortniteStatus(account))
+      : statusFromStatusPage((await getStatusPage()).status?.indicator);
     const previous = state.serverStatus;
 
     if (state.initialized && previous !== null && previous !== current) {

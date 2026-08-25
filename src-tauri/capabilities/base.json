@@ -78,6 +78,12 @@
 					"url": "https://ucs-images.fortnite.com/*"
 				},
 				{
+					"url": "https://status.epicgames.com"
+				},
+				{
+					"url": "https://status.epicgames.com/*"
+				},
+				{
 					"url": "https://store.steampowered.com"
 				},
 				{

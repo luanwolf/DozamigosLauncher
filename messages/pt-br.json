@@ -609,9 +609,10 @@
     "export": {
       "button": "Extrair imagens",
       "category": "Vazamentos {date}",
+      "progress": "Baixando imagens… {percent}%",
       "done": "{count} item(ns) exportado(s).",
       "failed": "Não foi possível exportar os vazamentos.",
-      "open": "Abrir última exportação"
+      "open": "Abrir imagem"
     }
   },
   "sprites": {
@@ -801,7 +802,7 @@
       "emotes": "Emotes",
       "wraps": "Envelopamentos",
       "auras": "Aura",
-      "pets": "Pets",
+      "pets": "Mascote",
       "shoes": "Calçados"
     }
   },
@@ -854,7 +855,7 @@
       "emotes": "Emotes",
       "wraps": "Envelopamentos",
       "auras": "Aura",
-      "pets": "Pets",
+      "pets": "Mascote",
       "shoes": "Calçados",
       "total": "{count} cosméticos"
     },
@@ -931,7 +932,19 @@
     "kills": "Abates",
     "kd": "K/D",
     "matches": "Partidas",
-    "winRate": "Taxa de vitória"
+    "winRate": "Taxa de vitória",
+    "minutesPlayed": "Tempo jogado",
+    "score": "Pontuação",
+    "top10": "Top 10",
+    "playersOutlived": "Jogadores superados",
+    "lastMatch": "Última partida",
+    "battlePass": "Passe nível {level}",
+    "modesTitle": "Por modo",
+    "modes": {
+      "solo": "Solo",
+      "duo": "Duo",
+      "squad": "Squad"
+    }
   },
   "playlists": {
     "page": {

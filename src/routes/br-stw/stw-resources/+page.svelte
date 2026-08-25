@@ -1,13 +1,11 @@
 <script lang="ts">
   import DownloadIcon from '@lucide/svelte/icons/download';
-  import ExternalLinkIcon from '@lucide/svelte/icons/external-link';
-  import LoaderCircleIcon from '@lucide/svelte/icons/loader-circle';
   import RefreshCwIcon from '@lucide/svelte/icons/refresh-cw';
   import SearchIcon from '@lucide/svelte/icons/search';
-  import { openPath } from '@tauri-apps/plugin-opener';
   import { toast } from 'svelte-sonner';
   import { HUD_PAGE_WIDTH } from '$lib/constants/page-layout';
   import { language, t } from '$lib/i18n';
+  import { beginExportToast } from '$lib/modules/export-toast';
   import { exportStwResourcesWebp } from '$lib/modules/stw-resources-export';
   import { fetchStwResources, type StwResourceRow } from '$lib/modules/stw-resources';
   import { rarityBackgroundStyle } from '$lib/modules/locker-export-rarity';
@@ -18,7 +16,6 @@
   import PageLoading from '$components/layout/PageLoading.svelte';
   import StoreItemGrid from '$components/layout/StoreItemGrid.svelte';
   import { Input } from '$components/ui/input';
-  import { Progress } from '$components/ui/progress';
 
   const activeAccount = accountStore.getActiveStore(true);
 
@@ -26,8 +23,6 @@
   let powerLevel = $state(0);
   let isLoading = $state(false);
   let isExporting = $state(false);
-  let exportPercent = $state(0);
-  let lastExportPath = $state<string | null>(null);
   let search = $state('');
 
   const filtered = $derived.by(() => {
@@ -60,8 +55,8 @@
   async function exportWebp() {
     if (!filtered.length || isExporting) return;
     isExporting = true;
-    exportPercent = 0;
-    lastExportPath = null;
+    const exportToast = beginExportToast();
+    exportToast.progress($t('stwResources.exportProgress', { percent: 0 }));
     try {
       const result = await exportStwResourcesWebp({
         resources: filtered,
@@ -70,25 +65,22 @@
         powerLabel: $t('stwResources.powerLabel', { power: powerLevel.toFixed(1) }),
         locale: $language,
         onProgress: ({ done, total }) => {
-          exportPercent = total > 0 ? Math.round((done / total) * 100) : 0;
+          exportToast.progress(
+            $t('stwResources.exportProgress', { percent: total > 0 ? Math.round((done / total) * 100) : 0 })
+          );
         }
       });
-      lastExportPath = result.path || null;
-      toast.success($t('stwResources.exported', { count: result.count }));
+      if (result.path) {
+        exportToast.done($t('stwResources.exported', { count: result.count }), result.path, $t('stwResources.openExport'));
+      } else {
+        exportToast.fail();
+        toast.success($t('stwResources.exported', { count: result.count }));
+      }
     } catch (error) {
+      exportToast.fail();
       handleError({ error, message: $t('stwResources.exportFailed'), account: $activeAccount ?? undefined });
     } finally {
       isExporting = false;
-      exportPercent = 0;
-    }
-  }
-
-  async function openLastExport() {
-    if (!lastExportPath) return;
-    try {
-      await openPath(lastExportPath);
-    } catch (error) {
-      handleError({ error, message: $t('stwResources.exportFailed'), account: $activeAccount ?? undefined });
     }
   }
 
@@ -113,11 +105,6 @@
       >
         <DownloadIcon class="size-4" />
       </PageActionButton>
-      {#if lastExportPath}
-        <PageActionButton disabled={isExporting} label={$t('stwResources.openExport')} onclick={() => openLastExport()}>
-          <ExternalLinkIcon class="size-4" />
-        </PageActionButton>
-      {/if}
       <PageActionButton
         disabled={isLoading || isExporting}
         label={$t('stwResources.refresh')}
@@ -131,12 +118,6 @@
 
   {#if !$activeAccount}
     <p class="text-center text-sm text-muted-foreground">{$t('sidebar.loginRequired')}</p>
-  {:else if isExporting}
-    <div class="flex flex-col items-center justify-center gap-4 py-16 text-center" role="status" aria-busy="true">
-      <LoaderCircleIcon class="size-8 animate-spin text-primary" />
-      <p class="text-sm text-muted-foreground">{$t('stwResources.exportProgress', { percent: exportPercent })}</p>
-      <Progress class="h-2 w-full max-w-xs" value={exportPercent} />
-    </div>
   {:else if isLoading && !resources.length}
     <PageLoading label={$t('loading')} />
   {:else}

@@ -7,6 +7,7 @@ import {
   fillRarityBackground,
   fitText,
   loadBitmap,
+  loadBitmaps,
   loadRarityBackground,
   roundRect,
   sanitizeFilename,
@@ -134,17 +135,10 @@ export async function exportItemShopWebp(options: ShopExportOptions): Promise<Sh
   ctx.fillStyle = 'rgba(255,255,255,0.92)';
   fillOutlinedText(ctx, dateLabel.toUpperCase(), width / 2, HEADER * 0.78, width - PAD * 2);
 
-  const total = items.length;
-  onProgress?.({ done: 0, total });
-  let done = 0;
   const [bitmaps, backgrounds] = await Promise.all([
-    Promise.all(
-      items.map(async (item) => {
-        const bitmap = await loadBitmap(imageUrl(item));
-        done += 1;
-        onProgress?.({ done, total });
-        return bitmap;
-      })
+    loadBitmaps(
+      items.map((item) => imageUrl(item)),
+      onProgress
     ),
     Promise.all(items.map((item) => loadRarityBackground(exportTone(item))))
   ]);

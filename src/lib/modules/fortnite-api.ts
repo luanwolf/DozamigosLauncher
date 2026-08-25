@@ -1,5 +1,8 @@
-import { fortniteApiService } from '$lib/http';
+import { fortniteApiService, lightswitchService } from '$lib/http';
+import { getAuthedKy } from '$lib/modules/auth-session';
 import { pickCosmeticImage } from '$lib/modules/cosmetic-image';
+import type { AccountData } from '$types/account';
+import type { LightswitchData } from '$types/game/server-status';
 import type { ShopData, ShopItem } from '$types/shop';
 
 type FnApiShopEntry = {
@@ -287,6 +290,8 @@ export type CosmeticMeta = {
   description: string;
   /** Backend type, e.g. "AthenaCharacter", "AthenaBackpack". */
   typeBackend: string;
+  /** fortnite-api `type.value`, e.g. "sidekick". */
+  typeValue: string;
   /** Rarity value lowercased, e.g. "legendary". */
   rarity: string;
   /** Series backend value when present, e.g. "MarvelSeries". */
@@ -330,6 +335,7 @@ export async function fetchCosmeticsBr(locale?: string): Promise<Map<string, Cos
       name: item.name,
       description: item.description ?? '',
       typeBackend: item.type?.backendValue ?? '',
+      typeValue: item.type?.value ?? '',
       rarity: item.rarity?.value?.toLowerCase() ?? 'common',
       series: item.series?.backendValue?.toLowerCase() || undefined,
       smallIcon: item.images?.icon ?? item.images?.featured ?? item.images?.smallIcon ?? '',
@@ -443,5 +449,29 @@ export async function fetchMap(locale?: string): Promise<FortniteMapData> {
     imageBlank: response.data.images.blank,
     imagePois: response.data.images.pois,
     pois: response.data.pois
+  };
+}
+
+export type FortniteBrStatus = {
+  status: string;
+  message: string;
+  allowedActions?: string[];
+  maintenanceUri?: string | null;
+  banned?: boolean;
+};
+
+/** Epic lightswitch (needs a logged-in account). fortnite-api.com/v2/status is gone (404). */
+export async function fetchFortniteStatus(account: AccountData): Promise<FortniteBrStatus> {
+  const data = await getAuthedKy(account, lightswitchService)
+    .get<LightswitchData[] | LightswitchData>('bulk/status', { searchParams: { serviceId: 'Fortnite' } })
+    .json();
+  const row = Array.isArray(data) ? data[0] : data;
+  if (!row) throw new Error('Empty Fortnite lightswitch');
+  return {
+    status: row.status,
+    message: row.message ?? '',
+    allowedActions: row.allowedActions,
+    maintenanceUri: row.maintenanceUri ?? null,
+    banned: row.banned
   };
 }

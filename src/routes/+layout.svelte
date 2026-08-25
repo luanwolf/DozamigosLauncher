@@ -263,7 +263,8 @@
           title: 'glitch-toast-title font-display text-base leading-none text-foreground',
           description: 'text-sm text-muted-foreground',
           error: 'glitch-toast-error',
-          success: 'glitch-toast-success'
+          actionButton:
+            'ml-auto shrink-0 rounded-sm bg-primary px-2 py-1 text-xs font-semibold text-primary-foreground hover:bg-primary/90'
         }
       }}
     >

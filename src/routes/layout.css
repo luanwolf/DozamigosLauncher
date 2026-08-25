@@ -500,7 +500,7 @@
   }
 
   .cheat-admin-input {
-    width: 10.5rem;
+    width: 16rem;
     padding: 0.15rem 0.4rem;
     text-transform: none;
   }
@@ -534,6 +534,42 @@
       color-mix(in srgb, #9af7ff 8%, transparent) 3px
     );
     opacity: 0.55;
+  }
+
+  .cheat-admin-list {
+    position: absolute;
+    z-index: 4;
+    margin: 0;
+    padding: 0.2rem 0;
+    max-height: 11.5rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+    list-style: none;
+    border: 1px solid color-mix(in srgb, var(--glow-cyan) 70%, transparent);
+    background: color-mix(in srgb, #04151c 94%, transparent);
+    color: #e8fbff;
+    font-family: ui-monospace, 'Cascadia Code', 'Segoe UI Mono', monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.02em;
+    box-shadow: 0 0 12px color-mix(in srgb, var(--glow-cyan) 35%, transparent);
+  }
+
+  .cheat-admin-list button {
+    display: block;
+    width: 100%;
+    padding: 0.28rem 0.5rem;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .cheat-admin-list button:hover,
+  .cheat-admin-list button.is-active {
+    background: color-mix(in srgb, #06303a 88%, transparent);
+    color: #9af7ff;
   }
 
   .surface-tile {
@@ -1243,6 +1279,7 @@
   .hud-toolbar,
   .hud-chip,
   .cheat-admin-chip,
+  .cheat-admin-list,
   .hud-cut,
   .surface-tile,
   .surface-tile-interactive,
@@ -1266,7 +1303,8 @@
   }
 
   .hud-chip,
-  .cheat-admin-chip {
+  .cheat-admin-chip,
+  .cheat-admin-list {
     border-radius: 0 6px 0 6px;
   }
 

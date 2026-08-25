@@ -48,6 +48,17 @@ assert.equal(merged[1]!.video, 'https://fnggcdn.com/items/23836/video-2-1-1.mp4?
 // Mismatched lists can't be paired, so no clip is guessed.
 assert.deepEqual(mergeStyles(catalog.slice(0, 2), combined), catalog.slice(0, 2));
 
+// Wraps: fortnite.gg's WEAPON/OUTFIT toggles aren't item styles.
+const wrapHtml = `<video class='item-video' data-id='14713' data-v='1'></video>
+<div id='style-variants'><div class='style-title'>TYPE<span class='style-name'>WEAPON</span></div><div>
+<div class='style-variant active' data-idx='1' onclick='itemStyle(this,"WEAPON")'><img src='/img/style-weapon.jpg'></div>
+<div class='style-variant' data-idx='2' onclick='itemStyle(this,"OUTFIT")'><img src='/img/style-outfit.jpg'></div>
+</div></div>`;
+const wrap = parseCosmeticPreview(wrapHtml);
+assert.equal(wrap.video, 'https://fnggcdn.com/items/14713/video.mp4?1');
+assert.equal(wrap.styles.length, 0);
+assert.deepEqual(mergeStyles([], wrap), []);
+
 // A 404 page has no player at all.
 assert.deepEqual(parseCosmeticPreview('<h1>Page Not Found</h1>'), { video: null, styles: [] });
 

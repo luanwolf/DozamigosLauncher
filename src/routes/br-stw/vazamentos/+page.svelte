@@ -3,11 +3,9 @@
   import DownloadIcon from '@lucide/svelte/icons/download';
   import EyeIcon from '@lucide/svelte/icons/eye';
   import EyeOffIcon from '@lucide/svelte/icons/eye-off';
-  import ExternalLinkIcon from '@lucide/svelte/icons/external-link';
   import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
   import LoaderCircleIcon from '@lucide/svelte/icons/loader-circle';
   import RefreshCwIcon from '@lucide/svelte/icons/refresh-cw';
-  import { openPath } from '@tauri-apps/plugin-opener';
   import { HUD_PAGE_WIDTH } from '$lib/constants/page-layout';
   import { language, t } from '$lib/i18n';
   import { leaksCache } from '$lib/modules/account-data';
@@ -17,6 +15,7 @@
     type LeakedCosmetic
   } from '$lib/modules/fortnite-leaks';
   import { exportLockerCategoryWebp, type LockerExportItem } from '$lib/modules/locker-export';
+  import { beginExportToast } from '$lib/modules/export-toast';
   import { rarityBackgroundStyle } from '$lib/modules/locker-export-rarity';
   import { onCosmeticImageError } from '$lib/modules/cosmetic-image';
   import { handleError } from '$lib/utils';
@@ -27,7 +26,6 @@
   import * as Accordion from '$components/ui/accordion';
   import { Button } from '$components/ui/button';
   import HudPanel from '$components/ui/hud/HudPanel.svelte';
-  import { Progress } from '$components/ui/progress';
 
   const cached = $derived(leaksCache.get($language));
   const leaksData = $derived(cached.data);
@@ -40,8 +38,6 @@
   let previewItem = $state<LeakedCosmetic | null>(null);
   let showSecrets = $state(false);
   let isExporting = $state(false);
-  let exportPercent = $state(0);
-  let lastExportPath = $state<string | null>(null);
   let exportingDay = $state<string | null>(null);
 
   $effect(() => {
@@ -92,7 +88,8 @@
     if (!items.length || isExporting) return;
     isExporting = true;
     exportingDay = dateKey;
-    exportPercent = 0;
+    const exportToast = beginExportToast();
+    exportToast.progress($t('leaks.export.progress', { percent: 0 }));
     try {
       const label = formatLeakDayLabel(dateKey, $language);
       const result = await exportLockerCategoryWebp({
@@ -100,26 +97,21 @@
         categorySlug: `leaks-${dateKey}`,
         categoryLabel: $t('leaks.export.category', { date: label }),
         onProgress: ({ done, total }) => {
-          exportPercent = total > 0 ? Math.round((done / total) * 100) : 0;
+          exportToast.progress($t('leaks.export.progress', { percent: total > 0 ? Math.round((done / total) * 100) : 0 }));
         }
       });
-      lastExportPath = result.path;
-      toast.success($t('leaks.export.done', { count: result.count }));
+      if (result.path) {
+        exportToast.done($t('leaks.export.done', { count: result.count }), result.path, $t('leaks.export.open'));
+      } else {
+        exportToast.fail();
+        toast.success($t('leaks.export.done', { count: result.count }));
+      }
     } catch (error) {
+      exportToast.fail();
       handleError({ error, message: $t('leaks.export.failed') });
     } finally {
       isExporting = false;
       exportingDay = null;
-      exportPercent = 0;
-    }
-  }
-
-  async function openLastExport() {
-    if (!lastExportPath) return;
-    try {
-      await openPath(lastExportPath);
-    } catch (error) {
-      handleError({ error, message: $t('leaks.export.failed') });
     }
   }
 
@@ -145,11 +137,6 @@
     >
       <RefreshCwIcon class="size-4" />
     </PageActionButton>
-    {#if lastExportPath}
-      <PageActionButton disabled={isExporting} label={$t('leaks.export.open')} onclick={() => openLastExport()}>
-        <ExternalLinkIcon class="size-4" />
-      </PageActionButton>
-    {/if}
   {/snippet}
 
   {#if loadFailed}
@@ -159,12 +146,6 @@
   {:else if isLoading && !leaksData}
     <PageLoading label={$t('loading')} />
   {:else if leaksData}
-    {#if isExporting}
-      <div class="flex max-w-xs items-center gap-2" role="status" aria-live="polite">
-        <LoaderCircleIcon class="size-3.5 animate-spin text-muted-foreground" />
-        <Progress class="h-2 flex-1" value={exportPercent} />
-      </div>
-    {/if}
 
     {#if dayGroups.length}
       <Accordion.Root class="w-full space-y-2" type="single" collapsible bind:value={openDay}>

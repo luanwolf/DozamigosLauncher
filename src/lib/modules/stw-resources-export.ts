@@ -12,7 +12,8 @@ import {
   roundRect,
   sanitizeFilename,
   saveExportBlob,
-  UI_FONT
+  UI_FONT,
+  WEBP_QUALITY
 } from '$lib/modules/locker-export';
 import type { StwResourceRow } from '$lib/modules/stw-resources-parse';
 
@@ -166,7 +167,7 @@ export async function exportStwResourcesWebp(
   ctx.textBaseline = 'middle';
   ctx.fillText(APP_NAME, brandX, footerY);
 
-  const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/webp', 0.9));
+  const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/webp', WEBP_QUALITY));
   if (!blob) throw new Error('Failed to encode WebP');
 
   const path = await saveExportBlob(

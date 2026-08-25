@@ -4,16 +4,16 @@
 </script>
 
 <script lang="ts">
-  import { untrack } from 'svelte';
-  import { openUrl } from '@tauri-apps/plugin-opener';
   import { ItemColors } from '$lib/constants/item-colors';
   import { t } from '$lib/i18n';
   import type { LockerCategory, LockerOwnedItem } from '$lib/modules/locker-parse';
+  import { rarityBackgroundStyle } from '$lib/modules/locker-export-rarity';
   import {
     mergeStyles,
     resolveCosmeticPreview,
     type CosmeticPreview
   } from '$lib/modules/shop-preview-video';
+  import CosmeticPreviewPane from '$components/modules/shop/CosmeticPreviewPane.svelte';
   import CosmeticStyles, { type StyleOption } from '$components/modules/shop/CosmeticStyles.svelte';
   import { Badge } from '$components/ui/badge';
   import * as Dialog from '$components/ui/dialog';
@@ -28,14 +28,17 @@
   const colors: Record<string, string> = { ...ItemColors.rarities, ...ItemColors.series };
   let isOpen = $state(false);
   let preview = $state<CosmeticPreview>({ video: null, styles: [] });
-  let previewVideoFailed = $state(false);
   let selectedStyle = $state<StyleOption | null>(null);
+  let previewMuted = $state(audioPreference.muted);
 
-  const hasAudio = $derived(category === 'emotes');
+  const hasAudio = $derived(category === 'emotes' || category === 'pets');
   const badgeLabel = $derived(item?.series || item?.rarity || '');
   const badgeColor = $derived(colors[badgeLabel] || colors.common);
   const styles = $derived<StyleOption[]>(mergeStyles(item?.styles ?? [], preview));
   const previewVideoUrl = $derived(selectedStyle ? (selectedStyle.video ?? null) : preview.video);
+  const previewBg = $derived(
+    item ? rarityBackgroundStyle({ rarity: item.rarity, series: item.series }) : ''
+  );
 
   $effect(() => {
     isOpen = !!item;
@@ -44,7 +47,6 @@
   $effect(() => {
     const cosmeticId = item?.cosmeticId;
     preview = { video: null, styles: [] };
-    previewVideoFailed = false;
     selectedStyle = null;
     if (!cosmeticId) return;
 
@@ -58,8 +60,7 @@
   });
 
   $effect(() => {
-    previewVideoUrl;
-    untrack(() => (previewVideoFailed = false));
+    audioPreference.muted = previewMuted;
   });
 
   function close() {
@@ -74,62 +75,19 @@
   bind:open={isOpen}
 >
   {#if item}
-    <Dialog.Content
-      class="flex w-[min(96vw,56rem)] !max-w-none flex-col gap-0 overflow-hidden p-0 sm:w-[min(96vw,64rem)]"
-    >
-      <div
-        class="grid max-h-[min(90vh,52rem)] grid-cols-1 overflow-y-auto sm:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] sm:overflow-hidden"
-      >
-        <div
-          class="relative min-h-72 overflow-hidden bg-[#121218] sm:min-h-[28rem] sm:border-r sm:border-border/80"
-        >
-          {#if previewVideoUrl && !previewVideoFailed}
-            <video
-              class="absolute inset-0 size-full object-contain"
-              autoplay
-              controls={hasAudio}
-              loop
-              muted
-              playsinline
-              poster={selectedStyle?.image || item.imageUrl || undefined}
-              src={previewVideoUrl}
-              onerror={() => {
-                previewVideoFailed = true;
-              }}
-              onloadeddata={(event) => {
-                if (!hasAudio) return;
-                event.currentTarget.volume = audioPreference.volume;
-                event.currentTarget.muted = audioPreference.muted;
-              }}
-              onvolumechange={(event) => {
-                if (!hasAudio) return;
-                audioPreference.volume = event.currentTarget.volume;
-                audioPreference.muted = event.currentTarget.muted;
-              }}
-            ></video>
-            <a
-              class="absolute inset-x-0 bottom-2 z-10 text-center text-xs text-white/70 underline-offset-2 hover:text-white hover:underline"
-              href="https://fortnite.gg"
-              onclick={(e) => {
-                e.preventDefault();
-                void openUrl('https://fortnite.gg');
-              }}
-              rel="noreferrer"
-            >
-              {$t('itemShop.itemInformation.videoCredit')}
-            </a>
-          {:else if selectedStyle?.image || item.imageUrl}
-            <img
-              class="absolute inset-0 size-full object-contain"
-              alt={item.name}
-              src={selectedStyle?.image || item.imageUrl}
-            />
-          {:else}
-            <p class="relative z-10 p-4 text-sm text-muted-foreground">{item.name}</p>
-          {/if}
-        </div>
+    <Dialog.Content class="flex w-max max-w-[min(96vw,56rem)] flex-col gap-0 overflow-hidden p-0 sm:flex-row sm:max-w-[min(96vw,56rem)]">
+      <CosmeticPreviewPane
+        alt={item.name}
+        hasAudio={hasAudio}
+        imageUrl={selectedStyle?.image || item.imageUrl || ''}
+        poster={selectedStyle?.image || item.imageUrl}
+        rarityStyle={previewBg}
+        videoUrl={previewVideoUrl}
+        volume={audioPreference.volume}
+        bind:muted={previewMuted}
+      />
 
-        <div class="flex min-h-0 flex-col gap-y-5 overflow-y-auto p-5 sm:p-6">
+      <div class="flex min-h-0 w-full flex-col gap-y-5 overflow-y-auto p-5 sm:w-[22rem] sm:max-h-[min(70dvh,36rem)] sm:p-6">
           <div class="space-y-3">
             <div>
               <h2 class="text-xl leading-tight font-semibold tracking-tight">{item.name}</h2>
@@ -153,7 +111,6 @@
           </div>
 
           <CosmeticStyles {styles} bind:selected={selectedStyle} />
-        </div>
       </div>
     </Dialog.Content>
   {/if}

@@ -8,6 +8,7 @@ import type { Locale } from '$lib/paraglide/runtime';
 import { extractGrantedItems, type GrantedItem } from '$lib/utils/mcp-loot';
 import { localizedOfferTitle } from '$lib/utils/stw-item-locale';
 import { currencyDisplay, resolveStwTemplateDisplay } from '$lib/utils/stw-template-display';
+import { isGhostLlamaOffer } from '$lib/utils/stw-schematic-cardpack';
 import type { AccountData } from '$types/account';
 import type { CampaignProfile, CommonCoreProfile, CommonCoreProfileAttributes } from '$types/game/mcp';
 import type {
@@ -401,7 +402,7 @@ export async function fetchStwStore(
 
     const offers = storefront.catalogEntries
       .map((entry) => parseOffer(storefront.name, entry, owned, locale, purchaseContext))
-      .filter((offer): offer is StwStoreOffer => !!offer)
+      .filter((offer): offer is StwStoreOffer => !!offer && !isGhostLlamaOffer(storefront.name, offer))
       .map((offer) => (exhausted.has(offer.offerId) ? { ...offer, ownedHeroGrant: true } : offer))
       .sort((a, b) => Number(!!a.ownedHeroGrant) - Number(!!b.ownedHeroGrant));
 

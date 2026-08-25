@@ -8,6 +8,7 @@ import { localizedStwItemName } from '$lib/utils/stw-item-names';
 import { resolveSchematicStoreTitle } from '$lib/utils/stw-schematic-locale';
 import { localizedTokenGrant } from '$lib/utils/stw-store-offers';
 import { stwResourceImageUrl } from '$lib/utils/stw-resource-image';
+import { schematicCardPackImage } from '$lib/utils/stw-schematic-cardpack';
 import type { RarityType } from '$types/game/stw/resources';
 
 export type StwTemplateDisplay = {
@@ -56,6 +57,15 @@ export function resolveStwTemplateDisplay(templateId: string, locale: Locale = '
 
   if (templateId.toLowerCase().startsWith('cardpack:')) {
     const key = templateId.replace(/^[^:]+:/, '');
+    const schematicIcon = schematicCardPackImage(key);
+    if (schematicIcon) {
+      return {
+        name: localizedStwItemName(key, locale, key),
+        imageUrl: schematicIcon,
+        rarity,
+        kind: 'schematic'
+      };
+    }
     return {
       name: localizedStwItemName(key, locale, key),
       imageUrl: '/resources/cardpack_bronze.png',

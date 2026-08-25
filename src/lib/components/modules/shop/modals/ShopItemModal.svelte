@@ -4,7 +4,6 @@
 </script>
 
 <script lang="ts">
-  import { untrack } from 'svelte';
   import CheckIcon from '@lucide/svelte/icons/check';
   import CoinsIcon from '@lucide/svelte/icons/coins';
   import ExternalLinkIcon from '@lucide/svelte/icons/external-link';
@@ -14,6 +13,7 @@
   import { ItemColors } from '$lib/constants/item-colors';
   import { language, t } from '$lib/i18n';
   import { generateAuthenticatedGamePageUrl } from '$lib/modules/epic-web-url';
+  import { rarityBackgroundStyle } from '$lib/modules/locker-export-rarity';
   import { getShopAppearanceStats, isLeavingToday } from '$lib/modules/shop-history';
   import {
     mergeStyles,
@@ -24,6 +24,7 @@
   import { accountStore } from '$lib/storage';
   import { accountDataCache, brShopCache, createDiscountedStore, createIsOwnedStore } from '$lib/stores';
   import { handleError } from '$lib/utils';
+  import CosmeticPreviewPane from '$components/modules/shop/CosmeticPreviewPane.svelte';
   import CosmeticStyles, { type StyleOption } from '$components/modules/shop/CosmeticStyles.svelte';
   import ShopGiftFriendSelection from '$components/modules/shop/modals/ShopGiftFriendSelection.svelte';
   import ShopPurchaseConfirmation from '$components/modules/shop/modals/ShopPurchaseConfirmation.svelte';
@@ -64,19 +65,19 @@
   let isSendingGifts = $state(false);
   let isOpeningPack = $state(false);
   let preview = $state<CosmeticPreview>({ video: null, styles: [] });
-  let previewVideoFailed = $state(false);
   let selectedStyle = $state<StyleOption | null>(null);
+  let previewMuted = $state(audioPreference.muted);
 
   const previewCosmeticId = $derived(item.isBundle ? (item.contents[0]?.id ?? item.id) : item.id);
   const stillImage = $derived(item.assets.featured || item.assets.large || item.assets.small);
   const hasAudio = $derived(AUDIO_TYPE_IDS.has(item.type.id.toLowerCase()));
   const styles = $derived<StyleOption[]>(mergeStyles(item.styles, preview));
   const previewVideoUrl = $derived(selectedStyle ? (selectedStyle.video ?? null) : preview.video);
+  const previewBg = $derived(rarityBackgroundStyle({ rarity: item.rarity?.id || 'common', series: item.series?.id }));
 
   $effect(() => {
     const cosmeticId = previewCosmeticId;
     preview = { video: null, styles: [] };
-    previewVideoFailed = false;
     selectedStyle = null;
     if (!cosmeticId) return;
 
@@ -90,8 +91,7 @@
   });
 
   $effect(() => {
-    previewVideoUrl;
-    untrack(() => (previewVideoFailed = false));
+    audioPreference.muted = previewMuted;
   });
 
   function getItemColor() {
@@ -138,63 +138,19 @@
 </script>
 
 <Dialog.Root onOpenChangeComplete={(open) => !open && (offerId = '')} bind:open={isOpen}>
-  <Dialog.Content
-    class="flex w-[min(96vw,56rem)] !max-w-none flex-col gap-0 overflow-hidden p-0 sm:w-[min(96vw,64rem)]"
-  >
-    <div
-      class="grid max-h-[min(90vh,52rem)] grid-cols-1 overflow-y-auto sm:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] sm:overflow-hidden"
-    >
-      <!-- Left: full turntable / image -->
-      <div
-        class="relative min-h-72 overflow-hidden bg-[#121218] sm:min-h-[28rem] sm:border-r sm:border-border/80"
-      >
-        {#if previewVideoUrl && !previewVideoFailed}
-          <video
-            class="absolute inset-0 size-full object-contain"
-            autoplay
-            controls={hasAudio}
-            loop
-            muted
-            playsinline
-            poster={selectedStyle?.image || stillImage}
-            src={previewVideoUrl}
-            onerror={() => {
-              previewVideoFailed = true;
-            }}
-            onloadeddata={(event) => {
-              if (!hasAudio) return;
-              // Autoplay only survives muted, so restore the chosen volume once it rolls.
-              event.currentTarget.volume = audioPreference.volume;
-              event.currentTarget.muted = audioPreference.muted;
-            }}
-            onvolumechange={(event) => {
-              if (!hasAudio) return;
-              audioPreference.volume = event.currentTarget.volume;
-              audioPreference.muted = event.currentTarget.muted;
-            }}
-          ></video>
-          <a
-            class="absolute inset-x-0 bottom-2 z-10 text-center text-xs text-white/70 underline-offset-2 hover:text-white hover:underline"
-            href="https://fortnite.gg"
-            onclick={(e) => {
-              e.preventDefault();
-              void openUrl('https://fortnite.gg');
-            }}
-            rel="noreferrer"
-          >
-            {$t('itemShop.itemInformation.videoCredit')}
-          </a>
-        {:else}
-          <img
-            class="absolute inset-0 size-full object-contain"
-            alt={item.name}
-            src={selectedStyle?.image || stillImage}
-          />
-        {/if}
-      </div>
+  <Dialog.Content class="flex w-max max-w-[min(96vw,56rem)] flex-col gap-0 overflow-hidden p-0 sm:flex-row sm:max-w-[min(96vw,56rem)]">
+    <CosmeticPreviewPane
+      alt={item.name}
+      hasAudio={hasAudio}
+      imageUrl={selectedStyle?.image || stillImage || ''}
+      poster={selectedStyle?.image || stillImage}
+      rarityStyle={previewBg}
+      videoUrl={previewVideoUrl}
+      volume={audioPreference.volume}
+      bind:muted={previewMuted}
+    />
 
-      <!-- Right: details + actions -->
-      <div class="flex min-h-0 flex-col gap-y-5 overflow-y-auto p-5 sm:p-6">
+    <div class="flex min-h-0 w-full flex-col gap-y-5 overflow-y-auto p-5 sm:w-[22rem] sm:max-h-[min(70dvh,36rem)] sm:p-6">
         <div class="space-y-3">
           <div>
             <h2 class="text-xl leading-tight font-semibold tracking-tight">{item.name}</h2>
@@ -359,7 +315,6 @@
           </div>
         {/if}
       </div>
-    </div>
   </Dialog.Content>
 </Dialog.Root>
 

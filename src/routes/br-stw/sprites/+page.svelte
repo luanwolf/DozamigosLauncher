@@ -1,16 +1,14 @@
 <script lang="ts">
   import { toast } from 'svelte-sonner';
+  import DownloadIcon from '@lucide/svelte/icons/download';
   import CheckIcon from '@lucide/svelte/icons/check';
   import CrownIcon from '@lucide/svelte/icons/crown';
-  import DownloadIcon from '@lucide/svelte/icons/download';
-  import ExternalLinkIcon from '@lucide/svelte/icons/external-link';
-  import LoaderCircleIcon from '@lucide/svelte/icons/loader-circle';
   import SearchIcon from '@lucide/svelte/icons/search';
-  import { openPath } from '@tauri-apps/plugin-opener';
   import { ItemColors } from '$lib/constants/item-colors';
   import { HUD_PAGE_WIDTH } from '$lib/constants/page-layout';
   import { t } from '$lib/i18n';
   import { fetchSpriteAccountState, SPRITE_DUST_ICON, type SpriteResources } from '$lib/modules/sprites-account';
+  import { beginExportToast } from '$lib/modules/export-toast';
   import { exportSpriteAlbumWebp } from '$lib/modules/sprites-export';
   import {
     SPRITE_ENTRIES,
@@ -26,7 +24,6 @@
   import PageLoading from '$components/layout/PageLoading.svelte';
   import SpritePreviewModal from '$components/modules/sprites/SpritePreviewModal.svelte';
   import { Input } from '$components/ui/input';
-  import { Progress } from '$components/ui/progress';
 
   type RarityFilter = 'all' | SpriteRarity;
   type VariantFilter = 'all' | SpriteVariant;
@@ -41,8 +38,6 @@
   let status = $state<StatusFilter>('all');
   let isLoadingAccount = $state(true);
   let isExporting = $state(false);
-  let exportPercent = $state(0);
-  let lastExportPath = $state<string | null>(null);
   let previewEntry = $state<SpriteEntry | null>(null);
   let resources = $state<SpriteResources>({ dust: 0, gizmos: [] });
   let levels = $state<Record<string, number>>({});
@@ -97,8 +92,8 @@
     ]);
 
     isExporting = true;
-    exportPercent = 0;
-    lastExportPath = null;
+    const exportToast = beginExportToast();
+    exportToast.progress($t('sprites.export.progress', { percent: 0 }));
     try {
       const result = await exportSpriteAlbumWebp({
         accountLabel: $activeAccount.displayName,
@@ -106,25 +101,22 @@
         levels,
         resources,
         onProgress: ({ done, total }) => {
-          exportPercent = total > 0 ? Math.round((done / total) * 100) : 0;
+          exportToast.progress(
+            $t('sprites.export.progress', { percent: total > 0 ? Math.round((done / total) * 100) : 0 })
+          );
         }
       });
-      lastExportPath = result.path;
-      toast.success($t('sprites.export.done', { count: result.owned }));
+      if (result.path) {
+        exportToast.done($t('sprites.export.done', { count: result.owned }), result.path, $t('sprites.export.open'));
+      } else {
+        exportToast.fail();
+        toast.success($t('sprites.export.done', { count: result.owned }));
+      }
     } catch (error) {
+      exportToast.fail();
       handleError({ error, message: $t('sprites.export.failed'), account: $activeAccount });
     } finally {
       isExporting = false;
-      exportPercent = 0;
-    }
-  }
-
-  async function openLastExport() {
-    if (!lastExportPath) return;
-    try {
-      await openPath(lastExportPath);
-    } catch (error) {
-      handleError({ error, message: $t('sprites.export.failed'), account: $activeAccount ?? undefined });
     }
   }
 
@@ -170,28 +162,10 @@
       >
         <DownloadIcon class="size-4" />
       </PageActionButton>
-      {#if lastExportPath}
-        <PageActionButton disabled={isExporting} label={$t('sprites.export.open')} onclick={() => openLastExport()}>
-          <ExternalLinkIcon class="size-4" />
-        </PageActionButton>
-      {/if}
     {/if}
   {/snippet}
 
-  {#if isExporting}
-    <div
-      class="flex flex-col items-center justify-center gap-4 py-16 text-center"
-      role="status"
-      aria-live="polite"
-      aria-busy="true"
-    >
-      <LoaderCircleIcon class="size-8 animate-spin text-primary" strokeWidth={2.25} />
-      <p class="text-sm text-muted-foreground">
-        {$t('sprites.export.progress', { percent: exportPercent })}
-      </p>
-      <Progress class="h-2 w-full max-w-xs" value={exportPercent} />
-    </div>
-  {:else if isLoadingAccount}
+  {#if isLoadingAccount}
     <PageLoading label={$t('loading')} />
   {:else}
     <div class="grid gap-2 md:grid-cols-[minmax(0,1fr)_160px_160px_160px]">
