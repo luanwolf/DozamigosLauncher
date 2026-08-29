@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
   import DownloadIcon from '@lucide/svelte/icons/download';
   import RefreshCwIcon from '@lucide/svelte/icons/refresh-cw';
   import SearchIcon from '@lucide/svelte/icons/search';
@@ -85,7 +86,10 @@
   }
 
   $effect(() => {
-    if ($activeAccount?.accountId) void load();
+    if (!$activeAccount?.accountId) return;
+    // load() reads `isLoading`; tracking it here would re-run the effect on every
+    // flip and refetch forever (export/refresh stay disabled).
+    untrack(() => void load());
   });
 </script>
 
