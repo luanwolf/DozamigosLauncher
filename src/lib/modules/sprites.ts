@@ -123,6 +123,40 @@ export function spriteShortName(name: string) {
   return name.replace(/^Elemental(?: de| da| do| dos)?\s+/i, '').trim() || name;
 }
 
+/** Map api-fortnite `KlomboSprite`-style ids onto launcher slugs. */
+export function mapApiSpriteFamilyId(id: string): string | null {
+  const stem = id.replace(/Sprite$/i, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  if (!stem) return null;
+
+  const alias: Record<string, string> = {
+    klombo: 'klombo',
+    crown: 'crown',
+    jackrabbit: 'jackrabbit',
+    jazzjackrabbit: 'jackrabbit',
+    cosmicthunderdoublejump: 'jackrabbit',
+    doublejump: 'jackrabbit',
+    narrowflea: 'sonic',
+    sonic: 'sonic',
+    narrowfleamonkey: 'tails',
+    tails: 'tails',
+    shadow: 'shadow',
+    reloadovertime: 'shadow',
+    killswitch: 'killswitch',
+    eightbitblaster: 'eight-bit',
+    eightbit: 'eight-bit',
+    '8bitblaster': 'eight-bit',
+    dwarf: 'adventure',
+    adventure: 'adventure',
+    bushranger: 'bush',
+    bush: 'bush',
+    jonesy: 'jonesy',
+    stormscout: 'storm-scout'
+  };
+
+  if (alias[stem]) return alias[stem];
+  return SPRITE_FAMILIES.find((family) => stem === family.slug.replace(/-/g, ''))?.slug ?? null;
+}
+
 export const SPRITE_ENTRIES: SpriteEntry[] = SPRITE_FAMILIES.flatMap((family) => [
   {
     ...family,

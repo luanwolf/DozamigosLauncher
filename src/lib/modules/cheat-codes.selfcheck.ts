@@ -30,6 +30,8 @@ assert.equal(LOBBY_HACK_CODES.includes('LetsBlockAndRoll' as never), false);
 assert.equal(LOBBY_HACK_CODES.includes('DontBlockMe' as never), false);
 assert.ok(LOBBY_HACK_CODES.includes('GottaGoFast'));
 assert.ok(LOBBY_HACK_CODES.includes('OverrideXP'));
+assert.ok(LOBBY_HACK_CODES.includes('JonesyIsGolden'));
+assert.ok(LOBBY_HACK_CODES.includes('GatherAndCraft'));
 assert.equal(new Set(LOBBY_HACK_CODES).size, LOBBY_HACK_CODES.length);
 
 const empty = emptyCheatCodeSummary();

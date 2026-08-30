@@ -158,7 +158,7 @@
       "tagsHint": "Use tags para agrupar contas nas ferramentas em massa.",
       "saved": "Apelido e tags salvos",
       "save": "Salvar",
-      "stwNews": "Abrir perfil no STW News"
+      "stwNews": "Abrir perfil no SoM News"
     },
     "profile": {
       "accountId": "ID da conta",
@@ -278,7 +278,7 @@
   "accountOverview": {
     "page": {
       "title": "Visão geral",
-      "description": "Resumo BR e STW da conta ativa, com claim de recompensa 2FA."
+      "description": "Resumo BR e SoM da conta ativa, com claim de recompensa 2FA."
     },
     "refresh": "Atualizar",
     "loadFailed": "Não foi possível carregar a visão geral.",
@@ -317,18 +317,18 @@
       "title": "Recompensa 2FA",
       "description": "Resgate único após ativar autenticação em dois fatores na Epic.",
       "claimBr": "Resgatar BR",
-      "claimStw": "Resgatar STW",
+      "claimStw": "Resgatar SoM",
       "alreadyBr": "BR já resgatado",
-      "alreadyStw": "STW já resgatado",
+      "alreadyStw": "SoM já resgatado",
       "claimedBr": "Recompensa 2FA do BR resgatada.",
-      "claimedStw": "Recompensa 2FA do STW resgatada.",
+      "claimedStw": "Recompensa 2FA do SoM resgatada.",
       "failed": "Não foi possível resgatar a recompensa 2FA. Confira se o 2FA está ativo.",
       "need2fa": "Ative o 2FA na conta Epic antes de resgatar."
     }
   },
   "stwResources": {
     "page": {
-      "title": "Recursos STW",
+      "title": "Recursos",
       "description": "Inventário de recursos da campanha, com exportação em imagem."
     },
     "refresh": "Atualizar",
@@ -337,9 +337,9 @@
     "empty": "Nenhum recurso na conta.",
     "searchEmpty": "Nenhum recurso encontrado.",
     "count": "{count} recursos",
-    "powerLabel": "PL {power}",
+    "powerLabel": "⚡ {power}",
     "exportWebp": "Exportar imagem",
-    "exportTitle": "Recursos STW",
+    "exportTitle": "Recursos",
     "exportProgress": "Gerando imagem… {percent}%",
     "exported": "Imagem exportada com {count} recursos.",
     "exportFailed": "Não foi possível exportar a imagem.",
@@ -396,7 +396,7 @@
   "autoKick": {
     "page": {
       "title": "Sair automaticamente",
-      "description": "Automatize a saída da missão, o resgate e a transferência de materiais no STW."
+      "description": "Automatize a saída da missão, o resgate e a transferência de materiais no SoM."
     },
     "mobileIncompatibilityWarning": {
       "title": "Atenção",
@@ -416,7 +416,7 @@
   },
     "notifications": {
       "leftBase": {
-        "title": "Saiu da base STW",
+        "title": "Saiu da base SoM",
         "message": "{name}: você saiu automaticamente da base. Volte ao jogo para entrar em uma nova base."
       }
     }
@@ -628,6 +628,11 @@
     "search": "Buscar Elemental ou variante…",
     "results": "{count} resultado(s)",
     "source": "Imagens do jogo armazenadas localmente no launcher.",
+    "variants": {
+      "base": "Base",
+      "gold": "Dourado",
+      "cheatMaster": "Trapaçeiro"
+    },
     "filters": {
       "allRarities": "Todas as raridades",
       "allVariants": "Todas as variantes",
@@ -640,7 +645,7 @@
       "title": "Sua coleção",
       "perAccount": "Extraído só conta token de Mastery já ganho na conta — a Epic lista a quest de todo Elemental mesmo sem você ter extraído. Dust, dispositivos e nível (Lv) ficam no Magpie do Fortnite — o launcher público não tem a permissão que o jogo no PC tem.",
       "noAccount": "Entre em uma conta para separar as marcações por perfil.",
-      "explanation": "A imagem exportada segue o álbum Base + Gold + Cheat Master (36 slots). Dust e bugigangas no topo só aparecem se o Magpie da conta for legível.",
+      "explanation": "A imagem exportada segue o álbum Base + Dourado + Trapaçeiro (36 slots). Dust e bugigangas no topo só aparecem se o Magpie da conta for legível.",
       "dontShowAgain": "Não mostrar novamente"
     },
     "mastery": {
@@ -832,7 +837,7 @@
       "total": "Saldo total",
       "purchased": "Comprados",
       "earned": "Ganhos",
-      "other": "Outros (passe, STW, etc.)"
+      "other": "Outros (passe, SoM, etc.)"
     },
     "gifts": {
       "title": "Presentes",
@@ -868,10 +873,10 @@
   },
   "stwHub": {
     "page": {
-      "title": "Centro STW",
+      "title": "Centro SoM",
       "description": "Resumo do dia: alertas, missões e lhamas."
     },
-    "gold": "Ouro STW",
+    "gold": "Ouro SoM",
     "refresh": "Atualizar",
     "quickLinks": "Atalhos"
   },
@@ -1329,7 +1334,7 @@
       },
       "missionCheckInterval": {
         "title": "Intervalo de Verificação de Missão",
-        "description": "Define com que frequência o launcher verifica se você está em uma missão do STW."
+        "description": "Define com que frequência o launcher verifica se você está em uma missão do SoM."
       },
       "claimRewardsDelay": {
         "title": "Atraso para Resgatar Recompensas",
@@ -1348,16 +1353,16 @@
       },
       "windowsNotifications": {
         "title": "Notificações do Windows",
-        "description": "Avisa no Windows sobre V-Bucks no STW, missões, lhamas grátis, loja do BR e outras automações.",
+        "description": "Avisa no Windows sobre V-Bucks no SoM, missões, lhamas grátis, loja do BR e outras automações.",
         "denied": "O Windows bloqueou as notificações. Ative nas configurações do sistema."
       },
       "showXrayTickets": {
         "title": "Tickets de Raio-X na barra",
-        "description": "Mostra o saldo de Tickets de Raio-X ao lado dos V-Bucks. Na loja STW o saldo continua visível."
+        "description": "Mostra o saldo de Tickets de Raio-X ao lado dos V-Bucks. Na loja SoM o saldo continua visível."
       },
       "showStwGold": {
         "title": "Ouro na barra",
-        "description": "Mostra o saldo de Ouro ao lado dos V-Bucks. Na loja STW o saldo continua visível."
+        "description": "Mostra o saldo de Ouro ao lado dos V-Bucks. Na loja SoM o saldo continua visível."
       },
       "steamFreeGamesNotifications": {
         "title": "Jogos grátis da Steam",
@@ -1685,7 +1690,7 @@
     "viewGame": "Ver jogo",
     "dailyQuests": {
       "title": "Missões diárias",
-      "message": "As missões diárias do STW acabaram de resetar."
+      "message": "As missões diárias do SoM acabaram de resetar."
     },
     "itemShop": {
       "title": "Loja do BR",
@@ -1701,8 +1706,8 @@
       "message": "{count} item da sua lista está na loja: {names}"
     },
     "missionAlerts": {
-      "title": "Missões do STW",
-      "vbucksTitle": "V-Bucks no STW",
+      "title": "Missões do SoM",
+      "vbucksTitle": "V-Bucks no SoM",
       "vbucks": "Tem {count} V-Bucks nas missões de hoje.",
       "survivors": "{count} sobrevivente lendário",
       "llamas": "{count} ficha de lhama",

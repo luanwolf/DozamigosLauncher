@@ -47,27 +47,40 @@ export function powerLevelFromFort(stats: FortStats): number {
   return evalCurve(HOMEBASE_RATING, fortTotal(stats) * 4);
 }
 
-/** Research / ventures FORT from `Stat:` profile items. */
+const CAMPAIGN_FORT_STAT_IDS = {
+  fortitude: 'stat:fortitude',
+  resistance: 'stat:resistance',
+  offense: 'stat:offense',
+  tech: 'stat:technology'
+} as const;
+
+const VENTURE_FORT_STAT_IDS = {
+  fortitude: 'stat:fortitude_phoenix',
+  resistance: 'stat:resistance_phoenix',
+  offense: 'stat:offense_phoenix',
+  tech: 'stat:technology_phoenix'
+} as const;
+
+function fortStatQty(items: Record<string, ProfileItem>, templateId: string): number {
+  let total = 0;
+  for (const item of Object.values(items)) {
+    if (item.templateId.toLowerCase() === templateId) total += item.quantity ?? 0;
+  }
+  return total;
+}
+
+/** Commander / ventures FORT from exact personal `Stat:` items (ignores party `team_*`, legacy `Stat:tech`). */
 export function researchFortFromItems(
   items: Record<string, ProfileItem>,
   ventures = false
 ): FortStats {
-  const stats = { ...EMPTY_FORT };
-
-  for (const item of Object.values(items)) {
-    const id = item.templateId.toLowerCase();
-    if (!id.startsWith('stat:')) continue;
-    const isPhoenix = id.includes('phoenix');
-    if (ventures ? !isPhoenix : isPhoenix) continue;
-
-    const qty = item.quantity ?? 0;
-    if (id.includes('fortitude')) stats.fortitude += qty;
-    else if (id.includes('resistance')) stats.resistance += qty;
-    else if (id.includes('offense')) stats.offense += qty;
-    else if (id.includes('technology') || id.includes('tech')) stats.tech += qty;
-  }
-
-  return stats;
+  const ids = ventures ? VENTURE_FORT_STAT_IDS : CAMPAIGN_FORT_STAT_IDS;
+  return {
+    fortitude: fortStatQty(items, ids.fortitude),
+    resistance: fortStatQty(items, ids.resistance),
+    offense: fortStatQty(items, ids.offense),
+    tech: fortStatQty(items, ids.tech)
+  };
 }
 
 type ParsedSurvivor = {

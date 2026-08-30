@@ -1,17 +1,19 @@
 <script lang="ts">
   import { ItemColors } from '$lib/constants/item-colors';
   import { SPRITE_ENTRIES, type SpriteEntry, type SpriteVariant } from '$lib/modules/sprites';
+  import { resolveSpriteLabel, type SpriteCatalogLabels } from '$lib/modules/sprites-catalog';
   import CosmeticStyles, { type StyleOption } from '$components/modules/shop/CosmeticStyles.svelte';
   import { Badge } from '$components/ui/badge';
   import * as Dialog from '$components/ui/dialog';
 
   type Props = {
     entry: SpriteEntry | null;
+    catalog: SpriteCatalogLabels | null;
     variantLabels: Record<SpriteVariant, string>;
     rarityLabels: Record<SpriteEntry['rarity'], string>;
   };
 
-  let { entry = $bindable(), variantLabels, rarityLabels }: Props = $props();
+  let { entry = $bindable(), catalog = null, variantLabels, rarityLabels }: Props = $props();
 
   const colors: Record<string, string> = { ...ItemColors.rarities };
   let isOpen = $state(false);
@@ -35,6 +37,9 @@
     return variantLabels[entry.variant];
   });
   const badgeColor = $derived(entry ? colors[entry.rarity] || colors.common : colors.common);
+  const labels = $derived(
+    entry ? resolveSpriteLabel(entry.slug, { name: entry.name, ability: entry.ability }, catalog) : null
+  );
 
   $effect(() => {
     isOpen = !!entry;
@@ -75,18 +80,18 @@
           {#if previewImage}
             <img
               class="max-h-[min(70vh,36rem)] w-full object-contain drop-shadow-lg"
-              alt="{entry.name} · {previewVariantLabel}"
+              alt="{labels?.name ?? entry.name} · {previewVariantLabel}"
               src={previewImage}
             />
           {:else}
-            <p class="text-sm text-muted-foreground">{entry.name}</p>
+            <p class="text-sm text-muted-foreground">{labels?.name ?? entry.name}</p>
           {/if}
         </div>
 
         <div class="flex flex-col gap-y-5 overflow-y-auto p-5 sm:p-6">
           <div class="space-y-3">
             <div>
-              <h2 class="text-xl leading-tight font-semibold tracking-tight">{entry.name}</h2>
+              <h2 class="text-xl leading-tight font-semibold tracking-tight">{labels?.name ?? entry.name}</h2>
               <p class="mt-1 text-sm text-muted-foreground">
                 {previewVariantLabel} · {rarityLabels[entry.rarity]}
               </p>
@@ -99,7 +104,7 @@
               {rarityLabels[entry.rarity]}
             </Badge>
 
-            <p class="text-sm leading-relaxed text-muted-foreground">{entry.ability}</p>
+            <p class="text-sm leading-relaxed text-muted-foreground">{labels?.ability ?? entry.ability}</p>
           </div>
 
           <CosmeticStyles {styles} bind:selected={selectedStyle} />

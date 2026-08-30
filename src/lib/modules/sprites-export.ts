@@ -11,6 +11,9 @@ import {
   sanitizeFilename,
   UI_FONT
 } from '$lib/modules/locker-export';
+import { m } from '$lib/paraglide/messages';
+import type { Locale } from '$lib/paraglide/runtime';
+import { fetchSpriteCatalogLabels, resolveSpriteLabel, type SpriteCatalogLabels } from '$lib/modules/sprites-catalog';
 import { SPRITE_DUST_ICON, type SpriteResources } from '$lib/modules/sprites-account';
 import {
   SPRITE_ENTRIES,
@@ -38,11 +41,15 @@ export const SPRITE_EXPORT_ORDER = [
   'crown'
 ] as const;
 
-const VARIANT_ROW_LABEL: Record<SpriteVariant, string> = {
-  base: 'BASE',
-  gold: 'GOLD',
-  'cheat-master': 'CHEAT MASTER'
-};
+const VARIANT_LABEL_KEYS = {
+  base: 'sprites.variants.base',
+  gold: 'sprites.variants.gold',
+  'cheat-master': 'sprites.variants.cheatMaster'
+} as const satisfies Record<SpriteVariant, keyof typeof m>;
+
+function variantRowLabel(variant: SpriteVariant, locale: Locale): string {
+  return String(m[VARIANT_LABEL_KEYS[variant]]({}, { locale })).toUpperCase();
+}
 
 const GOLD_BAR = '#f5c542';
 
@@ -78,6 +85,8 @@ export type SpriteExportOptions = {
   ownedKeys: ReadonlySet<string>;
   levels?: Record<string, number>;
   resources?: SpriteResources;
+  locale?: Locale;
+  catalog?: SpriteCatalogLabels | null;
   onProgress?: (progress: { done: number; total: number }) => void;
 };
 
@@ -118,6 +127,16 @@ export function buildSpriteExportSlots(
     }
   }
   return slots;
+}
+
+function exportColumnLabel(slug: string, catalog: SpriteCatalogLabels | null): string {
+  const family = SPRITE_FAMILIES.find((item) => item.slug === slug);
+  const { name } = resolveSpriteLabel(
+    slug,
+    { name: family?.name ?? slug, ability: family?.ability ?? '' },
+    catalog
+  );
+  return spriteShortName(name).toUpperCase();
 }
 
 function drawRainbowBar(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number) {
@@ -180,8 +199,10 @@ function paintChip(
  * Rendered at 3× so 512px sprite art stays sharp on the card.
  */
 export async function exportSpriteAlbumWebp(options: SpriteExportOptions): Promise<SpriteExportResult> {
-  const { accountLabel, ownedKeys, levels = {}, resources, onProgress } = options;
+  const { accountLabel, ownedKeys, levels = {}, resources, locale = 'pt-br', catalog, onProgress } = options;
   await ensureDisplayFont();
+
+  const labelCatalog = catalog ?? (await fetchSpriteCatalogLabels(locale));
 
   const slots = buildSpriteExportSlots(ownedKeys, levels);
   const ownedCount = slots.filter((slot) => slot.owned).length;
@@ -269,8 +290,7 @@ export async function exportSpriteAlbumWebp(options: SpriteExportOptions): Promi
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   SPRITE_EXPORT_ORDER.forEach((slug, col) => {
-    const family = SPRITE_FAMILIES.find((item) => item.slug === slug);
-    const label = spriteShortName(family?.name ?? slug).toUpperCase();
+    const label = exportColumnLabel(slug, labelCatalog);
     const x = gridLeft + col * (CELL + GAP) + CELL / 2;
     ctx.fillText(fitText(ctx, label, CELL - 6), x, HEADER + PAD + NAME_ROW / 2);
   });
@@ -278,7 +298,7 @@ export async function exportSpriteAlbumWebp(options: SpriteExportOptions): Promi
   SPRITE_EXPORT_VARIANTS.forEach((variant, row) => {
     drawVerticalLabel(
       ctx,
-      VARIANT_ROW_LABEL[variant],
+      variantRowLabel(variant, locale),
       PAD + LABEL_COL / 2,
       gridTop + row * (CELL + GAP),
       CELL

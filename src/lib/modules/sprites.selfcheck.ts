@@ -1,5 +1,7 @@
 import { strict as assert } from 'node:assert';
+import { m } from '$lib/paraglide/messages';
 import {
+  mapApiSpriteFamilyId,
   parseSpriteProgress,
   readSpriteCollection,
   SPRITE_ENTRIES,
@@ -24,6 +26,7 @@ assert.equal(SPRITE_ENTRIES.length, 36);
 assert.equal(new Set(SPRITE_ENTRIES.map((entry) => entry.key)).size, SPRITE_ENTRIES.length);
 assert.equal(SPRITE_FAMILIES.find((f) => f.slug === 'sonic')?.name, 'Elemental Sonic');
 assert.equal(SPRITE_FAMILIES.find((f) => f.slug === 'klombo')?.rarity, 'mythic');
+assert.equal(mapApiSpriteFamilyId('KlomboSprite'), 'klombo');
 assert.equal(SPRITE_FAMILIES.every((f) => f.name.startsWith('Elemental')), true);
 assert.equal(SPRITE_FAMILIES.every((f) => f.variants.includes('gold')), true);
 assert.equal(SPRITE_FAMILIES.every((f) => f.variants.includes('cheat-master')), true);
@@ -95,6 +98,11 @@ assert.deepEqual([...progress.mastered].sort(), ['sonic:base', 'sonic:gold']);
 assert.deepEqual([...progress.extracted], ['sonic']);
 
 console.log(`sprites self-check passed (${SPRITE_ENTRIES.length} entries)`);
+
+for (const key of ['sprites.variants.base', 'sprites.variants.gold', 'sprites.variants.cheatMaster'] as const) {
+  assert.equal(typeof m[key], 'function', key);
+  assert.ok(m[key]({}, { locale: 'pt-br' }));
+}
 
 const resourceProfile = {
   profileChanges: [

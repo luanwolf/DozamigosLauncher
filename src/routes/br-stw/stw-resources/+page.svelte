@@ -9,7 +9,7 @@
   import { beginExportToast } from '$lib/modules/export-toast';
   import { exportStwResourcesWebp } from '$lib/modules/stw-resources-export';
   import { fetchStwResources, type StwResourceRow } from '$lib/modules/stw-resources';
-  import { rarityBackgroundStyle } from '$lib/modules/locker-export-rarity';
+  import { RarityColors } from '$lib/constants/stw/resources';
   import { accountStore } from '$lib/storage';
   import { handleError } from '$lib/utils';
   import PageActionButton from '$components/layout/PageActionButton.svelte';
@@ -142,18 +142,25 @@
       {:else}
         <StoreItemGrid variant="stw">
           {#each filtered as row (row.templateId)}
-            <div
-              class="relative aspect-square overflow-hidden rounded-md border border-border/60"
-              style={rarityBackgroundStyle({ rarity: row.rarity })}
+            <article
+              class="flex min-h-[180px] flex-col overflow-hidden rounded-md border border-border/70 bg-card"
             >
-              <img alt="" class="absolute inset-0 size-full object-contain p-2" src={row.imageUrl} />
-              <div class="absolute inset-x-0 bottom-0 bg-black/70 px-2 py-1.5">
-                <p class="truncate text-sm font-medium text-white">{row.name}</p>
-                <p class="text-lg font-semibold tabular-nums text-white">
-                  {row.quantity.toLocaleString($language)}
-                </p>
+              <div
+                class="flex flex-1 items-center justify-center p-2"
+                style="background-color: {RarityColors[row.rarity]}12"
+              >
+                <img
+                  alt=""
+                  class="max-h-24 max-w-full object-contain select-none"
+                  loading="lazy"
+                  src={row.imageUrl}
+                />
               </div>
-            </div>
+              <div class="space-y-0.5 border-t border-border/60 px-2.5 py-2">
+                <p class="line-clamp-2 text-sm font-semibold leading-snug">{row.name}</p>
+                <p class="text-lg font-bold tabular-nums">{row.quantity.toLocaleString($language)}</p>
+              </div>
+            </article>
           {/each}
         </StoreItemGrid>
       {/if}

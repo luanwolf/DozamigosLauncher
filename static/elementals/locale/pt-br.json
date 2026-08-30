@@ -1,0 +1,54 @@
+{
+  "_readme": "Edite name e ability por slug. Salve o arquivo e recarregue a página Elementais. Slugs válidos: klombo, crown, jackrabbit, sonic, tails, shadow, killswitch, eight-bit, adventure, bush, jonesy, storm-scout.",
+  "locale": "pt-br",
+  "sprites": {
+    "klombo": {
+      "name": "Elemental Klimbo",
+      "ability": "Concede itens aleatórios a cada nível; só sobe de nível ao consumir itens. A qualidade dos itens aumenta por nível."
+    },
+    "crown": {
+      "name": "Elemental de Coroa",
+      "ability": "Sobe de Nível apenas ao vencer partidas. Suba de nível mais rápido obtendo vitórias de Coroa! Novas variantes ao dominar."
+    },
+    "jackrabbit": {
+      "name": "Elemental Jackrabbit",
+      "ability": "Concede a habilidade de realizar outro salto no ar!"
+    },
+    "sonic": {
+      "name": "Elemental Sonic",
+      "ability": "Gotta Go Fast! Dê disparadas mais rápidas a cada Subida de Nível!"
+    },
+    "tails": {
+      "name": "Elemental Tails",
+      "ability": "Concede a habilidade de flutuar com a ajuda do Tails."
+    },
+    "shadow": {
+      "name": "Elemental Shadow",
+      "ability": "Recarrega automaticamente armas guardadas ao longo do tempo. Recarrega a arma equipada no nível máximo."
+    },
+    "killswitch": {
+      "name": "Elemental Disruptor",
+      "ability": "Ativa a Câmera Lenta com precisão melhorada ao mirar enquanto pula ou cai."
+    },
+    "eight-bit": {
+      "name": "Elemental 8-Bit",
+      "ability": "Encontra uma Espingarda 8-Bit no primeiro baú e ganha multiplicador de pontuação nela."
+    },
+    "adventure": {
+      "name": "Elemental Aventura",
+      "ability": "Aprimora um item aleatório do inventário a cada nível!"
+    },
+    "bush": {
+      "name": "Elemental Arbusto",
+      "ability": "Concede um arbusto em você após um período, e ganha um arbusto ao fazer uma eliminação no nível máximo."
+    },
+    "jonesy": {
+      "name": "Elemental Jonesy",
+      "ability": "Recupera um pouco de vida ou escudo após sofrer dano por uma curta duração."
+    },
+    "storm-scout": {
+      "name": "Elemental Meteorológico",
+      "ability": "Aplica Sobrecarga após sofrer uma certa quantidade de dano da Tempestade. Revela os próximos círculos da Tempestade no nível máximo."
+    }
+  }
+}

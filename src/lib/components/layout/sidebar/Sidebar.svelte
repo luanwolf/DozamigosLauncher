@@ -1,10 +1,12 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { on } from 'svelte/events';
+  import { getVersion } from '@tauri-apps/api/app';
   import { page } from '$app/state';
   import { openUrl } from '@tauri-apps/plugin-opener';
   import DownloadIcon from '@lucide/svelte/icons/download';
   import appIcon from '$lib/assets/app-icon.png';
+  import { APP_VERSION } from '$lib/constants/app';
   import { NavZones, zoneForPath, type NavZone } from '$lib/constants/sidebar';
   import { t } from '$lib/i18n';
   import { accountStore } from '$lib/storage';
@@ -21,8 +23,15 @@
 
   /** Hide side panel under ~Steam Deck half / narrow laptop — keep rail only. */
   let wideEnough = $state(true);
+  let appVersion = $state(APP_VERSION);
 
   onMount(() => {
+    void getVersion()
+      .then((v) => {
+        appVersion = v;
+      })
+      .catch(() => {});
+
     const mq = window.matchMedia('(min-width: 900px)');
     wideEnough = mq.matches;
     const onChange = () => {
@@ -103,24 +112,33 @@
           </Tooltip.Root>
         {/if}
 
-        <Tooltip.Root>
-          <Tooltip.Trigger>
-            <a
-              class="zone-rail-btn glitch-target flex size-11 items-center justify-center text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-foreground"
-              aria-label={$t('sidebar.externalLinks.repository')}
-              href="https://github.com/luanwolf/DozamigosLauncher"
-              onclick={(event) => {
-                event.preventDefault();
-                void openUrl('https://github.com/luanwolf/DozamigosLauncher');
-              }}
-            >
-              <img class="size-5" alt="" src="/icons/github.svg" />
-            </a>
-          </Tooltip.Trigger>
-          <Tooltip.Content side="right">
-            {$t('sidebar.externalLinks.repository')}
-          </Tooltip.Content>
-        </Tooltip.Root>
+        <div class="flex flex-col items-center gap-0.5">
+          <Tooltip.Root>
+            <Tooltip.Trigger>
+              <a
+                class="zone-rail-btn glitch-target flex size-11 items-center justify-center text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-foreground"
+                aria-label={$t('sidebar.externalLinks.repository')}
+                href="https://github.com/luanwolf/DozamigosLauncher"
+                onclick={(event) => {
+                  event.preventDefault();
+                  void openUrl('https://github.com/luanwolf/DozamigosLauncher');
+                }}
+              >
+                <img class="size-5" alt="" src="/icons/github.svg" />
+              </a>
+            </Tooltip.Trigger>
+            <Tooltip.Content side="right">
+              {$t('sidebar.externalLinks.repository')}
+            </Tooltip.Content>
+          </Tooltip.Root>
+          <span
+            class="max-w-[3.25rem] truncate text-center text-[9px] leading-none tabular-nums text-muted-foreground/65"
+            aria-label="{$t('sidebar.version')} {appVersion}"
+            title="{$t('sidebar.version')} {appVersion}"
+          >
+            v{appVersion}
+          </span>
+        </div>
       </div>
     </div>
 

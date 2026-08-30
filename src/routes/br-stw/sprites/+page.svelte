@@ -6,8 +6,13 @@
   import SearchIcon from '@lucide/svelte/icons/search';
   import { ItemColors } from '$lib/constants/item-colors';
   import { HUD_PAGE_WIDTH } from '$lib/constants/page-layout';
-  import { t } from '$lib/i18n';
+  import { t, language } from '$lib/i18n';
   import { fetchSpriteAccountState, SPRITE_DUST_ICON, type SpriteResources } from '$lib/modules/sprites-account';
+  import {
+    fetchSpriteCatalogLabels,
+    resolveSpriteLabel,
+    type SpriteCatalogLabels
+  } from '$lib/modules/sprites-catalog';
   import { beginExportToast } from '$lib/modules/export-toast';
   import { exportSpriteAlbumWebp } from '$lib/modules/sprites-export';
   import {
@@ -41,12 +46,16 @@
   let previewEntry = $state<SpriteEntry | null>(null);
   let resources = $state<SpriteResources>({ dust: 0, gizmos: [] });
   let levels = $state<Record<string, number>>({});
+  let catalog = $state<SpriteCatalogLabels | null>(null);
 
-  const variantLabels: Record<SpriteVariant, string> = {
-    base: 'Base',
-    gold: 'Dourado',
-    'cheat-master': 'Cheat Master'
-  };
+  const labelFor = (entry: (typeof SPRITE_ENTRIES)[number]) =>
+    resolveSpriteLabel(entry.slug, { name: entry.name, ability: entry.ability }, catalog);
+
+  const variantLabels = $derived<Record<SpriteVariant, string>>({
+    base: $t('sprites.variants.base'),
+    gold: $t('sprites.variants.gold'),
+    'cheat-master': $t('sprites.variants.cheatMaster')
+  });
 
   const rarityLabels: Record<SpriteRarity, string> = {
     rare: 'Raro',
@@ -73,6 +82,7 @@
           (status === 'mastered' && isMastered(entry)) ||
           (status === 'missing' && !isExtracted(entry))) &&
         (!query ||
+          labelFor(entry).name.toLowerCase().includes(query) ||
           entry.name.toLowerCase().includes(query) ||
           variantLabels[entry.variant].toLowerCase().includes(query))
     );
@@ -100,6 +110,8 @@
         ownedKeys,
         levels,
         resources,
+        locale: $language,
+        catalog,
         onProgress: ({ done, total }) => {
           exportToast.progress(
             $t('sprites.export.progress', { percent: total > 0 ? Math.round((done / total) * 100) : 0 })
@@ -119,6 +131,21 @@
       isExporting = false;
     }
   }
+
+  $effect(() => {
+    const locale = $language;
+    let cancelled = false;
+    fetchSpriteCatalogLabels(locale)
+      .then((result) => {
+        if (!cancelled) catalog = result;
+      })
+      .catch(() => {
+        if (!cancelled) catalog = null;
+      });
+    return () => {
+      cancelled = true;
+    };
+  });
 
   $effect(() => {
     const account = $activeAccount;
@@ -221,6 +248,7 @@
 
     <div class="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
       {#each filtered as entry (entry.key)}
+        {@const labels = labelFor(entry)}
         {@const owned = isExtracted(entry)}
         {@const hasMastery = isMastered(entry)}
         <article
@@ -240,7 +268,7 @@
           >
             <img
               class="aspect-square w-full object-contain p-1"
-              alt={entry.name}
+              alt={labels.name}
               loading="lazy"
               src={entry.image}
             />
@@ -268,7 +296,7 @@
               </span>
             {/if}
             <div class="space-y-0.5 bg-black/75 px-2 pt-2 text-white">
-              <p class="truncate text-xs font-semibold">{entry.name}</p>
+              <p class="truncate text-xs font-semibold">{labels.name}</p>
               <p class="pb-1 text-[10px] text-white/70">
                 {variantLabels[entry.variant]} · {rarityLabels[entry.rarity]}
               </p>
@@ -280,4 +308,4 @@
   {/if}
 </PageContent>
 
-<SpritePreviewModal {variantLabels} {rarityLabels} bind:entry={previewEntry} />
+<SpritePreviewModal {variantLabels} {rarityLabels} {catalog} bind:entry={previewEntry} />

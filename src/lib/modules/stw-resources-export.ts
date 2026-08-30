@@ -4,17 +4,17 @@ import {
   createExportCanvas,
   DISPLAY_FONT,
   ensureDisplayFont,
+  EXPORT_PAGE_BG,
   fillOutlinedText,
-  fillRarityBackground,
   fitText,
   loadBitmap,
-  loadRarityBackground,
   roundRect,
   sanitizeFilename,
   saveExportBlob,
   UI_FONT,
   WEBP_QUALITY
 } from '$lib/modules/locker-export';
+import { RarityColors } from '$lib/constants/stw/resources';
 import type { StwResourceRow } from '$lib/modules/stw-resources-parse';
 
 const CELL = 172;
@@ -63,12 +63,21 @@ function drawContained(
   bitmap: ImageBitmap,
   x: number,
   y: number,
-  size: number
+  width: number,
+  height: number
 ) {
-  const scale = Math.min(size / bitmap.width, size / bitmap.height);
-  const width = bitmap.width * scale;
-  const height = bitmap.height * scale;
-  ctx.drawImage(bitmap, x + (size - width) / 2, y + (size - height) / 2, width, height);
+  const scale = Math.min(width / bitmap.width, height / bitmap.height);
+  const w = bitmap.width * scale;
+  const h = bitmap.height * scale;
+  ctx.drawImage(bitmap, x + (width - w) / 2, y + (height - h) / 2, w, h);
+}
+
+function fillStwRarity(ctx: CanvasRenderingContext2D, x: number, y: number, size: number, rarity: string) {
+  const color = RarityColors[rarity as keyof typeof RarityColors] ?? RarityColors.c;
+  ctx.fillStyle = color + '22';
+  ctx.fillRect(x, y, size, size);
+  ctx.fillStyle = color + '18';
+  ctx.fillRect(x, y, size, size - TILE_BAND);
 }
 
 /** WebP collage of STW account resources (icons + quantities). */
@@ -87,7 +96,7 @@ export async function exportStwResourcesWebp(
 
   const { canvas, ctx } = createExportCanvas(width, height);
 
-  ctx.fillStyle = '#12100c';
+  ctx.fillStyle = EXPORT_PAGE_BG;
   ctx.fillRect(0, 0, width, height);
 
   ctx.fillStyle = '#ffffff';
@@ -108,7 +117,7 @@ export async function exportStwResourcesWebp(
   const total = resources.length;
   onProgress?.({ done: 0, total });
   let done = 0;
-  const [bitmaps, backgrounds] = await Promise.all([
+  const [bitmaps, appIcon] = await Promise.all([
     Promise.all(
       resources.map(async (row) => {
         const bitmap = await loadBitmap(row.imageUrl).catch(() => null);
@@ -117,9 +126,8 @@ export async function exportStwResourcesWebp(
         return bitmap;
       })
     ),
-    Promise.all(resources.map((row) => loadRarityBackground({ rarity: row.rarity })))
+    loadBitmap(APP_ICON_URL).catch(() => null)
   ]);
-  const appIcon = await loadBitmap(APP_ICON_URL).catch(() => null);
   const qtyFmt = new Intl.NumberFormat(locale);
   const gridTop = HEADER + PAD;
 
@@ -133,11 +141,11 @@ export async function exportStwResourcesWebp(
     ctx.save();
     roundRect(ctx, x, y, CELL, CELL, TILE_RADIUS);
     ctx.clip();
-    fillRarityBackground(ctx, x, y, CELL, CELL, { rarity: row.rarity }, backgrounds[index]);
+    fillStwRarity(ctx, x, y, CELL, row.rarity);
 
     const bitmap = bitmaps[index];
     if (bitmap) {
-      drawContained(ctx, bitmap, x, y + 4, CELL - 32);
+      drawContained(ctx, bitmap, x + 12, y + 8, CELL - 24, CELL - TILE_BAND - 16);
       bitmap.close();
     }
 

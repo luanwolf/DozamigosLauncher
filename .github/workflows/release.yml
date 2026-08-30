@@ -57,17 +57,25 @@ jobs:
           tagName: v__VERSION__
           releaseName: 'v__VERSION__'
           releaseBody: |
-            ## Dozamigos Launcher v0.1.7
+            ## Dozamigos Launcher v0.1.8
 
             Baixe o instalador **Windows NSIS** (`.exe`) abaixo. Quem já tem o launcher instalado recebe o aviso de atualização na próxima abertura.
 
             ### Arquivos desta release
-            - `Dozamigos Launcher_0.1.7_x64-setup.exe` — instalador Windows (recomendado)
+            - `Dozamigos Launcher_0.1.8_x64-setup.exe` — instalador Windows (recomendado)
             - `latest.json` — manifesto da atualização automática
             - assinatura do instalador (usada pelo updater)
 
+            ### Geral
+            - Versão do app exibida abaixo do ícone do GitHub na barra lateral
+
             ### Salve o Mundo
-            - Recursos STW: a página não fica mais atualizando em loop, então exportar imagem e atualizar voltam a funcionar
+            - **Recursos**: página renomeada, export com fundo alinhado à loja/vestiário e PL da conta corrigido (FORT sem stats de time duplicados)
+            - Textos visíveis passam a usar **SoM** onde faz sentido (ex.: resgate 2FA, notificações)
+
+            ### Battle Royale
+            - **Elementais**: variante renomeada para Trapaceiro; export corrigido; nomes e habilidades em português (catálogo + `static/elementals/locale/pt-br.json` editável)
+            - Novos códigos de lobby no resgate automático de Admin Panel
           releaseDraft: false
           prerelease: false
           uploadUpdaterJson: true

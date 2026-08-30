@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/luanwolf/DozamigosLauncher/releases/latest"><img alt="Versão" src="https://img.shields.io/badge/vers%C3%A3o-0.1.7-a855f7"></a>
+  <a href="https://github.com/luanwolf/DozamigosLauncher/releases/latest"><img alt="Versão" src="https://img.shields.io/badge/vers%C3%A3o-0.1.8-a855f7"></a>
   <img alt="Plataforma" src="https://img.shields.io/badge/plataforma-Windows-2b3140">
   <a href="LICENSE"><img alt="Licença" src="https://img.shields.io/badge/licen%C3%A7a-GPL--3.0-2b3140"></a>
 </p>
@@ -34,7 +34,7 @@ Feito por **Heyash**.
 | Loja de itens | Fundos de raridade, prévia em vídeo, áudio das músicas e emotes, estilos com rolagem, tag “Só até hoje” e exportação da loja em imagem |
 | Ofertas especiais | Promoções em dinheiro real da Epic e da PSN |
 | Vestiário | Categorias em dropdown, aba Mascote, prévia em vídeo e exportação em imagem (popup com Abrir imagem) |
-| Elementais | Poeira Elemental, dispositivos, prévia, variantes (Base, Gold, Cheat Master) e exportação do álbum |
+| Elementais | Poeira Elemental, dispositivos, prévia, variantes (Base, Gold, Trapaceiro), nomes em português e exportação do álbum |
 | Estatísticas e XP | Suas stats de BR e o XP ganho na temporada |
 | Extras | Mapa atual, status dos servidores, vazamentos (por dia, com prévia e exportação), compra de V-Bucks e apoiar um criador |
 
@@ -44,7 +44,7 @@ Feito por **Heyash**.
 - **Lhamas grátis** com resgate automático: o launcher varre as contas de hora em hora (no horário UTC) e resgata para todo mundo que deixou a opção ligada, com histórico dos itens recebidos.
 - **Loja do STW** (incluindo lhamas com Fichas Raio-X) e **missões diárias**.
 - **Auto-kick**: sai da missão na hora, resgata as recompensas, transfere materiais e convida seus amigos quando a missão acaba.
-- Ferramentas extras: Recursos STW (grade, busca e exportação em imagem) e Boosts de XP.
+- Ferramentas extras: **Recursos** (grade, PL da conta, busca e exportação em imagem) e Boosts de XP.
 
 ### Notificações do Windows
 
@@ -68,7 +68,8 @@ Com a opção ligada em _Ajustes_, o launcher avisa no Windows (mesmo visual dos
 
 - **Trocar de conta:** pelo topo da janela. Para cadastrar outra, vá em _Conta → Conta_ e siga o login da Epic.
 - **Jogar:** botão _Iniciar jogo_ no topo. O caminho da instalação você muda em _Ajustes_.
-- **Exportar loja, vestiário ou Recursos STW:** abra a página, clique em _Exportar_ e espere a barra de progresso. O `.webp` fica em `%APPDATA%\dozamigos-launcher\exports`, e o botão _Abrir imagem_ aparece ao lado assim que termina.
+- **Exportar loja, vestiário, Elementais ou Recursos:** abra a página, clique em _Exportar_ e espere a barra de progresso. O `.webp` fica em `%APPDATA%\dozamigos-launcher\exports`, e o botão _Abrir imagem_ aparece ao lado assim que termina.
+- **Versão instalada:** aparece abaixo do ícone do GitHub na barra lateral (`v0.1.8` nesta release).
 - **Resgate automático de lhamas:** ligue em _STW → Lhamas grátis_. A varredura roda mesmo com o app minimizado.
 
 > [!IMPORTANT]

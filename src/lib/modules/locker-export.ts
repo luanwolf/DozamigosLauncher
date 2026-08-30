@@ -25,6 +25,8 @@ export {
 } from '$lib/modules/locker-export-rarity';
 
 export const WEBP_QUALITY = 0.85;
+/** Shared export collage backdrop (shop, locker, sprites, STW resources). */
+export const EXPORT_PAGE_BG = '#0a1628';
 const NAME_BAND = 34;
 /** Fortnite display face — load from /fonts; falls back to Impact/Teko if missing. */
 export const DISPLAY_FONT = '"Burbank Big Condensed Black", Impact, Teko, sans-serif';
