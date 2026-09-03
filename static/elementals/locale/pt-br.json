@@ -1,5 +1,5 @@
 {
-  "_readme": "Edite name e ability por slug. Salve o arquivo e recarregue a página Elementais. Slugs válidos: klombo, crown, jackrabbit, sonic, tails, shadow, killswitch, eight-bit, adventure, bush, jonesy, storm-scout.",
+  "_readme": "Edite name e ability por slug. Salve o arquivo e recarregue a página Elementais. Slugs válidos: klombo, crown, jackrabbit, sonic, tails, shadow, killswitch, eight-bit, adventure, bush, jonesy, storm-scout, x-ray, onigiri, mega-man, overshield.",
   "locale": "pt-br",
   "sprites": {
     "klombo": {
@@ -49,6 +49,22 @@
     "storm-scout": {
       "name": "Elemental Meteorológico",
       "ability": "Aplica Sobrecarga após sofrer uma certa quantidade de dano da Tempestade. Revela os próximos círculos da Tempestade no nível máximo."
+    },
+    "x-ray": {
+      "name": "Elemental Raio X",
+      "ability": "Marca inimigos periodicamente em uma área ao redor. O raio de detecção aumenta a cada nível."
+    },
+    "onigiri": {
+      "name": "Elemental Onigiri",
+      "ability": "Aplica Sobrecarga depois que você come ou bebe um consumível. A duração aumenta a cada nível."
+    },
+    "mega-man": {
+      "name": "Elemental Mega Man",
+      "ability": "Deslize por aí com atrito reduzido. Deslize mais longe a cada Subida de Nível."
+    },
+    "overshield": {
+      "name": "Elemental Sobrescudo",
+      "ability": "Concede Sobrescudo. A quantidade aumenta a cada nível."
     }
   }
 }

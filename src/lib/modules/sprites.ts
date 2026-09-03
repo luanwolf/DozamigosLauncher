@@ -1,7 +1,7 @@
 import type { AccountData } from '$types/account';
 
 export type SpriteRarity = 'rare' | 'epic' | 'legendary' | 'mythic';
-export type SpriteVariant = 'base' | 'gold' | 'cheat-master';
+export type SpriteVariant = 'base' | 'gold' | 'cheat-master' | 'loot-hacker';
 
 export type SpriteFamily = {
   slug: string;
@@ -19,9 +19,29 @@ export type SpriteEntry = SpriteFamily & {
 };
 
 const IMAGE_ROOT = '/elementals';
-const S4_VARIANTS: Exclude<SpriteVariant, 'base'>[] = ['gold', 'cheat-master'];
-/** Album rows: common, gold, then cheat. */
-export const SPRITE_EXPORT_VARIANTS: SpriteVariant[] = ['base', 'gold', 'cheat-master'];
+const S4_VARIANTS: Exclude<SpriteVariant, 'base'>[] = ['gold', 'cheat-master', 'loot-hacker'];
+/** Album rows: base, gold, cheat master, then loot hacker. */
+export const SPRITE_EXPORT_VARIANTS: SpriteVariant[] = ['base', 'gold', 'cheat-master', 'loot-hacker'];
+
+/** Left → right: rare → epic → legendary → mythic. */
+export const SPRITE_EXPORT_ORDER = [
+  'bush',
+  'adventure',
+  'jonesy',
+  'eight-bit',
+  'onigiri',
+  'mega-man',
+  'overshield',
+  'storm-scout',
+  'shadow',
+  'tails',
+  'killswitch',
+  'sonic',
+  'jackrabbit',
+  'x-ray',
+  'klombo',
+  'crown'
+] as const;
 
 /** Chapter 7 Season 4 (Override) — season id 42 on fortnite.gg. */
 export const SPRITE_FAMILIES: SpriteFamily[] = [
@@ -115,6 +135,34 @@ export const SPRITE_FAMILIES: SpriteFamily[] = [
     ability:
       'Ativa Sobrecarga após dano da tempestade; no nível máximo, revela círculos futuros. O limiar cai por nível.',
     variants: [...S4_VARIANTS]
+  },
+  {
+    slug: 'x-ray',
+    name: 'Elemental X-Ray',
+    rarity: 'legendary',
+    ability: 'Marca inimigos próximos periodicamente. O raio de detecção aumenta a cada nível.',
+    variants: [...S4_VARIANTS]
+  },
+  {
+    slug: 'onigiri',
+    name: 'Elemental Onigiri',
+    rarity: 'rare',
+    ability: 'Ativa Sobrecarga ao comer ou beber um consumível. A duração aumenta a cada nível.',
+    variants: [...S4_VARIANTS]
+  },
+  {
+    slug: 'mega-man',
+    name: 'Elemental Mega Man',
+    rarity: 'rare',
+    ability: 'Reduz o atrito ao deslizar ou nadar. Você desliza cada vez mais longe a cada nível.',
+    variants: []
+  },
+  {
+    slug: 'overshield',
+    name: 'Elemental Sobrescudo',
+    rarity: 'rare',
+    ability: 'Concede Sobrescudo. A quantidade aumenta a cada nível.',
+    variants: [...S4_VARIANTS]
   }
 ];
 
@@ -150,7 +198,11 @@ export function mapApiSpriteFamilyId(id: string): string | null {
     bushranger: 'bush',
     bush: 'bush',
     jonesy: 'jonesy',
-    stormscout: 'storm-scout'
+    stormscout: 'storm-scout',
+    xray: 'x-ray',
+    onigiri: 'onigiri',
+    megaman: 'mega-man',
+    overshield: 'overshield'
   };
 
   if (alias[stem]) return alias[stem];
@@ -231,6 +283,10 @@ export const SPRITE_RELIC_FAMILIES: Record<string, string> = {
   bushranger: 'bush',
   jonesy: 'jonesy',
   stormscout: 'storm-scout',
+  xray: 'x-ray',
+  onigiri: 'onigiri',
+  megaman: 'mega-man',
+  overshield: 'overshield',
   jazzjackrabbit: 'jackrabbit',
   jackrabbit: 'jackrabbit',
   sonic: 'sonic',
@@ -263,7 +319,7 @@ type QuestItem = {
 const MASTERY_QUEST = /^Quest:quest_s4\d_spritemastery_(redeem_)?p\d+_(q\d+)([a-z]?)$/;
 const MASTERY_TOKEN = /^Token:athena_s4\d_spritemastery_token_([a-z0-9]+?)(?:_\d+)?$/i;
 const TROPHY_REWARD =
-  /^CosmeticVariantToken:vtid_backpack_coldtrophy_([a-z0-9]+?)(?:_(gummy|galaxy|gold|gem|holofoil|cube|quack|cheatmaster))?$/;
+  /^CosmeticVariantToken:vtid_backpack_coldtrophy_([a-z0-9]+?)(?:_(gummy|galaxy|gold|gem|holofoil|cube|quack|cheatmaster|loothacker))?$/;
 
 /**
  * Epic exposes Mastery through athena quests. Dust, gizmos and per-Sprite levels live in Magpie
@@ -300,7 +356,13 @@ export function parseSpriteProgress(profile: unknown): SpriteProgress {
 
       const variantRaw = trophy[2]?.toLowerCase();
       const variant =
-        variantRaw === 'cheatmaster' ? 'cheat-master' : variantRaw === 'gold' ? 'gold' : 'base';
+        variantRaw === 'cheatmaster'
+          ? 'cheat-master'
+          : variantRaw === 'gold'
+            ? 'gold'
+            : variantRaw === 'galaxy' || variantRaw === 'loothacker'
+              ? 'loot-hacker'
+              : 'base';
 
       familyByQuest[questId] = family;
       if (claimed) mastered.add(`${family}:${variant}`);

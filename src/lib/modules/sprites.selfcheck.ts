@@ -5,6 +5,7 @@ import {
   parseSpriteProgress,
   readSpriteCollection,
   SPRITE_ENTRIES,
+  SPRITE_EXPORT_ORDER,
   SPRITE_EXPORT_VARIANTS,
   SPRITE_FAMILIES,
   spriteShortName,
@@ -12,6 +13,7 @@ import {
 } from './sprites';
 import {
   parseSpriteLevels,
+  parseSpriteMastered,
   parseSpriteResources,
   flattenMagpie,
   parseCreatureSpriteId,
@@ -21,17 +23,21 @@ import {
   SPRITE_GIZMO_CATALOG
 } from './sprites-account';
 
-assert.equal(SPRITE_FAMILIES.length, 12);
-assert.equal(SPRITE_ENTRIES.length, 36);
+assert.equal(SPRITE_FAMILIES.length, 16);
+assert.equal(SPRITE_ENTRIES.length, 61);
 assert.equal(new Set(SPRITE_ENTRIES.map((entry) => entry.key)).size, SPRITE_ENTRIES.length);
 assert.equal(SPRITE_FAMILIES.find((f) => f.slug === 'sonic')?.name, 'Elemental Sonic');
 assert.equal(SPRITE_FAMILIES.find((f) => f.slug === 'klombo')?.rarity, 'mythic');
 assert.equal(mapApiSpriteFamilyId('KlomboSprite'), 'klombo');
+assert.equal(mapApiSpriteFamilyId('XRaySprite'), 'x-ray');
+assert.equal(mapApiSpriteFamilyId('OnigiriSprite'), 'onigiri');
+assert.equal(mapApiSpriteFamilyId('MegaManSprite'), 'mega-man');
+assert.equal(mapApiSpriteFamilyId('OvershieldSprite'), 'overshield');
 assert.equal(SPRITE_FAMILIES.every((f) => f.name.startsWith('Elemental')), true);
-assert.equal(SPRITE_FAMILIES.every((f) => f.variants.includes('gold')), true);
-assert.equal(SPRITE_FAMILIES.every((f) => f.variants.includes('cheat-master')), true);
-assert.deepEqual(SPRITE_EXPORT_VARIANTS, ['base', 'gold', 'cheat-master']);
-assert.equal(SPRITE_FAMILIES.length * SPRITE_EXPORT_VARIANTS.length, 36);
+assert.equal(SPRITE_FAMILIES.find((f) => f.slug === 'mega-man')?.variants.length, 0);
+assert.equal(SPRITE_FAMILIES.find((f) => f.slug === 'overshield')?.variants.includes('loot-hacker'), true);
+assert.equal(SPRITE_FAMILIES.filter((f) => f.slug !== 'mega-man').every((f) => f.variants.includes('loot-hacker')), true);
+assert.deepEqual(SPRITE_EXPORT_VARIANTS, ['base', 'gold', 'cheat-master', 'loot-hacker']);
 assert.equal(spriteShortName('Elemental Sonic'), 'Sonic');
 assert.equal(spriteShortName('Elemental Storm Scout'), 'Storm Scout');
 assert.equal(spriteShortName('Elemental 8-Bit'), '8-Bit');
@@ -87,14 +93,20 @@ const progress = parseSpriteProgress({
             'Active',
             'CosmeticVariantToken:vtid_backpack_coldtrophy_klombo'
           ),
-          i: quest('Quest:quest_s42_bpquests_p01_q01', 'Claimed')
+          i: quest('Quest:quest_s42_bpquests_p01_q01', 'Claimed'),
+          j: quest('Quest:quest_s42_spritemastery_p01_q03', 'Claimed'),
+          k: quest(
+            'Quest:quest_s42_spritemastery_redeem_p01_q03',
+            'Claimed',
+            'CosmeticVariantToken:vtid_backpack_coldtrophy_narrowflea_galaxy'
+          )
         }
       }
     }
   ]
 });
 
-assert.deepEqual([...progress.mastered].sort(), ['sonic:base', 'sonic:gold']);
+assert.deepEqual([...progress.mastered].sort(), ['sonic:base', 'sonic:gold', 'sonic:loot-hacker']);
 assert.deepEqual([...progress.extracted], ['sonic']);
 
 console.log(`sprites self-check passed (${SPRITE_ENTRIES.length} entries)`);
@@ -280,6 +292,14 @@ assert.deepEqual(parseRelicId('KillswitchSprite_Variant_CheatMaster'), {
   family: 'killswitch',
   variant: 'cheat-master'
 });
+assert.deepEqual(parseRelicId('XRaySprite_Variant_LootHacker'), {
+  family: 'x-ray',
+  variant: 'loot-hacker'
+});
+assert.deepEqual(parseRelicId('OnigiriSprite_Variant_Galaxy'), {
+  family: 'onigiri',
+  variant: 'loot-hacker'
+});
 assert.equal(parseRelicId('Quest:quest_s42_spritemastery_jonesy'), null);
 assert.deepEqual(parseCreatureSpriteId('CollectableCreature:Jonesy'), { family: 'jonesy', variant: 'base' });
 assert.deepEqual(parseCreatureSpriteId('CollectableCreatureSprite:JazzJackrabbit_Gold'), {
@@ -289,6 +309,10 @@ assert.deepEqual(parseCreatureSpriteId('CollectableCreatureSprite:JazzJackrabbit
 assert.deepEqual(parseCreatureSpriteId('BR_Creature_Sprite_EightBitBlaster_Cheatmaster'), {
   family: 'eight-bit',
   variant: 'cheat-master'
+});
+assert.deepEqual(parseCreatureSpriteId('BR_Creature_Sprite_XRay_LootHacker'), {
+  family: 'x-ray',
+  variant: 'loot-hacker'
 });
 assert.equal(
   parseSpriteLevels({
@@ -348,9 +372,34 @@ assert.equal(
   parseSpriteLevels(itemsAsProfileForCheck(v2Items))['jonesy:base'],
   5
 );
+assert.deepEqual([...parseSpriteMastered(itemsAsProfileForCheck(v2Items))].sort(), ['jonesy:base']);
 assert.equal(parseSpriteResources(itemsAsProfileForCheck(v2Items)).dust, 8765);
 
-function itemsAsProfileForCheck(list: { templateId?: string; quantity?: number; attributes?: Record<string, unknown> }[]) {
+assert.ok(SPRITE_EXPORT_ORDER.indexOf('jackrabbit') < SPRITE_EXPORT_ORDER.indexOf('x-ray'));
+assert.ok(SPRITE_EXPORT_ORDER.indexOf('sonic') < SPRITE_EXPORT_ORDER.indexOf('jackrabbit'));
+assert.ok(SPRITE_EXPORT_ORDER.indexOf('storm-scout') < SPRITE_EXPORT_ORDER.indexOf('shadow'));
+assert.deepEqual([...SPRITE_EXPORT_ORDER], [
+  'bush',
+  'adventure',
+  'jonesy',
+  'eight-bit',
+  'onigiri',
+  'mega-man',
+  'overshield',
+  'storm-scout',
+  'shadow',
+  'tails',
+  'killswitch',
+  'sonic',
+  'jackrabbit',
+  'x-ray',
+  'klombo',
+  'crown'
+]);
+
+function itemsAsProfileForCheck(
+  list: { templateId?: string; quantity?: number | string; attributes?: Record<string, unknown> }[]
+) {
   const items: Record<string, (typeof list)[number]> = {};
   list.forEach((item, i) => {
     items[`m-${i}`] = item;

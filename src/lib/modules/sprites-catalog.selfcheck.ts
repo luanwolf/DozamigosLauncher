@@ -5,6 +5,10 @@ assert.equal(mapApiSpriteFamilyId('KlomboSprite'), 'klombo');
 assert.equal(mapApiSpriteFamilyId('EightBitBlasterSprite'), 'eight-bit');
 assert.equal(mapApiSpriteFamilyId('StormScoutSprite'), 'storm-scout');
 assert.equal(mapApiSpriteFamilyId('NarrowfleaSprite'), 'sonic');
+assert.equal(mapApiSpriteFamilyId('XRaySprite'), 'x-ray');
+assert.equal(mapApiSpriteFamilyId('OnigiriSprite'), 'onigiri');
+assert.equal(mapApiSpriteFamilyId('MegaManSprite'), 'mega-man');
+assert.equal(mapApiSpriteFamilyId('OvershieldSprite'), 'overshield');
 assert.equal(mapApiSpriteFamilyId('UnknownSprite'), null);
 
 const base = fallbackCatalog();
@@ -29,7 +33,11 @@ assert.equal(labeled.name, 'Elemental Klombo');
 assert.equal(labeled.ability, 'api ability');
 
 const pt = applySpriteLocaleFile(fallbackCatalog(), {
-  sprites: { killswitch: { name: 'Elemental Disruptor' }, 'storm-scout': { name: 'Elemental Meteorológico' } }
+  sprites: {
+    killswitch: { name: 'Elemental Disruptor' },
+    'storm-scout': { name: 'Elemental Meteorológico' },
+    'x-ray': { name: 'Elemental Raio X' }
+  }
 });
 assert.equal(
   spriteShortName(resolveSpriteLabel('killswitch', { name: 'Elemental Killswitch', ability: '' }, pt).name),
@@ -39,5 +47,6 @@ assert.equal(
   spriteShortName(resolveSpriteLabel('storm-scout', { name: 'Elemental Storm Scout', ability: '' }, pt).name),
   'Meteorológico'
 );
+assert.equal(spriteShortName(resolveSpriteLabel('x-ray', { name: 'Elemental X-Ray', ability: '' }, pt).name), 'Raio X');
 
 console.log('sprites-catalog self-check passed');

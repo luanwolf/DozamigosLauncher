@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { ItemColors } from '$lib/constants/item-colors';
+import { rarityBackgroundStyle } from '$lib/modules/locker-export-rarity';
   import { SPRITE_ENTRIES, type SpriteEntry, type SpriteVariant } from '$lib/modules/sprites';
   import { resolveSpriteLabel, type SpriteCatalogLabels } from '$lib/modules/sprites-catalog';
   import CosmeticStyles, { type StyleOption } from '$components/modules/shop/CosmeticStyles.svelte';
@@ -15,7 +15,12 @@
 
   let { entry = $bindable(), catalog = null, variantLabels, rarityLabels }: Props = $props();
 
-  const colors: Record<string, string> = { ...ItemColors.rarities };
+  const rarityBadge: Record<SpriteEntry['rarity'], string> = {
+    rare: '#3D9BF7',
+    epic: '#6C3F9E',
+    legendary: '#DA791D',
+    mythic: '#c89b28'
+  };
   let isOpen = $state(false);
   let selectedStyle = $state<StyleOption | null>(null);
 
@@ -36,7 +41,8 @@
     if (selectedStyle) return selectedStyle.name;
     return variantLabels[entry.variant];
   });
-  const badgeColor = $derived(entry ? colors[entry.rarity] || colors.common : colors.common);
+  const badgeColor = $derived(entry ? rarityBadge[entry.rarity] : rarityBadge.rare);
+  const previewBg = $derived(entry ? rarityBackgroundStyle({ rarity: entry.rarity }) : '');
   const labels = $derived(
     entry ? resolveSpriteLabel(entry.slug, { name: entry.name, ability: entry.ability }, catalog) : null
   );
@@ -75,7 +81,7 @@
       >
         <div
           class="relative flex min-h-72 flex-col items-center justify-center gap-3 bg-black/50 p-4 sm:min-h-[28rem] sm:border-r sm:border-border/80"
-          style="background-color: {badgeColor}"
+          style={previewBg}
         >
           {#if previewImage}
             <img

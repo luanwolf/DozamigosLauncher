@@ -32,6 +32,9 @@ assert.ok(LOBBY_HACK_CODES.includes('GottaGoFast'));
 assert.ok(LOBBY_HACK_CODES.includes('OverrideXP'));
 assert.ok(LOBBY_HACK_CODES.includes('JonesyIsGolden'));
 assert.ok(LOBBY_HACK_CODES.includes('GatherAndCraft'));
+assert.ok(LOBBY_HACK_CODES.includes('INVALIDCHEAT'));
+assert.ok(LOBBY_HACK_CODES.includes('ChatWhereDoYouFindTheKey'));
+assert.ok(LOBBY_HACK_CODES.includes('YourThoughtsAreMine'));
 assert.equal(new Set(LOBBY_HACK_CODES).size, LOBBY_HACK_CODES.length);
 
 const empty = emptyCheatCodeSummary();

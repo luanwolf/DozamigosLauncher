@@ -75,7 +75,7 @@ const SPRITE_MAGPIE_MODULE = '828c9446-3eb8-497e-a282-d95b92243c14';
 const GIZMO_MAGPIE_MODULE = '039e7691-eb2a-4ce2-99c5-63c831917870';
 const EOS_MAGPIE_UA =
   'EOS-SDK/1.19.4200.0-56705564@Fortnite (Windows/10.0.26100.8972.64bit) Fortnite/++Fortnite+Release-42.00-CL-56878558';
-const RELIC_ID_RE = /^([A-Za-z0-9]+?)(?:Sprite)?_Variant_(A|Gold|CheatMaster)$/i;
+const RELIC_ID_RE = /^([A-Za-z0-9]+?)(?:Sprite)?_Variant_(A|Gold|CheatMaster|LootHacker|Galaxy)$/i;
 
 const GIZMO_ICON_ROOT = '/elementals/gizmos';
 
@@ -163,7 +163,14 @@ export function parseRelicId(id: string): { family: string; variant: SpriteVaria
   const family = lookupRelicFamily(match[1]);
   if (!family) return null;
   const raw = match[2].toLowerCase();
-  const variant: SpriteVariant = raw === 'cheatmaster' ? 'cheat-master' : raw === 'gold' ? 'gold' : 'base';
+  const variant: SpriteVariant =
+    raw === 'cheatmaster'
+      ? 'cheat-master'
+      : raw === 'gold'
+        ? 'gold'
+        : raw === 'loothacker' || raw === 'galaxy'
+          ? 'loot-hacker'
+          : 'base';
   return { family, variant };
 }
 
@@ -178,7 +185,10 @@ export function parseCreatureSpriteId(id: string): { family: string; variant: Sp
   if (!match) return null;
   let name = match[1];
   let variant: SpriteVariant = 'base';
-  if (/cheatmaster$/i.test(name)) {
+  if (/loothacker$|galaxy$/i.test(name)) {
+    variant = 'loot-hacker';
+    name = name.replace(/[_-]?(loothacker|galaxy)$/i, '');
+  } else if (/cheatmaster$/i.test(name)) {
     variant = 'cheat-master';
     name = name.replace(/[_-]?cheatmaster$/i, '');
   } else if (/_gold$|gold$/i.test(name) && !/cheatmaster/i.test(name)) {
@@ -199,7 +209,8 @@ function familyFromTemplate(templateId: string): { family: string; variant: Spri
   if (!/sprite|elemental|magpie|collectible|collectable|creature/.test(lower)) return null;
 
   let variant: SpriteVariant = 'base';
-  if (/cheat\s?master|cheatmaster/.test(lower)) variant = 'cheat-master';
+  if (/loot\s?hacker|loothacker|\bgalaxy\b/.test(lower)) variant = 'loot-hacker';
+  else if (/cheat\s?master|cheatmaster/.test(lower)) variant = 'cheat-master';
   else if (/\bgold\b|dourad/.test(lower)) variant = 'gold';
 
   for (const family of SPRITE_FAMILIES) {
@@ -275,7 +286,14 @@ export function flattenMagpie(value: unknown, path = 'root', depth = 0): Profile
   if (templateId) {
     items.push({
       templateId,
-      quantity: obj.quantity ?? obj.Quantity ?? obj.count ?? 1,
+      quantity:
+        typeof obj.quantity === 'number' || typeof obj.quantity === 'string'
+          ? obj.quantity
+          : typeof obj.Quantity === 'number' || typeof obj.Quantity === 'string'
+            ? obj.Quantity
+            : typeof obj.count === 'number' || typeof obj.count === 'string'
+              ? obj.count
+              : 1,
       attributes: obj.attributes && typeof obj.attributes === 'object' ? (obj.attributes as Record<string, unknown>) : obj
     });
   }
@@ -506,6 +524,22 @@ export function parseSpriteLevels(...profiles: unknown[]): SpriteLevels {
   return levels;
 }
 
+/** Magpie entitlementMetadata `ml:true` marks a mastered Sprite variant. */
+export function parseSpriteMastered(...profiles: unknown[]): Set<string> {
+  const mastered = new Set<string>();
+  for (const profile of profiles) {
+    if (!profile) continue;
+    for (const item of profileItems(profile)) {
+      const id = item.templateId ?? '';
+      if (!id || /^(Quest|ChallengeBundle|ChallengeBundleSchedule|ConditionalAction|Token):/i.test(id)) continue;
+      if (item.attributes?.ml !== true) continue;
+      const parsed = familyFromTemplate(id);
+      if (parsed) mastered.add(`${parsed.family}:${parsed.variant}`);
+    }
+  }
+  return mastered;
+}
+
 /**
  * Athena Mastery quests + Magpie v2 inventory (gc.svc …/api/magpie/v2, EOS user token).
  */
@@ -523,6 +557,9 @@ export async function fetchSpriteAccountState(account: AccountData): Promise<Spr
   const magpie = await fetchMagpieProfile(account).catch(() => null);
 
   const progress = parseSpriteProgress(athena);
+  for (const key of parseSpriteMastered(athena, collections, commonCore, magpie)) {
+    progress.mastered.add(key);
+  }
   const levels = parseSpriteLevels(athena, collections, commonCore, magpie);
   for (const key of Object.keys(levels)) {
     const family = key.split(':')[0];

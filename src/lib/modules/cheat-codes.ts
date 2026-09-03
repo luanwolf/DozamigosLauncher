@@ -2,6 +2,9 @@ import type { AccountData } from '$types/account';
 
 /** Override lobby Admin Panel codes (skip visual repeatables LetsBlockAndRoll / DontBlockMe). */
 export const LOBBY_HACK_CODES = [
+  'INVALIDCHEAT',
+  'ChatWhereDoYouFindTheKey',
+  'YourThoughtsAreMine',
   'JonesyIsGolden',
   'GatherAndCraft',
   'Play4All',

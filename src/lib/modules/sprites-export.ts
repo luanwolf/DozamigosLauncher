@@ -3,9 +3,11 @@ import {
   APP_NAME,
   DISPLAY_FONT,
   ensureDisplayFont,
+  fillRarityBackground,
   fillOutlinedText,
   fitText,
   loadBitmap,
+  loadRarityBackground,
   roundRect,
   saveExportBlob,
   sanitizeFilename,
@@ -17,38 +19,23 @@ import { fetchSpriteCatalogLabels, resolveSpriteLabel, type SpriteCatalogLabels 
 import { SPRITE_DUST_ICON, type SpriteResources } from '$lib/modules/sprites-account';
 import {
   SPRITE_ENTRIES,
+  SPRITE_EXPORT_ORDER,
   SPRITE_EXPORT_VARIANTS,
   SPRITE_FAMILIES,
   spriteShortName,
+  type SpriteFamily,
   type SpriteEntry,
   type SpriteRarity,
   type SpriteVariant
 } from '$lib/modules/sprites';
 
-/** Left → right like the Fortniters card: rare → epic → legendary → mythic. */
-export const SPRITE_EXPORT_ORDER = [
-  'bush',
-  'adventure',
-  'jonesy',
-  'eight-bit',
-  'storm-scout',
-  'shadow',
-  'tails',
-  'killswitch',
-  'sonic',
-  'jackrabbit',
-  'klombo',
-  'crown'
-] as const;
-
-const VARIANT_LABEL_KEYS = {
-  base: 'sprites.variants.base',
-  gold: 'sprites.variants.gold',
-  'cheat-master': 'sprites.variants.cheatMaster'
-} as const satisfies Record<SpriteVariant, keyof typeof m>;
+const MASTERY_CROWN_URL = '/elementals/mastery-crown.webp';
 
 function variantRowLabel(variant: SpriteVariant, locale: Locale): string {
-  return String(m[VARIANT_LABEL_KEYS[variant]]({}, { locale })).toUpperCase();
+  if (variant === 'loot-hacker') return 'HACKER DE SAQUE';
+  if (variant === 'cheat-master') return String(m['sprites.variants.cheatMaster']({}, { locale })).toUpperCase();
+  if (variant === 'gold') return String(m['sprites.variants.gold']({}, { locale })).toUpperCase();
+  return String(m['sprites.variants.base']({}, { locale })).toUpperCase();
 }
 
 const GOLD_BAR = '#f5c542';
@@ -74,8 +61,10 @@ const CHIP_ICON = 40;
 const EXPORT_WEBP_QUALITY = 0.98;
 
 export type SpriteExportSlot = {
-  entry: SpriteEntry;
+  family: SpriteFamily;
+  entry: SpriteEntry | null;
   owned: boolean;
+  mastered: boolean;
   level?: number;
   slot: number;
 };
@@ -83,6 +72,7 @@ export type SpriteExportSlot = {
 export type SpriteExportOptions = {
   accountLabel: string;
   ownedKeys: ReadonlySet<string>;
+  masteredKeys?: ReadonlySet<string>;
   levels?: Record<string, number>;
   resources?: SpriteResources;
   locale?: Locale;
@@ -96,32 +86,36 @@ export type SpriteExportResult = {
   path: string;
 };
 
-function entryFor(slug: string, variant: SpriteVariant): SpriteEntry {
-  const entry = SPRITE_ENTRIES.find((item) => item.slug === slug && item.variant === variant);
-  if (!entry) throw new Error('Missing sprite entry ' + slug + ':' + variant);
-  return entry;
+function entryFor(slug: string, variant: SpriteVariant): SpriteEntry | null {
+  return SPRITE_ENTRIES.find((item) => item.slug === slug && item.variant === variant) ?? null;
 }
 
-function isOwned(entry: SpriteEntry, ownedKeys: ReadonlySet<string>) {
+function isOwned(entry: SpriteEntry | null, ownedKeys: ReadonlySet<string>) {
+  if (!entry) return false;
   if (ownedKeys.has(entry.key)) return true;
   if (entry.variant === 'base' && ownedKeys.has(entry.slug)) return true;
   return false;
 }
 
-/** Fixed 3×12 BASE + GOLD + CHEAT MASTER grid (36 slots). */
+/** Fixed 4×16 BASE + GOLD + CHEAT MASTER + LOOT HACKER grid (64 slots, blanks when Epic has no variant). */
 export function buildSpriteExportSlots(
   ownedKeys: ReadonlySet<string>,
-  levels: Record<string, number> = {}
+  levels: Record<string, number> = {},
+  masteredKeys: ReadonlySet<string> = new Set()
 ): SpriteExportSlot[] {
   const slots: SpriteExportSlot[] = [];
   let slot = 1;
   for (const variant of SPRITE_EXPORT_VARIANTS) {
     for (const slug of SPRITE_EXPORT_ORDER) {
       const entry = entryFor(slug, variant);
+      const family = SPRITE_FAMILIES.find((item) => item.slug === slug);
+      if (!family) throw new Error('Missing sprite family ' + slug);
       slots.push({
+        family,
         entry,
         owned: isOwned(entry, ownedKeys),
-        level: levels[entry.key],
+        mastered: !!entry && masteredKeys.has(entry.key),
+        level: entry ? levels[entry.key] : undefined,
         slot: slot++
       });
     }
@@ -199,12 +193,21 @@ function paintChip(
  * Rendered at 3× so 512px sprite art stays sharp on the card.
  */
 export async function exportSpriteAlbumWebp(options: SpriteExportOptions): Promise<SpriteExportResult> {
-  const { accountLabel, ownedKeys, levels = {}, resources, locale = 'pt-br', catalog, onProgress } = options;
+  const {
+    accountLabel,
+    ownedKeys,
+    masteredKeys = new Set(),
+    levels = {},
+    resources,
+    locale = 'pt-br',
+    catalog,
+    onProgress
+  } = options;
   await ensureDisplayFont();
 
   const labelCatalog = catalog ?? (await fetchSpriteCatalogLabels(locale));
 
-  const slots = buildSpriteExportSlots(ownedKeys, levels);
+  const slots = buildSpriteExportSlots(ownedKeys, levels, masteredKeys);
   const ownedCount = slots.filter((slot) => slot.owned).length;
 
   const cols = SPRITE_EXPORT_ORDER.length;
@@ -273,14 +276,18 @@ export async function exportSpriteAlbumWebp(options: SpriteExportOptions): Promi
   const total = slots.length;
   onProgress?.({ done: 0, total });
   let done = 0;
-  const bitmaps = await Promise.all(
-    slots.map(async (slot) => {
-      const bmp = await loadBitmap(slot.entry.image);
-      done += 1;
-      onProgress?.({ done, total });
-      return bmp;
-    })
-  );
+  const [bitmaps, backgrounds, crownBmp] = await Promise.all([
+    Promise.all(
+      slots.map(async (slot) => {
+        const bmp = slot.entry ? await loadBitmap(slot.entry.image) : null;
+        done += 1;
+        onProgress?.({ done, total });
+        return bmp;
+      })
+    ),
+    Promise.all(slots.map((slot) => loadRarityBackground({ rarity: slot.family.rarity }))),
+    loadBitmap(MASTERY_CROWN_URL)
+  ]);
 
   const gridLeft = PAD + LABEL_COL;
   const gridTop = HEADER + PAD + NAME_ROW;
@@ -316,8 +323,7 @@ export async function exportSpriteAlbumWebp(options: SpriteExportOptions): Promi
     roundRect(ctx, x, y, CELL, CELL, 14);
     ctx.clip();
 
-    ctx.fillStyle = '#132238';
-    ctx.fillRect(x, y, CELL, CELL);
+    fillRarityBackground(ctx, x, y, CELL, CELL, { rarity: slot.family.rarity }, backgrounds[i]);
 
     const bmp = bitmaps[i];
     if (bmp) {
@@ -350,18 +356,29 @@ export async function exportSpriteAlbumWebp(options: SpriteExportOptions): Promi
       ctx.fillText('Lvl ' + slot.level, x + 8, y + CELL - BAR_H - 8);
     }
 
-    if (slot.entry.variant === 'cheat-master') {
+    if (slot.mastered && crownBmp) {
+      const crown = Math.round(CELL * 0.28);
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(crownBmp, x + CELL - crown - 6, y + 6, crown, crown);
+    }
+
+    if (slot.entry?.variant === 'loot-hacker') {
       drawRainbowBar(ctx, x, y + CELL - BAR_H, CELL, BAR_H);
-    } else if (slot.entry.variant === 'gold') {
+    } else if (slot.entry?.variant === 'cheat-master') {
+      drawRainbowBar(ctx, x, y + CELL - BAR_H, CELL, BAR_H);
+    } else if (slot.entry?.variant === 'gold') {
       ctx.fillStyle = GOLD_BAR;
       ctx.fillRect(x, y + CELL - BAR_H, CELL, BAR_H);
     } else {
-      ctx.fillStyle = RARITY_BAR[slot.entry.rarity];
+      ctx.fillStyle = RARITY_BAR[slot.family.rarity];
       ctx.fillRect(x, y + CELL - BAR_H, CELL, BAR_H);
     }
 
     ctx.restore();
   }
+
+  crownBmp?.close();
 
   const appIcon = await loadBitmap(APP_ICON_URL);
   const footerY = height - FOOTER / 2;

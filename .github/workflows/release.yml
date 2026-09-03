@@ -57,12 +57,12 @@ jobs:
           tagName: v__VERSION__
           releaseName: 'v__VERSION__'
           releaseBody: |
-            ## Dozamigos Launcher v0.1.8
+            ## Dozamigos Launcher v0.1.9
 
             Baixe o instalador **Windows NSIS** (`.exe`) abaixo. Quem já tem o launcher instalado recebe o aviso de atualização na próxima abertura.
 
             ### Arquivos desta release
-            - `Dozamigos Launcher_0.1.8_x64-setup.exe` — instalador Windows (recomendado)
+            - `Dozamigos Launcher_0.1.9_x64-setup.exe` — instalador Windows (recomendado)
             - `latest.json` — manifesto da atualização automática
             - assinatura do instalador (usada pelo updater)
 
@@ -74,8 +74,8 @@ jobs:
             - Textos visíveis passam a usar **SoM** onde faz sentido (ex.: resgate 2FA, notificações)
 
             ### Battle Royale
-            - **Elementais**: variante renomeada para Trapaceiro; export corrigido; nomes e habilidades em português (catálogo + `static/elementals/locale/pt-br.json` editável)
-            - Novos códigos de lobby no resgate automático de Admin Panel
+            - **Elementais**: novos da v42.10 (Raio X, Onigiri, Mega Man, Sobrescudo), linha Hacker de Saque no álbum, ordem raro→épico→lendário→mítico, fundo alinhado à loja, ícones atualizados e coroa nos dominados (launcher + export)
+            - Novos códigos de lobby da v42.10 no resgate automático de Admin Panel
           releaseDraft: false
           prerelease: false
           uploadUpdaterJson: true

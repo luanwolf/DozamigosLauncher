@@ -2,11 +2,10 @@
   import { toast } from 'svelte-sonner';
   import DownloadIcon from '@lucide/svelte/icons/download';
   import CheckIcon from '@lucide/svelte/icons/check';
-  import CrownIcon from '@lucide/svelte/icons/crown';
   import SearchIcon from '@lucide/svelte/icons/search';
-  import { ItemColors } from '$lib/constants/item-colors';
   import { HUD_PAGE_WIDTH } from '$lib/constants/page-layout';
   import { t, language } from '$lib/i18n';
+  import { rarityBackgroundStyle } from '$lib/modules/locker-export-rarity';
   import { fetchSpriteAccountState, SPRITE_DUST_ICON, type SpriteResources } from '$lib/modules/sprites-account';
   import {
     fetchSpriteCatalogLabels,
@@ -17,6 +16,8 @@
   import { exportSpriteAlbumWebp } from '$lib/modules/sprites-export';
   import {
     SPRITE_ENTRIES,
+    SPRITE_EXPORT_ORDER,
+    SPRITE_EXPORT_VARIANTS,
     type SpriteEntry,
     type SpriteProgress,
     type SpriteRarity,
@@ -54,7 +55,8 @@
   const variantLabels = $derived<Record<SpriteVariant, string>>({
     base: $t('sprites.variants.base'),
     gold: $t('sprites.variants.gold'),
-    'cheat-master': $t('sprites.variants.cheatMaster')
+    'cheat-master': $t('sprites.variants.cheatMaster'),
+    'loot-hacker': 'Hacker de Saque'
   });
 
   const rarityLabels: Record<SpriteRarity, string> = {
@@ -71,6 +73,9 @@
 
   const isMastered = (entry: (typeof SPRITE_ENTRIES)[number]) => progress.mastered.has(entry.key);
 
+  const familyOrder = Object.fromEntries(SPRITE_EXPORT_ORDER.map((slug, index) => [slug, index]));
+  const variantOrder = Object.fromEntries(SPRITE_EXPORT_VARIANTS.map((value, index) => [value, index]));
+
   const filtered = $derived.by(() => {
     const query = search.trim().toLowerCase();
     return SPRITE_ENTRIES.filter(
@@ -85,12 +90,14 @@
           labelFor(entry).name.toLowerCase().includes(query) ||
           entry.name.toLowerCase().includes(query) ||
           variantLabels[entry.variant].toLowerCase().includes(query))
-    );
+    ).sort((a, b) => {
+      const byFamily = (familyOrder[a.slug] ?? 99) - (familyOrder[b.slug] ?? 99);
+      if (byFamily !== 0) return byFamily;
+      return (variantOrder[a.variant] ?? 99) - (variantOrder[b.variant] ?? 99);
+    });
   });
 
-  function cardBackground(rarity: SpriteRarity) {
-    return rarity === 'mythic' ? '#c89b28' : ItemColors.rarities[rarity];
-  }
+  const cardBackground = (rarity: SpriteRarity) => rarityBackgroundStyle({ rarity });
 
   async function exportCollection() {
     if (!$activeAccount || isExporting) return;
@@ -108,6 +115,7 @@
       const result = await exportSpriteAlbumWebp({
         accountLabel: $activeAccount.displayName,
         ownedKeys,
+        masteredKeys: progress.mastered,
         levels,
         resources,
         locale: $language,
@@ -257,7 +265,7 @@
             : owned
               ? 'border-primary ring-1 ring-primary/50'
               : ''}"
-          style="background-color: {cardBackground(entry.rarity)}"
+          style={cardBackground(entry.rarity)}
         >
           <button
             type="button"
@@ -281,12 +289,12 @@
               </span>
             {/if}
             {#if hasMastery}
-              <span
-                class="absolute top-2 right-2 flex size-6 items-center justify-center rounded-full bg-amber-400 text-black shadow"
+              <img
+                class="absolute top-1 right-1 z-10 h-7 w-auto drop-shadow-[0_2px_6px_rgba(0,0,0,0.65)]"
                 title={$t('sprites.mastery.mastered')}
-              >
-                <CrownIcon class="size-4" />
-              </span>
+                alt=""
+                src="/elementals/mastery-crown.webp"
+              />
             {:else if owned}
               <span
                 class="absolute top-2 right-2 flex size-6 items-center justify-center rounded-full bg-primary text-primary-foreground shadow"
