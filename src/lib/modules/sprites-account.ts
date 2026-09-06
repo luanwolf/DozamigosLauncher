@@ -1,8 +1,8 @@
 import type { AccountData } from '$types/account';
 import {
+  mapApiSpriteFamilyId,
   parseSpriteProgress,
   SPRITE_FAMILIES,
-  SPRITE_RELIC_FAMILIES,
   type SpriteProgress,
   type SpriteVariant
 } from '$lib/modules/sprites';
@@ -73,9 +73,12 @@ const DUST_RE = /sprite[_\s.-]?dust|athenaspritedust|extractionpoints/i;
 const EOS_DEPLOYMENT_ID = '62a9473a2dca46b29ccf17577fcf42d7';
 const SPRITE_MAGPIE_MODULE = '828c9446-3eb8-497e-a282-d95b92243c14';
 const GIZMO_MAGPIE_MODULE = '039e7691-eb2a-4ce2-99c5-63c831917870';
+const KNOWN_MAGPIE_MODULES = [SPRITE_MAGPIE_MODULE, GIZMO_MAGPIE_MODULE];
+const MAGPIE_MODULE_UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const EOS_MAGPIE_UA =
   'EOS-SDK/1.19.4200.0-56705564@Fortnite (Windows/10.0.26100.8972.64bit) Fortnite/++Fortnite+Release-42.00-CL-56878558';
-const RELIC_ID_RE = /^([A-Za-z0-9]+?)(?:Sprite)?_Variant_(A|Gold|CheatMaster|LootHacker|Galaxy)$/i;
+const RELIC_ID_RE =
+  /^([A-Za-z0-9]+(?:_[A-Za-z0-9]+)*)(?:Sprite)?_Variant_(A|Gold|CheatMaster|LootHacker|Galaxy)$/i;
 
 const GIZMO_ICON_ROOT = '/elementals/gizmos';
 
@@ -152,15 +155,14 @@ function digLevel(value: unknown, depth = 0): number | null {
   return null;
 }
 
-function lookupRelicFamily(token: string): string | null {
-  const relic = token.toLowerCase().replace(/sprite$/i, '');
-  return SPRITE_RELIC_FAMILIES[relic] ?? SPRITE_RELIC_FAMILIES[relic.replace(/-/g, '')] ?? null;
+function relicLeaf(id: string) {
+  return id.split(/[/:]/).filter(Boolean).pop() ?? id;
 }
 
 export function parseRelicId(id: string): { family: string; variant: SpriteVariant } | null {
-  const match = id.match(RELIC_ID_RE);
+  const match = relicLeaf(id).match(RELIC_ID_RE);
   if (!match) return null;
-  const family = lookupRelicFamily(match[1]);
+  const family = mapApiSpriteFamilyId(match[1]);
   if (!family) return null;
   const raw = match[2].toLowerCase();
   const variant: SpriteVariant =
@@ -195,7 +197,7 @@ export function parseCreatureSpriteId(id: string): { family: string; variant: Sp
     variant = 'gold';
     name = name.replace(/[_-]?gold$/i, '');
   }
-  const family = lookupRelicFamily(name.replace(/[_-]/g, ''));
+  const family = mapApiSpriteFamilyId(name);
   return family ? { family, variant } : null;
 }
 
@@ -206,16 +208,18 @@ function familyFromTemplate(templateId: string): { family: string; variant: Spri
   const lower = templateId.toLowerCase();
   // MagpieReward_* entitlement names contain family words (CrownSprite) without meaning ownership.
   if (/^magpiereward_/i.test(templateId) && !/_variant_/i.test(templateId)) return null;
-  if (!/sprite|elemental|magpie|collectible|collectable|creature/.test(lower)) return null;
+  // `_variant_` covers Magpie keys like Mega_Man_Variant_A that never say "sprite".
+  if (!/sprite|elemental|magpie|collectible|collectable|creature|_variant_/.test(lower)) return null;
 
   let variant: SpriteVariant = 'base';
   if (/loot\s?hacker|loothacker|\bgalaxy\b/.test(lower)) variant = 'loot-hacker';
   else if (/cheat\s?master|cheatmaster/.test(lower)) variant = 'cheat-master';
   else if (/\bgold\b|dourad/.test(lower)) variant = 'gold';
 
+  const compact = lower.replace(/[^a-z0-9]/g, '');
   for (const family of SPRITE_FAMILIES) {
-    const tokens = [family.slug, family.imageSlug, family.slug.replace(/-/g, '')].filter(Boolean) as string[];
-    if (tokens.some((token) => lower.includes(token.replace(/-/g, '')))) {
+    const tokens = [family.slug, family.imageSlug].filter(Boolean) as string[];
+    if (tokens.some((token) => compact.includes(token.replace(/-/g, '')))) {
       return { family: family.slug, variant };
     }
   }
@@ -433,21 +437,112 @@ async function fetchMagpieBag(
     .catch(() => null);
 }
 
+/** Strip Magpie `module-uuid:` so the same stack from filtered + full bags collapses. */
+function magpieDedupeKey(id: string) {
+  return id.replace(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}:/i, '');
+}
+
+/** Module UUIDs from Magpie keys (`uuid:Relic`) and `moduleId` fields — not account/deployment ids. */
+export function collectMagpieModuleIds(value: unknown, depth = 0): string[] {
+  const found = new Set<string>();
+  const add = (raw: string) => {
+    const id = raw.toLowerCase();
+    if (id === EOS_DEPLOYMENT_ID) return;
+    found.add(id);
+  };
+
+  const walk = (node: unknown, d: number) => {
+    if (d > 8 || node == null) return;
+    if (typeof node === 'string') {
+      const prefixed = node.match(
+        /^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}):/i
+      );
+      if (prefixed) add(prefixed[1]);
+      return;
+    }
+    if (Array.isArray(node)) {
+      for (const child of node) walk(child, d + 1);
+      return;
+    }
+    if (typeof node !== 'object') return;
+    for (const [key, child] of Object.entries(node as Record<string, unknown>)) {
+      const prefixed = key.match(
+        /^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}):/i
+      );
+      if (prefixed) add(prefixed[1]);
+      if (/^module(id|_id)?$/i.test(key) && typeof child === 'string' && MAGPIE_MODULE_UUID_RE.test(child)) {
+        add(child);
+      }
+      walk(child, d + 1);
+    }
+  };
+
+  walk(value, depth);
+  return [...found];
+}
+
+/** Merge Magpie bags; same template (max qty) wins so gizmos don't double-count. */
+export function mergeMagpieItems(...lists: ProfileItem[][]): ProfileItem[] {
+  const byKey = new Map<string, ProfileItem>();
+  for (const item of lists.flat()) {
+    const id = item.templateId ?? '';
+    if (!id) continue;
+    const key = magpieDedupeKey(id);
+    const prev = byKey.get(key);
+    if (!prev || qty(item) > qty(prev)) byKey.set(key, item);
+  }
+  return [...byKey.values()];
+}
+
+async function fetchMagpieModules(
+  magpieV2Service: Awaited<typeof import('$lib/http')>['magpieV2Service'],
+  session: FortniteEosSession,
+  accountId: string
+) {
+  const headers = {
+    Authorization: `Bearer ${session.accessToken}`,
+    'X-User-Agent': EOS_MAGPIE_UA
+  };
+  const paths = [
+    `deployment/${EOS_DEPLOYMENT_ID}/domain/FN1/account/${accountId}/workspace/default/linkMode/live/modules`,
+    `deployment/${EOS_DEPLOYMENT_ID}/domain/FN1/account/${accountId}/workspace/default/modules`
+  ];
+  const listed = await Promise.all(
+    paths.map((path) => magpieV2Service.get(path, { headers }).json().catch(() => null))
+  );
+  return collectMagpieModuleIds(listed);
+}
+
+/**
+ * Known sprite + gizmo modules (unfiltered Magpie often returns empty), plus
+ * discovered / wildcard bags so a second sprite module is not invisible.
+ */
 async function fetchMagpieProfile(account: AccountData): Promise<unknown | null> {
   const session = await getFortniteEosSession(account).catch(() => null);
   if (!session) return null;
 
   const { magpieV2Service } = await import('$lib/http');
-  const [sprites, gizmos] = await Promise.all([
+  const [sprites, gizmos, wildcard, full, listed] = await Promise.all([
     fetchMagpieBag(magpieV2Service, session, account.accountId, SPRITE_MAGPIE_MODULE),
-    fetchMagpieBag(magpieV2Service, session, account.accountId, GIZMO_MAGPIE_MODULE)
+    fetchMagpieBag(magpieV2Service, session, account.accountId, GIZMO_MAGPIE_MODULE),
+    fetchMagpieBag(magpieV2Service, session, account.accountId, '*'),
+    fetchMagpieBag(magpieV2Service, session, account.accountId),
+    fetchMagpieModules(magpieV2Service, session, account.accountId)
   ]);
 
-  let items = [...parseMagpieV2Inventory(sprites), ...parseMagpieV2Inventory(gizmos)];
-  if (!items.some((item) => matchGizmo(item.templateId ?? ''))) {
-    const full = await fetchMagpieBag(magpieV2Service, session, account.accountId);
-    items = [...items, ...parseMagpieV2Inventory(full)];
-  }
+  const seen = new Set(KNOWN_MAGPIE_MODULES);
+  const extraIds = [...listed, ...collectMagpieModuleIds([sprites, gizmos, wildcard, full])].filter((id) => {
+    if (seen.has(id)) return false;
+    seen.add(id);
+    return true;
+  });
+  const extra = extraIds.length
+    ? await Promise.all(extraIds.map((id) => fetchMagpieBag(magpieV2Service, session, account.accountId, id)))
+    : [];
+
+  const items = mergeMagpieItems(
+    ...[sprites, gizmos, wildcard, full, ...extra].map((bag) => parseMagpieV2Inventory(bag))
+  );
   return items.length ? itemsAsProfile(items) : null;
 }
 
@@ -484,7 +579,7 @@ export function parseSpriteResources(...profiles: unknown[]): SpriteResources {
       }
       const gizmo = matchGizmo(id);
       if (!gizmo) continue;
-      profileGizmos.set(gizmo.id, (profileGizmos.get(gizmo.id) ?? 0) + amount);
+      profileGizmos.set(gizmo.id, Math.max(profileGizmos.get(gizmo.id) ?? 0, amount));
     }
 
     dust = Math.max(dust, profileDust);

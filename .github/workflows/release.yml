@@ -57,25 +57,24 @@ jobs:
           tagName: v__VERSION__
           releaseName: 'v__VERSION__'
           releaseBody: |
-            ## Dozamigos Launcher v0.1.9
+            ## Dozamigos Launcher v0.2.0
 
             Baixe o instalador **Windows NSIS** (`.exe`) abaixo. Quem já tem o launcher instalado recebe o aviso de atualização na próxima abertura.
 
             ### Arquivos desta release
-            - `Dozamigos Launcher_0.1.9_x64-setup.exe` — instalador Windows (recomendado)
+            - `Dozamigos Launcher_0.2.0_x64-setup.exe` — instalador Windows (recomendado)
             - `latest.json` — manifesto da atualização automática
             - assinatura do instalador (usada pelo updater)
 
-            ### Geral
-            - Versão do app exibida abaixo do ícone do GitHub na barra lateral
-
-            ### Salve o Mundo
-            - **Recursos**: página renomeada, export com fundo alinhado à loja/vestiário e PL da conta corrigido (FORT sem stats de time duplicados)
-            - Textos visíveis passam a usar **SoM** onde faz sentido (ex.: resgate 2FA, notificações)
-
             ### Battle Royale
-            - **Elementais**: novos da v42.10 (Raio X, Onigiri, Mega Man, Sobrescudo), linha Hacker de Saque no álbum, ordem raro→épico→lendário→mítico, fundo alinhado à loja, ícones atualizados e coroa nos dominados (launcher + export)
-            - Novos códigos de lobby da v42.10 no resgate automático de Admin Panel
+            - **Elementais** v42.10 (Raio X, Onigiri, Mega Man, Sobrescudo) no catálogo; extraído/dominado/nível via IDs Epic (WinnerB/WinnerC/ImprovedSlide/Overshield) no mesmo fluxo Magpie/athena
+
+            ### Biblioteca
+            - Resgatar jogos grátis abre a página no Epic Games Launcher
+
+            ### Geral
+            - Cache horário de dados gerais (sem mudar crons de loja/lhamas)
+            - Versão do app exibida abaixo do ícone do GitHub na barra lateral
           releaseDraft: false
           prerelease: false
           uploadUpdaterJson: true

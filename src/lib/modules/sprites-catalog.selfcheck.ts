@@ -1,14 +1,18 @@
 import { strict as assert } from 'node:assert';
-import { mapApiSpriteFamilyId, spriteShortName } from './sprites';
+import { mapApiSpriteFamilyId, SPRITE_FAMILIES, spriteShortName } from './sprites';
 import { applySpriteLocaleFile, fallbackCatalog, resolveSpriteLabel } from './sprites-catalog';
-assert.equal(mapApiSpriteFamilyId('KlomboSprite'), 'klombo');
-assert.equal(mapApiSpriteFamilyId('EightBitBlasterSprite'), 'eight-bit');
-assert.equal(mapApiSpriteFamilyId('StormScoutSprite'), 'storm-scout');
+for (const family of SPRITE_FAMILIES) {
+  const compact = family.slug.replace(/-/g, '');
+  assert.equal(mapApiSpriteFamilyId(family.slug), family.slug, family.slug);
+  assert.equal(mapApiSpriteFamilyId(`${compact}Sprite`), family.slug, `${compact}Sprite`);
+}
 assert.equal(mapApiSpriteFamilyId('NarrowfleaSprite'), 'sonic');
-assert.equal(mapApiSpriteFamilyId('XRaySprite'), 'x-ray');
-assert.equal(mapApiSpriteFamilyId('OnigiriSprite'), 'onigiri');
-assert.equal(mapApiSpriteFamilyId('MegaManSprite'), 'mega-man');
-assert.equal(mapApiSpriteFamilyId('OvershieldSprite'), 'overshield');
+assert.equal(mapApiSpriteFamilyId('EightBitBlasterSprite'), 'eight-bit');
+assert.equal(mapApiSpriteFamilyId('BulletSprite'), 'onigiri');
+assert.equal(mapApiSpriteFamilyId('Mega_Man'), 'mega-man');
+assert.equal(mapApiSpriteFamilyId('WinnerBSprite'), 'x-ray');
+assert.equal(mapApiSpriteFamilyId('WinnerC'), 'onigiri');
+assert.equal(mapApiSpriteFamilyId('ImprovedSlideSprite'), 'mega-man');
 assert.equal(mapApiSpriteFamilyId('UnknownSprite'), null);
 
 const base = fallbackCatalog();

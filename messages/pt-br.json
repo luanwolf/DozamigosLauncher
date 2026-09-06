@@ -1515,7 +1515,7 @@
   "freeGames": {
     "page": {
       "title": "Jogos Gratuitos",
-      "description": "Jogos gratuitos da Epic Games Store com resgate direto na conta ativa do launcher."
+      "description": "Jogos gratuitos da Epic Games Store. O resgate abre a página do jogo no Epic Games Launcher."
     },
     "refresh": "Atualizar",
     "loading": "Carregando...",
@@ -1524,12 +1524,12 @@
     "free": "GRÁTIS",
     "endsAt": "Termina em {date}",
     "claimOnStore": "Abrir Epic Launcher",
-    "claimLinkHint": "O launcher tenta resgatar o jogo na conta ativa. Se a API falhar, o Epic Games Launcher será aberto para concluir o resgate.",
+    "claimLinkHint": "Resgatar abre a página do jogo no Epic Games Launcher para você confirmar o resgate por lá.",
     "claimLinkCopied": "Link de resgate copiado para {account}",
     "failedToCopyClaimLink": "Falha ao copiar o link de resgate",
     "claimGame": "Resgatar",
     "claimFailedUseLink": "O resgate pelo launcher falhou. Abrindo o Epic Games Launcher no PC.",
-    "openingLauncher": "Abrindo o Epic Games Launcher para concluir o resgate…",
+    "openingLauncher": "Abrindo a página do jogo no Epic Games Launcher…",
     "claimAll": "Resgatar Todos os Jogos Gratuitos",
     "claiming": "Resgatando...",
     "claimedCount": "{count} jogo(s) resgatado(s)!",

@@ -6,12 +6,9 @@
   import { HUD_PAGE_WIDTH } from '$lib/constants/page-layout';
   import { t, language } from '$lib/i18n';
   import { rarityBackgroundStyle } from '$lib/modules/locker-export-rarity';
-  import { fetchSpriteAccountState, SPRITE_DUST_ICON, type SpriteResources } from '$lib/modules/sprites-account';
-  import {
-    fetchSpriteCatalogLabels,
-    resolveSpriteLabel,
-    type SpriteCatalogLabels
-  } from '$lib/modules/sprites-catalog';
+  import { spriteAccountCache, spriteCatalogCache } from '$lib/modules/account-data';
+  import { SPRITE_DUST_ICON } from '$lib/modules/sprites-account';
+  import { resolveSpriteLabel } from '$lib/modules/sprites-catalog';
   import { beginExportToast } from '$lib/modules/export-toast';
   import { exportSpriteAlbumWebp } from '$lib/modules/sprites-export';
   import {
@@ -19,7 +16,6 @@
     SPRITE_EXPORT_ORDER,
     SPRITE_EXPORT_VARIANTS,
     type SpriteEntry,
-    type SpriteProgress,
     type SpriteRarity,
     type SpriteVariant
   } from '$lib/modules/sprites';
@@ -36,18 +32,26 @@
   type StatusFilter = 'all' | 'extracted' | 'mastered' | 'missing';
 
   const activeAccount = accountStore.getActiveStore(false);
+  const accountState = $derived(spriteAccountCache.get($activeAccount));
+  const catalogState = $derived(spriteCatalogCache.get($language));
 
-  let progress = $state<SpriteProgress>({ mastered: new Set(), extracted: new Set() });
   let search = $state('');
   let rarity = $state<RarityFilter>('all');
   let variant = $state<VariantFilter>('all');
   let status = $state<StatusFilter>('all');
-  let isLoadingAccount = $state(true);
   let isExporting = $state(false);
   let previewEntry = $state<SpriteEntry | null>(null);
-  let resources = $state<SpriteResources>({ dust: 0, gizmos: [] });
-  let levels = $state<Record<string, number>>({});
-  let catalog = $state<SpriteCatalogLabels | null>(null);
+
+  const progress = $derived({
+    mastered: accountState.data?.mastered ?? new Set<string>(),
+    extracted: accountState.data?.extracted ?? new Set<string>()
+  });
+  const resources = $derived(accountState.data?.resources ?? { dust: 0, gizmos: [] });
+  const levels = $derived(accountState.data?.levels ?? {});
+  const catalog = $derived(catalogState.data);
+  const isLoadingAccount = $derived(
+    !!$activeAccount && !accountState.data && (accountState.loading || accountState.error == null)
+  );
 
   const labelFor = (entry: (typeof SPRITE_ENTRIES)[number]) =>
     resolveSpriteLabel(entry.slug, { name: entry.name, ability: entry.ability }, catalog);
@@ -141,48 +145,14 @@
   }
 
   $effect(() => {
-    const locale = $language;
-    let cancelled = false;
-    fetchSpriteCatalogLabels(locale)
-      .then((result) => {
-        if (!cancelled) catalog = result;
-      })
-      .catch(() => {
-        if (!cancelled) catalog = null;
-      });
-    return () => {
-      cancelled = true;
-    };
+    void spriteCatalogCache.ensure($language);
   });
 
   $effect(() => {
     const account = $activeAccount;
-    progress = { mastered: new Set(), extracted: new Set() };
-    resources = { dust: 0, gizmos: [] };
-    levels = {};
-    if (!account) {
-      isLoadingAccount = false;
-      return;
-    }
-
-    isLoadingAccount = true;
-    let cancelled = false;
-    fetchSpriteAccountState(account)
-      .then((result) => {
-        if (cancelled) return;
-        progress = { mastered: result.mastered, extracted: result.extracted };
-        resources = result.resources;
-        levels = result.levels;
-        isLoadingAccount = false;
-      })
-      .catch((error) => {
-        handleError({ error, message: $t('sprites.mastery.failed'), account });
-        if (!cancelled) isLoadingAccount = false;
-      });
-
-    return () => {
-      cancelled = true;
-    };
+    if (!account) return;
+    const hasData = spriteAccountCache.get(account).data != null;
+    void (hasData ? spriteAccountCache.refresh(account) : spriteAccountCache.ensure(account));
   });
 </script>
 

@@ -19,6 +19,8 @@ import {
   parseCreatureSpriteId,
   parseRelicId,
   parseMagpieV2Inventory,
+  mergeMagpieItems,
+  collectMagpieModuleIds,
   spriteXpToLevel,
   SPRITE_GIZMO_CATALOG
 } from './sprites-account';
@@ -28,11 +30,34 @@ assert.equal(SPRITE_ENTRIES.length, 61);
 assert.equal(new Set(SPRITE_ENTRIES.map((entry) => entry.key)).size, SPRITE_ENTRIES.length);
 assert.equal(SPRITE_FAMILIES.find((f) => f.slug === 'sonic')?.name, 'Elemental Sonic');
 assert.equal(SPRITE_FAMILIES.find((f) => f.slug === 'klombo')?.rarity, 'mythic');
-assert.equal(mapApiSpriteFamilyId('KlomboSprite'), 'klombo');
-assert.equal(mapApiSpriteFamilyId('XRaySprite'), 'x-ray');
-assert.equal(mapApiSpriteFamilyId('OnigiriSprite'), 'onigiri');
-assert.equal(mapApiSpriteFamilyId('MegaManSprite'), 'mega-man');
-assert.equal(mapApiSpriteFamilyId('OvershieldSprite'), 'overshield');
+function pascalFamily(slug: string) {
+  return slug
+    .split('-')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join('');
+}
+
+for (const family of SPRITE_FAMILIES) {
+  const compact = family.slug.replace(/-/g, '');
+  const pascal = pascalFamily(family.slug);
+  assert.equal(mapApiSpriteFamilyId(family.slug), family.slug, family.slug);
+  assert.equal(mapApiSpriteFamilyId(family.slug.replace(/-/g, '_')), family.slug, `${family.slug} underscores`);
+  assert.equal(mapApiSpriteFamilyId(`${compact}Sprite`), family.slug, `${compact}Sprite`);
+  assert.deepEqual(parseRelicId(`${pascal}_Variant_A`), { family: family.slug, variant: 'base' }, pascal);
+  assert.deepEqual(
+    parseRelicId(`module-uuid:${pascal}Sprite_Variant_A`),
+    { family: family.slug, variant: 'base' },
+    `uuid:${pascal}`
+  );
+}
+assert.equal(mapApiSpriteFamilyId('NarrowfleaSprite'), 'sonic');
+assert.equal(mapApiSpriteFamilyId('EightBitBlasterSprite'), 'eight-bit');
+assert.equal(mapApiSpriteFamilyId('BulletSprite'), 'onigiri');
+assert.equal(mapApiSpriteFamilyId('Mega_Man'), 'mega-man');
+assert.equal(mapApiSpriteFamilyId('WinnerBSprite'), 'x-ray');
+assert.equal(mapApiSpriteFamilyId('WinnerC'), 'onigiri');
+assert.equal(mapApiSpriteFamilyId('ImprovedSlideSprite'), 'mega-man');
+assert.equal(mapApiSpriteFamilyId('UnknownSprite'), null);
 assert.equal(SPRITE_FAMILIES.every((f) => f.name.startsWith('Elemental')), true);
 assert.equal(SPRITE_FAMILIES.find((f) => f.slug === 'mega-man')?.variants.length, 0);
 assert.equal(SPRITE_FAMILIES.find((f) => f.slug === 'overshield')?.variants.includes('loot-hacker'), true);
@@ -287,6 +312,65 @@ assert.equal(familyProgress.extracted.has('jonesy'), true);
 assert.equal(familyProgress.extracted.has('eight-bit'), true);
 assert.equal(familyProgress.extracted.has('klombo'), false);
 
+const liveTokenProgress = parseSpriteProgress({
+  profileChanges: [
+    {
+      profile: {
+        items: {
+          a: { templateId: 'Token:athena_s42_spritemastery_token_winnerb', quantity: 1 },
+          b: { templateId: 'Token:athena_s42_spritemastery_token_winnerc_02', quantity: 1 },
+          c: { templateId: 'Token:athena_s42_spritemastery_token_improvedslide', quantity: 1 },
+          d: { templateId: 'Token:athena_s42_spritemastery_token_overshield_01', quantity: 1 }
+        }
+      }
+    }
+  ]
+});
+assert.equal(liveTokenProgress.extracted.has('x-ray'), true);
+assert.equal(liveTokenProgress.extracted.has('onigiri'), true);
+assert.equal(liveTokenProgress.extracted.has('mega-man'), true);
+assert.equal(liveTokenProgress.extracted.has('overshield'), true);
+
+const catalogTokenItems = Object.fromEntries(
+  SPRITE_FAMILIES.flatMap((family, i) => [
+    [
+      `t${i}`,
+      { templateId: `Token:athena_s42_spritemastery_token_${family.slug.replace(/-/g, '_')}`, quantity: 1 }
+    ],
+    [
+      `s${i}`,
+      { templateId: `Token:athena_s42_spritemastery_token_${family.slug.replace(/-/g, '')}sprite`, quantity: 1 }
+    ]
+  ])
+);
+const catalogTokenProgress = parseSpriteProgress({
+  profileChanges: [{ profile: { items: catalogTokenItems } }]
+});
+for (const family of SPRITE_FAMILIES) {
+  assert.equal(catalogTokenProgress.extracted.has(family.slug), true, `token ${family.slug}`);
+}
+
+const catalogLevelItems = Object.fromEntries(
+  SPRITE_FAMILIES.map((family, i) => [
+    `l${i}`,
+    {
+      templateId: `${pascalFamily(family.slug)}_Variant_A`,
+      quantity: 1,
+      attributes: { level: 2, ml: true }
+    }
+  ])
+);
+const catalogLevels = parseSpriteLevels({
+  profileChanges: [{ profile: { items: catalogLevelItems } }]
+});
+const catalogMastered = parseSpriteMastered({
+  profileChanges: [{ profile: { items: catalogLevelItems } }]
+});
+for (const family of SPRITE_FAMILIES) {
+  assert.equal(catalogLevels[`${family.slug}:base`], 2, `level ${family.slug}`);
+  assert.equal(catalogMastered.has(`${family.slug}:base`), true, `mastered ${family.slug}`);
+}
+
 assert.deepEqual(parseRelicId('Jonesy_Variant_A'), { family: 'jonesy', variant: 'base' });
 assert.deepEqual(parseRelicId('KillswitchSprite_Variant_CheatMaster'), {
   family: 'killswitch',
@@ -298,6 +382,31 @@ assert.deepEqual(parseRelicId('XRaySprite_Variant_LootHacker'), {
 });
 assert.deepEqual(parseRelicId('OnigiriSprite_Variant_Galaxy'), {
   family: 'onigiri',
+  variant: 'loot-hacker'
+});
+assert.deepEqual(parseRelicId('Mega_Man_Variant_A'), {
+  family: 'mega-man',
+  variant: 'base'
+});
+assert.deepEqual(parseRelicId('828c9446-3eb8-497e-a282-d95b92243c14:OnigiriSprite_Variant_A'), {
+  family: 'onigiri',
+  variant: 'base'
+});
+assert.deepEqual(parseRelicId('BulletSprite_Variant_Gold'), {
+  family: 'onigiri',
+  variant: 'gold'
+});
+assert.deepEqual(parseRelicId('XRaySprite_Variant_A'), { family: 'x-ray', variant: 'base' });
+assert.deepEqual(parseRelicId('OnigiriSprite_Variant_A'), { family: 'onigiri', variant: 'base' });
+assert.deepEqual(parseRelicId('OvershieldSprite_Variant_A'), { family: 'overshield', variant: 'base' });
+assert.deepEqual(parseRelicId('WinnerBSprite_Variant_A'), { family: 'x-ray', variant: 'base' });
+assert.deepEqual(parseRelicId('WinnerCSprite_Variant_CheatMaster'), {
+  family: 'onigiri',
+  variant: 'cheat-master'
+});
+assert.deepEqual(parseRelicId('ImprovedSlideSprite_Variant_A'), { family: 'mega-man', variant: 'base' });
+assert.deepEqual(parseRelicId('828c9446-3eb8-497e-a282-d95b92243c14:WinnerBSprite_Variant_LootHacker'), {
+  family: 'x-ray',
   variant: 'loot-hacker'
 });
 assert.equal(parseRelicId('Quest:quest_s42_spritemastery_jonesy'), null);
@@ -327,6 +436,50 @@ assert.equal(
     ]
   })['jonesy:base'],
   4
+);
+assert.equal(
+  parseSpriteLevels({
+    profileChanges: [
+      {
+        profile: {
+          items: {
+            a: { templateId: 'Mega_Man_Variant_A', quantity: 1, attributes: { xp: 800, level: 2 } },
+            b: { templateId: 'OnigiriSprite_Variant_A', quantity: 1, attributes: { ml: true, xp: 4000, level: 5 } }
+          }
+        }
+      }
+    ]
+  })['mega-man:base'],
+  2
+);
+assert.equal(
+  parseSpriteLevels({
+    profileChanges: [
+      {
+        profile: {
+          items: {
+            a: { templateId: 'OnigiriSprite_Variant_A', quantity: 1, attributes: { ml: true, xp: 4000, level: 5 } }
+          }
+        }
+      }
+    ]
+  })['onigiri:base'],
+  5
+);
+assert.deepEqual(
+  [...parseSpriteMastered({
+    profileChanges: [
+      {
+        profile: {
+          items: {
+            a: { templateId: 'OnigiriSprite_Variant_A', quantity: 1, attributes: { ml: true, level: 5 } },
+            b: { templateId: 'Mega_Man_Variant_A', quantity: 1, attributes: { ml: true, level: 5 } }
+          }
+        }
+      }
+    ]
+  })].sort(),
+  ['mega-man:base', 'onigiri:base']
 );
 
 const flattened = flattenMagpie({
@@ -455,5 +608,79 @@ assert.ok(renamedSlots.gizmos.some((g) => g.id === 'llama-supply-drop' && g.quan
 assert.ok(renamedSlots.gizmos.some((g) => g.id === 'extraction-accelerator' && g.quantity === 7));
 assert.ok(renamedSlots.gizmos.some((g) => g.id === 'cheat-code-locator' && g.quantity === 2));
 assert.ok(renamedSlots.gizmos.some((g) => g.id === 'portable-extractor' && g.quantity === 9));
+
+const spriteBag = parseMagpieV2Inventory({
+  inventory: [
+    {
+      counts: { Jonesy_Variant_A: 2, Currency_ExtractionPoints: 8765 },
+      entitlementMetadata: { Jonesy_Variant_A: '{"xp":4000,"ml":true}' }
+    }
+  ]
+});
+const gizmoBag = parseMagpieV2Inventory({
+  inventory: [{ counts: { '/MorningBell/CosmicThunder/Item00': 4 } }]
+});
+const fullBag = parseMagpieV2Inventory({
+  inventory: [
+    {
+      counts: {
+        '828c9446-3eb8-497e-a282-d95b92243c14:Jonesy_Variant_A': 1,
+        '039e7691-eb2a-4ce2-99c5-63c831917870:/MorningBell/CosmicThunder/Item00': 4,
+        OnigiriSprite_Variant_A: 3
+      },
+      entitlementMetadata: { OnigiriSprite_Variant_A: '{"xp":800,"ml":false}' }
+    }
+  ]
+});
+const emptyUnfiltered = parseMagpieV2Inventory({ inventory: [] });
+const merged = mergeMagpieItems(spriteBag, gizmoBag, emptyUnfiltered, fullBag);
+assert.equal(merged.filter((item) => magpieLeaf(item.templateId).includes('Jonesy_Variant_A')).length, 1);
+assert.equal(merged.find((item) => magpieLeaf(item.templateId).includes('Jonesy_Variant_A'))?.quantity, 2);
+assert.equal(merged.filter((item) => /Item00/.test(item.templateId ?? '')).length, 1);
+assert.ok(merged.some((item) => item.templateId === 'OnigiriSprite_Variant_A' && item.quantity === 3));
+const mergedRes = parseSpriteResources(itemsAsProfileForCheck(merged));
+assert.equal(mergedRes.dust, 8765);
+assert.ok(mergedRes.gizmos.some((g) => g.id === 'spicy-taco' && g.quantity === 4));
+assert.equal(parseSpriteLevels(itemsAsProfileForCheck(merged))['jonesy:base'], 5);
+assert.equal(parseSpriteLevels(itemsAsProfileForCheck(merged))['onigiri:base'], 2);
+assert.ok(parseSpriteMastered(itemsAsProfileForCheck(merged)).has('jonesy:base'));
+
+const v4210Bag = parseMagpieV2Inventory({
+  inventory: [
+    {
+      counts: {
+        WinnerBSprite_Variant_A: 1,
+        WinnerCSprite_Variant_Gold: 1,
+        ImprovedSlideSprite_Variant_A: 1,
+        OvershieldSprite_Variant_A: 2,
+        'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee:XRaySprite_Variant_CheatMaster': 1
+      },
+      entitlementMetadata: {
+        WinnerBSprite_Variant_A: '{"xp":4000,"ml":true}',
+        ImprovedSlideSprite_Variant_A: '{"xp":800,"ml":false}',
+        OvershieldSprite_Variant_A: '{"xp":2000,"ml":false}'
+      }
+    }
+  ]
+});
+const v4210Profile = itemsAsProfileForCheck(v4210Bag);
+assert.equal(parseSpriteLevels(v4210Profile)['x-ray:base'], 5);
+assert.equal(parseSpriteLevels(v4210Profile)['onigiri:gold'], 1);
+assert.equal(parseSpriteLevels(v4210Profile)['mega-man:base'], 2);
+assert.equal(parseSpriteLevels(v4210Profile)['overshield:base'], 4);
+assert.equal(parseSpriteLevels(v4210Profile)['x-ray:cheat-master'], 1);
+assert.ok(parseSpriteMastered(v4210Profile).has('x-ray:base'));
+assert.deepEqual(collectMagpieModuleIds(v4210Bag).sort(), ['aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee']);
+assert.deepEqual(
+  collectMagpieModuleIds({
+    modules: [{ moduleId: '11111111-2222-3333-4444-555555555555' }],
+    inventory: [{ counts: { '828c9446-3eb8-497e-a282-d95b92243c14:Jonesy_Variant_A': 1 } }]
+  }).sort(),
+  ['11111111-2222-3333-4444-555555555555', '828c9446-3eb8-497e-a282-d95b92243c14']
+);
+
+function magpieLeaf(id: string | undefined) {
+  return id?.replace(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}:/i, '') ?? '';
+}
 
 console.log('sprites-account self-check passed');

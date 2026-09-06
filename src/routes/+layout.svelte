@@ -12,7 +12,7 @@
   import { language, t } from '$lib/i18n';
   import { logger, setLogLevel } from '$lib/logger';
   import { loggableError } from '$lib/modules/redact-secrets';
-  import { warmAccountData } from '$lib/modules/account-data';
+  import { startHourlyDataRefresh, warmAccountData } from '$lib/modules/account-data';
   import { initAutoKick } from '$lib/modules/autokick/base';
   import { fetchAvatars } from '$lib/modules/avatar';
   import { addToQueue, initDownloader } from '$lib/modules/download.svelte';
@@ -224,6 +224,7 @@
       Promise.resolve(startLlamaAutoClaimScheduler()),
       Promise.resolve(startDailyQuestRerollScheduler()),
       Promise.resolve(startBackgroundNotifications()),
+      Promise.resolve(startHourlyDataRefresh()),
       // We could fetch all avatars using a single account
       // However, fetching per account allows invalid accounts to fail independently
       // and be detected and removed from the config.

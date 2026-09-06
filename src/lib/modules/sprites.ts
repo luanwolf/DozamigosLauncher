@@ -171,42 +171,15 @@ export function spriteShortName(name: string) {
   return name.replace(/^Elemental(?: de| da| do| dos)?\s+/i, '').trim() || name;
 }
 
-/** Map api-fortnite `KlomboSprite`-style ids onto launcher slugs. */
+const FAMILY_BY_COMPACT: Record<string, string> = Object.fromEntries(
+  SPRITE_FAMILIES.map((family) => [family.slug.replace(/-/g, ''), family.slug])
+);
+
+/** Map Epic / api-fortnite ids (`KlomboSprite`, `Mega_Man`, tokens) onto launcher slugs. */
 export function mapApiSpriteFamilyId(id: string): string | null {
   const stem = id.replace(/Sprite$/i, '').toLowerCase().replace(/[^a-z0-9]/g, '');
   if (!stem) return null;
-
-  const alias: Record<string, string> = {
-    klombo: 'klombo',
-    crown: 'crown',
-    jackrabbit: 'jackrabbit',
-    jazzjackrabbit: 'jackrabbit',
-    cosmicthunderdoublejump: 'jackrabbit',
-    doublejump: 'jackrabbit',
-    narrowflea: 'sonic',
-    sonic: 'sonic',
-    narrowfleamonkey: 'tails',
-    tails: 'tails',
-    shadow: 'shadow',
-    reloadovertime: 'shadow',
-    killswitch: 'killswitch',
-    eightbitblaster: 'eight-bit',
-    eightbit: 'eight-bit',
-    '8bitblaster': 'eight-bit',
-    dwarf: 'adventure',
-    adventure: 'adventure',
-    bushranger: 'bush',
-    bush: 'bush',
-    jonesy: 'jonesy',
-    stormscout: 'storm-scout',
-    xray: 'x-ray',
-    onigiri: 'onigiri',
-    megaman: 'mega-man',
-    overshield: 'overshield'
-  };
-
-  if (alias[stem]) return alias[stem];
-  return SPRITE_FAMILIES.find((family) => stem === family.slug.replace(/-/g, ''))?.slug ?? null;
+  return SPRITE_RELIC_FAMILIES[stem] ?? FAMILY_BY_COMPACT[stem] ?? null;
 }
 
 export const SPRITE_ENTRIES: SpriteEntry[] = SPRITE_FAMILIES.flatMap((family) => [
@@ -266,38 +239,26 @@ export function writeSpriteCollection(
   );
 }
 
-/** Epic trophy / Magpie relic ids (season 42). */
+/** Ability-code aliases. Slug match is automatic from SPRITE_FAMILIES. */
 export const SPRITE_RELIC_FAMILIES: Record<string, string> = {
-  klombo: 'klombo',
-  crown: 'crown',
   cosmicthunderdoublejump: 'jackrabbit',
   doublejump: 'jackrabbit',
+  jazzjackrabbit: 'jackrabbit',
   narrowflea: 'sonic',
   narrowfleamonkey: 'tails',
   reloadovertime: 'shadow',
-  killswitch: 'killswitch',
   '8bitblaster': 'eight-bit',
   eightbitblaster: 'eight-bit',
   '8bit': 'eight-bit',
   dwarf: 'adventure',
   bushranger: 'bush',
-  jonesy: 'jonesy',
-  stormscout: 'storm-scout',
-  xray: 'x-ray',
-  onigiri: 'onigiri',
-  megaman: 'mega-man',
-  overshield: 'overshield',
-  jazzjackrabbit: 'jackrabbit',
-  jackrabbit: 'jackrabbit',
-  sonic: 'sonic',
-  tails: 'tails',
-  shadow: 'shadow',
-  adventure: 'adventure',
-  bush: 'bush',
-  eightbit: 'eight-bit'
+  bullet: 'onigiri',
+  // FortniteGame.log SpriteLibrary + Athena_S42_SpriteMastery_Token_* (v42.10).
+  winnerb: 'x-ray',
+  winnerc: 'onigiri',
+  improvedslide: 'mega-man',
+  rockman: 'mega-man'
 };
-
-const TROPHY_FAMILIES = SPRITE_RELIC_FAMILIES;
 
 export type SpriteProgress = {
   /** Entry keys (`family:variant`) whose Mastery reward was already claimed. */
@@ -317,9 +278,9 @@ type QuestItem = {
 
 // ponytail: s41 kept so old profiles still parse; s42 is Override. Ceiling: bump when Epic rolls s43+.
 const MASTERY_QUEST = /^Quest:quest_s4\d_spritemastery_(redeem_)?p\d+_(q\d+)([a-z]?)$/;
-const MASTERY_TOKEN = /^Token:athena_s4\d_spritemastery_token_([a-z0-9]+?)(?:_\d+)?$/i;
+const MASTERY_TOKEN = /^Token:athena_s4\d_spritemastery_token_([a-z0-9_]+)$/i;
 const TROPHY_REWARD =
-  /^CosmeticVariantToken:vtid_backpack_coldtrophy_([a-z0-9]+?)(?:_(gummy|galaxy|gold|gem|holofoil|cube|quack|cheatmaster|loothacker))?$/;
+  /^CosmeticVariantToken:vtid_backpack_coldtrophy_([a-z0-9_]+?)(?:_(gummy|galaxy|gold|gem|holofoil|cube|quack|cheatmaster|loothacker))?$/i;
 
 /**
  * Epic exposes Mastery through athena quests. Dust, gizmos and per-Sprite levels live in Magpie
@@ -351,7 +312,7 @@ export function parseSpriteProgress(profile: unknown): SpriteProgress {
     for (const reward of rewards) {
       const trophy = reward.templateId?.match(TROPHY_REWARD);
       if (!trophy) continue;
-      const family = TROPHY_FAMILIES[trophy[1].toLowerCase()];
+      const family = mapApiSpriteFamilyId(trophy[1]);
       if (!family) continue;
 
       const variantRaw = trophy[2]?.toLowerCase();
@@ -380,7 +341,7 @@ export function parseSpriteProgress(profile: unknown): SpriteProgress {
   for (const item of Object.values(changes?.[0]?.profile?.items ?? {})) {
     const tokenMatch = (item as QuestItem).templateId?.match(MASTERY_TOKEN);
     if (!tokenMatch) continue;
-    const family = SPRITE_RELIC_FAMILIES[tokenMatch[1].toLowerCase()];
+    const family = mapApiSpriteFamilyId(tokenMatch[1].replace(/_\d+$/, ''));
     if (family) extracted.add(family);
   }
 

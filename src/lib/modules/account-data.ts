@@ -14,7 +14,10 @@ import { fetchLocker, type LockerData } from '$lib/modules/locker';
 import { fetchAccountProfile } from '$lib/modules/lookup';
 import { clientQuestLogin, queryProfile } from '$lib/modules/mcp';
 import { runProbes } from '$lib/modules/process-validator';
+import { fetchSpriteCatalogLabels, type SpriteCatalogLabels } from '$lib/modules/sprites-catalog';
+import { fetchSpriteAccountState, type SpriteAccountState } from '$lib/modules/sprites-account';
 import { fetchStwStore } from '$lib/modules/stw-catalog';
+import { accountStore } from '$lib/storage';
 import type { AccountData } from '$types/account';
 import type { EpicAccountById } from '$types/game/lookup';
 import type { StwStoreData } from '$types/game/stw-store';
@@ -24,6 +27,8 @@ const byLocale = (locale: string) => locale;
 
 /** ponytail: BR live pages used to stay frozen for the whole session; 15m + background ensure covers season flips without hammering Epic. Bump down if drops feel late. */
 const BR_LIVE_MAX_AGE_MS = 15 * 60 * 1000;
+/** General launcher pages (sprites, locker, free games…). Shop / llama crons stay on their own timers. */
+const HOURLY_MAX_AGE_MS = 60 * 60 * 1000;
 
 // ponytail: account caches are keyed by account only, not by locale. Switching
 // language keeps localized names from the previous locale until a manual
@@ -91,7 +96,21 @@ export const leaksCache = createCache<string, LeaksData>(
   { maxAgeMs: BR_LIVE_MAX_AGE_MS }
 );
 
-export const freeGamesCache = createCache<string, FreeGame[]>(byLocale, () => fetchFreeGames());
+export const freeGamesCache = createCache<string, FreeGame[]>(byLocale, () => fetchFreeGames(), {
+  maxAgeMs: HOURLY_MAX_AGE_MS
+});
+
+export const spriteAccountCache = createCache<AccountData, SpriteAccountState>(
+  byAccount,
+  (account) => fetchSpriteAccountState(account),
+  { maxAgeMs: HOURLY_MAX_AGE_MS }
+);
+
+export const spriteCatalogCache = createCache<string, SpriteCatalogLabels>(
+  byLocale,
+  (locale) => fetchSpriteCatalogLabels(locale),
+  { maxAgeMs: HOURLY_MAX_AGE_MS }
+);
 
 /**
  * Loads everything the account-scoped pages need up front — at startup and on
@@ -104,7 +123,8 @@ export async function warmAccountData(account: AccountData | null | undefined): 
   const work: Promise<unknown>[] = [
     mapCache.ensure(locale),
     leaksCache.ensure(locale),
-    freeGamesCache.ensure(locale)
+    freeGamesCache.ensure(locale),
+    spriteCatalogCache.ensure(locale)
   ];
 
   if (account) {
@@ -113,6 +133,7 @@ export async function warmAccountData(account: AccountData | null | undefined): 
       accountProfileCache.ensure(account),
       stwStoreCache.ensure(account),
       brStatsCache.ensure(account),
+      spriteAccountCache.ensure(account),
       ensureLibrary(account).catch((error) => {
         logger.warn('Failed to warm game library', { error });
       })
@@ -134,4 +155,40 @@ export async function refreshLiveBrData(account: AccountData | null | undefined)
     work.push(lockerCache.ensure(account), brStatsCache.ensure(account));
   }
   await Promise.allSettled(work);
+}
+
+/**
+ * Force-refresh account/catalog pages once an hour. Does not touch the shop or
+ * llama cron paths — those keep their existing schedules.
+ */
+export async function refreshHourlyLauncherData(account: AccountData | null | undefined): Promise<void> {
+  const locale = get(language);
+  const work: Promise<unknown>[] = [
+    mapCache.ensure(locale, { force: true }),
+    leaksCache.ensure(locale, { force: true }),
+    freeGamesCache.ensure(locale, { force: true }),
+    spriteCatalogCache.ensure(locale, { force: true })
+  ];
+  if (account) {
+    work.push(
+      lockerCache.ensure(account, { force: true }),
+      accountProfileCache.ensure(account, { force: true }),
+      stwStoreCache.ensure(account, { force: true }),
+      brStatsCache.ensure(account, { force: true }),
+      spriteAccountCache.ensure(account, { force: true }),
+      ensureLibrary(account).catch((error) => {
+        logger.warn('Failed to refresh game library', { error });
+      })
+    );
+  }
+  await Promise.allSettled(work);
+}
+
+let hourlyRefreshTimer: ReturnType<typeof setInterval> | null = null;
+
+export function startHourlyDataRefresh() {
+  if (hourlyRefreshTimer) return;
+  hourlyRefreshTimer = setInterval(() => {
+    void refreshHourlyLauncherData(accountStore.getActive());
+  }, HOURLY_MAX_AGE_MS);
 }

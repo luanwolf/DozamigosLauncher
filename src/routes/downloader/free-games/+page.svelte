@@ -22,17 +22,14 @@
   import { language, t } from '$lib/i18n';
   import { freeGamesCache } from '$lib/modules/account-data';
   import {
-    buildEpicLauncherPurchaseUrl,
     buildEpicLauncherStoreUrl,
     generateAuthenticatedGamePageUrl
   } from '$lib/modules/epic-web-url';
-  import { claimFreeGamesForAccount, type FreeGameClaimResult } from '$lib/modules/free-games-claim';
-  import { isFreeGameRedeemed, markFreeGamesRedeemed, redeemedFreeGameIds } from '$lib/modules/free-games-owned';
+  import { isFreeGameRedeemed, redeemedFreeGameIds } from '$lib/modules/free-games-owned';
   import { openExternalUrl } from '$lib/modules/open-external';
   import { fetchSteamFreeGames, type SteamFreeGame } from '$lib/modules/steam-free-games';
   import { accountStore } from '$lib/storage';
   import { ownedAppsCache } from '$lib/stores';
-  import { activityLog } from '$lib/stores/activity-log';
   import { cn, handleError } from '$lib/utils';
   import PageActionButton from '$components/layout/PageActionButton.svelte';
   import PageContent from '$components/layout/PageContent.svelte';
@@ -74,81 +71,46 @@
   }
 
   async function openInEpicLauncher(game: FreeGame) {
-    // One deep link only — opening purchase then store (or opening twice) bugs Epic checkout.
-    const purchase = buildEpicLauncherPurchaseUrl(game.namespace, game.id);
     try {
-      await openExternalUrl(purchase);
+      await openExternalUrl(buildEpicLauncherStoreUrl(game.storeUrl));
       return true;
-    } catch {
-      try {
-        await openExternalUrl(buildEpicLauncherStoreUrl(game.storeUrl));
-        return true;
-      } catch (error) {
-        handleError({
-          error,
-          message: 'Failed to open Epic Games Launcher',
-          account: $activeAccount ?? undefined
-        });
-        return false;
-      }
+    } catch (error) {
+      handleError({
+        error,
+        message: 'Failed to open Epic Games Launcher',
+        account: $activeAccount ?? undefined
+      });
+      return false;
     }
   }
 
-  async function reportClaimResults(results: FreeGameClaimResult[]) {
-    const claimed = results.filter((r) => r.status === 'claimed').length;
-    const owned = results.filter((r) => r.status === 'already_owned').length;
-    const needsLauncher = results.filter((r) => r.status === 'browser_only' || r.status === 'error');
-
-    markFreeGamesRedeemed(
-      results.filter((r) => r.status === 'claimed' || r.status === 'already_owned').map((r) => r.game.id)
-    );
-
-    for (const result of results) {
-      if (result.status === 'claimed') {
-        activityLog.add(
-          'game',
-          $t('activityLog.gameClaimed', { title: result.game.title }),
-          $activeAccount?.displayName
-        );
-      } else if (result.status === 'browser_only' || result.status === 'error') {
-        activityLog.add(
-          'game',
-          $t('activityLog.gameBrowserOnly', { title: result.game.title }),
-          $activeAccount?.displayName
-        );
-      }
-    }
-
-    if (claimed > 0) toast.success($t('freeGames.claimedCount', { count: claimed }));
-    else if (owned === results.length && !needsLauncher.length) {
-      toast.success($t('freeGames.allAlreadyOwned'));
-    }
-
-    if (needsLauncher.length) {
-      toast.message($t('freeGames.openingLauncher'));
-      // ponytail: one launcher handoff at a time — stacking deep links breaks Epic's purchase UI
-      await openInEpicLauncher(needsLauncher[0]!.game);
+  async function openFreeGamesInLauncher() {
+    try {
+      await openExternalUrl(buildEpicLauncherStoreUrl('https://store.epicgames.com/en-US/free-games'));
+      return true;
+    } catch {
+      return openInEpicLauncher(unclaimedGames[0] ?? freeGames[0]!);
     }
   }
 
   async function claimGames(games: FreeGame[]) {
     const account = $activeAccount;
     const targets = games.filter((game) => !isGameRedeemed(game));
-    if (!account || !targets.length) {
-      if (games.length && !targets.length) toast.success($t('freeGames.allAlreadyOwned'));
-      else toast.error($t('accountManager.selectAccount'));
+    if (!account) {
+      toast.error($t('accountManager.selectAccount'));
+      return;
+    }
+    if (!targets.length) {
+      toast.success($t('freeGames.allAlreadyOwned'));
       return;
     }
 
     isClaiming = true;
     claimingGameId = targets.length === 1 ? targets[0]!.id : null;
-
+    toast.message($t('freeGames.openingLauncher'));
     try {
-      const results = await claimFreeGamesForAccount(account, targets);
-      await reportClaimResults(results);
-    } catch (error) {
-      handleError({ error, message: 'Failed to claim free games', account });
-      for (const game of targets) await openInEpicLauncher(game);
+      if (targets.length === 1) await openInEpicLauncher(targets[0]!);
+      else await openFreeGamesInLauncher();
     } finally {
       isClaiming = false;
       claimingGameId = null;
