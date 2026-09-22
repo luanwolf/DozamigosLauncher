@@ -57,24 +57,25 @@ jobs:
           tagName: v__VERSION__
           releaseName: 'v__VERSION__'
           releaseBody: |
-            ## Dozamigos Launcher v0.2.0
+            ## Dozamigos Launcher v0.2.1
 
             Baixe o instalador **Windows NSIS** (`.exe`) abaixo. Quem já tem o launcher instalado recebe o aviso de atualização na próxima abertura.
 
             ### Arquivos desta release
-            - `Dozamigos Launcher_0.2.0_x64-setup.exe` — instalador Windows (recomendado)
+            - `Dozamigos Launcher_0.2.1_x64-setup.exe` — instalador Windows (recomendado)
             - `latest.json` — manifesto da atualização automática
             - assinatura do instalador (usada pelo updater)
 
-            ### Battle Royale
-            - **Elementais** v42.10 (Raio X, Onigiri, Mega Man, Sobrescudo) no catálogo; extraído/dominado/nível via IDs Epic (WinnerB/WinnerC/ImprovedSlide/Overshield) no mesmo fluxo Magpie/athena
+            ### Elementais
+            - Pond, Blinky e Crash Bandicoot no catálogo, com a variante Caçador de Recompensas
+            - Ícones oficiais do fortnite.gg em todas as famílias atuais
+            - Álbum de exportação com 95 slots e o total correto no aviso
 
-            ### Biblioteca
-            - Resgatar jogos grátis abre a página no Epic Games Launcher
+            ### Lobby Hacks
+            - 10 códigos novos que entregam item
 
-            ### Geral
-            - Cache horário de dados gerais (sem mudar crons de loja/lhamas)
-            - Versão do app exibida abaixo do ícone do GitHub na barra lateral
+            ### Lhamas
+            - Accolades de Resistência mostram o nome da onda (ex.: Resistência: Onda 6)
           releaseDraft: false
           prerelease: false
           uploadUpdaterJson: true

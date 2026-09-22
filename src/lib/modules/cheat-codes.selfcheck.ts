@@ -35,6 +35,12 @@ assert.ok(LOBBY_HACK_CODES.includes('GatherAndCraft'));
 assert.ok(LOBBY_HACK_CODES.includes('INVALIDCHEAT'));
 assert.ok(LOBBY_HACK_CODES.includes('ChatWhereDoYouFindTheKey'));
 assert.ok(LOBBY_HACK_CODES.includes('YourThoughtsAreMine'));
+assert.ok(LOBBY_HACK_CODES.includes('MagicIsReal'));
+assert.ok(LOBBY_HACK_CODES.includes('PlayToLevelUp'));
+assert.ok(LOBBY_HACK_CODES.includes('ChatFindMeAnotherCode'));
+assert.ok(LOBBY_HACK_CODES.includes('BLINKYINKYPINKYCLYDE'));
+assert.equal(LOBBY_HACK_CODES.includes('InsertCoinToContinue' as never), false);
+assert.equal(LOBBY_HACK_CODES.includes('NOPROLLAMA' as never), false);
 assert.equal(new Set(LOBBY_HACK_CODES).size, LOBBY_HACK_CODES.length);
 
 const empty = emptyCheatCodeSummary();

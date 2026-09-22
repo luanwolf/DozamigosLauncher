@@ -3,6 +3,7 @@ import {
   mapApiSpriteFamilyId,
   parseSpriteProgress,
   SPRITE_FAMILIES,
+  spriteVariantFromToken,
   type SpriteProgress,
   type SpriteVariant
 } from '$lib/modules/sprites';
@@ -78,7 +79,7 @@ const MAGPIE_MODULE_UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-
 const EOS_MAGPIE_UA =
   'EOS-SDK/1.19.4200.0-56705564@Fortnite (Windows/10.0.26100.8972.64bit) Fortnite/++Fortnite+Release-42.00-CL-56878558';
 const RELIC_ID_RE =
-  /^([A-Za-z0-9]+(?:_[A-Za-z0-9]+)*)(?:Sprite)?_Variant_(A|Gold|CheatMaster|LootHacker|Galaxy)$/i;
+  /^([A-Za-z0-9]+(?:_[A-Za-z0-9]+)*)(?:Sprite)?_Variant_(A|Gold|CheatMaster|LootHacker|Galaxy|BountyHunter|Bounty)$/i;
 
 const GIZMO_ICON_ROOT = '/elementals/gizmos';
 
@@ -164,16 +165,7 @@ export function parseRelicId(id: string): { family: string; variant: SpriteVaria
   if (!match) return null;
   const family = mapApiSpriteFamilyId(match[1]);
   if (!family) return null;
-  const raw = match[2].toLowerCase();
-  const variant: SpriteVariant =
-    raw === 'cheatmaster'
-      ? 'cheat-master'
-      : raw === 'gold'
-        ? 'gold'
-        : raw === 'loothacker' || raw === 'galaxy'
-          ? 'loot-hacker'
-          : 'base';
-  return { family, variant };
+  return { family, variant: spriteVariantFromToken(match[2]) };
 }
 
 /** MCP collections / catalog ids: CollectableCreature:Jonesy, BR_Creature_Sprite_BushRanger_Gold. */
@@ -187,15 +179,10 @@ export function parseCreatureSpriteId(id: string): { family: string; variant: Sp
   if (!match) return null;
   let name = match[1];
   let variant: SpriteVariant = 'base';
-  if (/loothacker$|galaxy$/i.test(name)) {
-    variant = 'loot-hacker';
-    name = name.replace(/[_-]?(loothacker|galaxy)$/i, '');
-  } else if (/cheatmaster$/i.test(name)) {
-    variant = 'cheat-master';
-    name = name.replace(/[_-]?cheatmaster$/i, '');
-  } else if (/_gold$|gold$/i.test(name) && !/cheatmaster/i.test(name)) {
-    variant = 'gold';
-    name = name.replace(/[_-]?gold$/i, '');
+  const suffix = name.match(/[_-]?(bountyhunter|bounty|loothacker|galaxy|cheatmaster|gold)$/i);
+  if (suffix && !(suffix[1].toLowerCase() === 'gold' && /cheatmaster/i.test(name))) {
+    variant = spriteVariantFromToken(suffix[1]);
+    name = name.slice(0, name.length - suffix[0].length);
   }
   const family = mapApiSpriteFamilyId(name);
   return family ? { family, variant } : null;
@@ -212,7 +199,8 @@ function familyFromTemplate(templateId: string): { family: string; variant: Spri
   if (!/sprite|elemental|magpie|collectible|collectable|creature|_variant_/.test(lower)) return null;
 
   let variant: SpriteVariant = 'base';
-  if (/loot\s?hacker|loothacker|\bgalaxy\b/.test(lower)) variant = 'loot-hacker';
+  if (/bounty\s?hunter|bountyhunter/.test(lower)) variant = 'bounty-hunter';
+  else if (/loot\s?hacker|loothacker|\bgalaxy\b/.test(lower)) variant = 'loot-hacker';
   else if (/cheat\s?master|cheatmaster/.test(lower)) variant = 'cheat-master';
   else if (/\bgold\b|dourad/.test(lower)) variant = 'gold';
 

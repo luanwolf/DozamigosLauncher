@@ -6,6 +6,7 @@ import { resolveGenericTemplateBody } from '$lib/utils/stw-generic-names';
 import { heroDisplayName, resolveHeroCatalogKey } from '$lib/utils/stw-hero-locale';
 import { localizedStwItemName } from '$lib/utils/stw-item-names';
 import { resolveSchematicStoreTitle } from '$lib/utils/stw-schematic-locale';
+import { accoladeDisplayName } from '$lib/utils/stw-accolade-name';
 import { localizedTokenGrant } from '$lib/utils/stw-store-offers';
 import { stwResourceImageUrl } from '$lib/utils/stw-resource-image';
 import { schematicCardPackImage } from '$lib/utils/stw-schematic-cardpack';
@@ -41,10 +42,20 @@ function parseRarityFromTemplate(templateId: string): RarityType {
 }
 
 export { resolveHeroCatalogKey } from '$lib/utils/stw-hero-locale';
+export { accoladeDisplayName } from '$lib/utils/stw-accolade-name';
 
 export function resolveStwTemplateDisplay(templateId: string, locale: Locale = 'pt-br'): StwTemplateDisplay {
   const rarity = parseRarityFromTemplate(templateId);
   const rarityName = get(RarityNames)[rarity];
+  const accoladeName = accoladeDisplayName(templateId, locale);
+  if (accoladeName) {
+    return {
+      name: accoladeName,
+      imageUrl: `/resources/voucher_generic_schematic_${rarity}.png`,
+      rarity,
+      kind: 'other'
+    };
+  }
 
   if (templateId === 'CardPack:cardpack_bronze' || templateId === 'CardPack:cardpack_bronze_10x') {
     return {

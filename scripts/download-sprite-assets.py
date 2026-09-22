@@ -1,89 +1,58 @@
-"""Download clean sprite icons into static/elementals/.
+"""Replace static/elementals icons with the ones shown on fortnite.gg/sprites.
 
-fortnite.gg/sprites is behind Cloudflare here, so we pull the same in-game
-sprite icons from a public pack that mirrors that catalog, then convert to WebP.
+The filenames are Epic's internal ids (Adventure is Dwarf, Pond is WinnerA,
+Crash's bounty hunter is labeled Body Slam). They are listed in
+fortnite-gg-sprite-icons.json, copied from that page. Cloudflare blocks this
+download from a plain script; when it does, the files already in
+static/elementals stay as they are.
 """
 
 from __future__ import annotations
 
-import os
-from io import BytesIO
+import json
 from pathlib import Path
+from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
-from PIL import Image
-
 ROOT = Path(__file__).resolve().parents[1] / "static" / "elementals"
-BASE = "https://raw.githubusercontent.com/mrpaulgaming/fnspritelocker/main/assets"
-UA = "DozamigosLauncher/0.1.10 (sprite-asset-sync)"
-
-FAMILIES = {
-    "klombo": "klombo",
-    "crown": "crown",
-    "jackrabbit": "jackrabbit",
-    "sonic": "sonic",
-    "tails": "tails",
-    "shadow": "shadow",
-    "killswitch": "killswitch",
-    "eight-bit": "8bit",
-    "adventure": "adventure",
-    "bush": "bush",
-    "jonesy": "jonesy",
-    "storm-scout": "stormscout",
-    "x-ray": "xray",
-    "onigiri": "onigiri",
-    "mega-man": "megaman",
-    "overshield": "overshield",
-}
-
-VARIANTS = {
-    "basic": None,
-    "gold": "gold",
-    "cheat": "cheat-master",
-    "hacker": "loot-hacker",
-}
+MAP = Path(__file__).with_name("fortnite-gg-sprite-icons.json")
+ORIGIN = "https://fortnite.gg"
+UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
 
 
-def fetch(url: str) -> bytes:
-    req = Request(url, headers={"User-Agent": UA})
+def dest_for(slug: str, variant: str) -> Path:
+    if variant == "base":
+        return ROOT / f"{slug}-sprite.webp"
+    return ROOT / "variants" / f"{slug}__{variant}.webp"
+
+
+def fetch(path: str) -> bytes:
+    req = Request(
+        ORIGIN + path,
+        headers={"User-Agent": UA, "Referer": ORIGIN + "/sprites"},
+    )
     with urlopen(req, timeout=60) as resp:
         return resp.read()
 
 
-def to_webp(png_bytes: bytes, dest: Path, size: int | None = 512) -> None:
-    im = Image.open(BytesIO(png_bytes)).convert("RGBA")
-    if size:
-        bbox = im.getbbox()
-        if bbox:
-            im = im.crop(bbox)
-        canvas = Image.new("RGBA", (size, size), (0, 0, 0, 0))
-        im.thumbnail((size - 16, size - 16), Image.Resampling.LANCZOS)
-        canvas.paste(im, ((size - im.width) // 2, (size - im.height) // 2), im)
-        im = canvas
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    im.save(dest, "WEBP", quality=92, method=4)
-    print(f"ok {dest.relative_to(ROOT.parent.parent)} ({dest.stat().st_size})")
-
-
 def main() -> None:
-    for slug, stem in FAMILIES.items():
-        for remote_suffix, folder_variant in VARIANTS.items():
-            url = f"{BASE}/sprites/{stem}_{remote_suffix}.png"
+    icons: dict[str, dict[str, str]] = json.loads(MAP.read_text(encoding="utf-8"))
+    wrote = 0
+    for slug, variants in icons.items():
+        for variant, path in variants.items():
+            dest = dest_for(slug, variant)
             try:
-                raw = fetch(url)
-            except Exception as exc:
-                print(f"skip {stem}_{remote_suffix}: {exc}")
-                continue
-            dest = (
-                ROOT / f"{slug}-sprite.webp"
-                if folder_variant is None
-                else ROOT / "variants" / f"{slug}__{folder_variant}.webp"
-            )
-            to_webp(raw, dest)
-
-    # Flat mastery badge (readable at card corner size).
-    to_webp(fetch(f"{BASE}/ui/mastered.png"), ROOT / "mastery-crown.webp", size=256)
-    print("done")
+                raw = fetch(path)
+            except HTTPError as exc:
+                raise SystemExit(
+                    f"fortnite.gg returned {exc.code} for {path}. "
+                    "The site blocks scripted downloads; icons already in static/elementals were left in place."
+                ) from exc
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            dest.write_bytes(raw)
+            wrote += 1
+            print(f"ok {dest.relative_to(ROOT.parent.parent)}")
+    print(f"done {wrote}")
 
 
 if __name__ == "__main__":

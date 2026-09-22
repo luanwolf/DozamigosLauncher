@@ -60,7 +60,8 @@
     base: $t('sprites.variants.base'),
     gold: $t('sprites.variants.gold'),
     'cheat-master': $t('sprites.variants.cheatMaster'),
-    'loot-hacker': 'Hacker de Saque'
+    'loot-hacker': $t('sprites.variants.lootHacker'),
+    'bounty-hunter': $t('sprites.variants.bountyHunter')
   });
 
   const rarityLabels: Record<SpriteRarity, string> = {
@@ -131,10 +132,14 @@
         }
       });
       if (result.path) {
-        exportToast.done($t('sprites.export.done', { count: result.owned }), result.path, $t('sprites.export.open'));
+        exportToast.done(
+          $t('sprites.export.done', { count: result.owned, total: result.count }),
+          result.path,
+          $t('sprites.export.open')
+        );
       } else {
         exportToast.fail();
-        toast.success($t('sprites.export.done', { count: result.owned }));
+        toast.success($t('sprites.export.done', { count: result.owned, total: result.count }));
       }
     } catch (error) {
       exportToast.fail();
@@ -230,7 +235,7 @@
         {@const owned = isExtracted(entry)}
         {@const hasMastery = isMastered(entry)}
         <article
-          class="group overflow-hidden rounded-md border border-border/40 {hasMastery
+          class="group flex flex-col overflow-hidden rounded-md border border-border/40 {hasMastery
             ? 'border-amber-400 ring-1 ring-amber-400/60'
             : owned
               ? 'border-primary ring-1 ring-primary/50'
@@ -239,13 +244,13 @@
         >
           <button
             type="button"
-            class="relative block w-full text-left transition hover:brightness-110 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            class="relative flex w-full flex-1 flex-col text-left transition hover:brightness-110 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
             onclick={() => {
               previewEntry = entry;
             }}
           >
             <img
-              class="aspect-square w-full object-contain p-1"
+              class="aspect-square w-full shrink-0 object-contain p-1"
               alt={labels.name}
               loading="lazy"
               src={entry.image}
@@ -273,9 +278,9 @@
                 <CheckIcon class="size-4" />
               </span>
             {/if}
-            <div class="space-y-0.5 bg-black/75 px-2 pt-2 text-white">
+            <div class="mt-auto flex-1 space-y-0.5 bg-black/75 px-2 pt-2 pb-2 text-white">
               <p class="truncate text-xs font-semibold">{labels.name}</p>
-              <p class="pb-1 text-[10px] text-white/70">
+              <p class="text-[10px] text-white/70">
                 {variantLabels[entry.variant]} · {rarityLabels[entry.rarity]}
               </p>
             </div>

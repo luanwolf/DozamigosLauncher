@@ -1,7 +1,7 @@
 import type { AccountData } from '$types/account';
 
 export type SpriteRarity = 'rare' | 'epic' | 'legendary' | 'mythic';
-export type SpriteVariant = 'base' | 'gold' | 'cheat-master' | 'loot-hacker';
+export type SpriteVariant = 'base' | 'gold' | 'cheat-master' | 'loot-hacker' | 'bounty-hunter';
 
 export type SpriteFamily = {
   slug: string;
@@ -19,9 +19,9 @@ export type SpriteEntry = SpriteFamily & {
 };
 
 const IMAGE_ROOT = '/elementals';
-const S4_VARIANTS: Exclude<SpriteVariant, 'base'>[] = ['gold', 'cheat-master', 'loot-hacker'];
-/** Album rows: base, gold, cheat master, then loot hacker. */
-export const SPRITE_EXPORT_VARIANTS: SpriteVariant[] = ['base', 'gold', 'cheat-master', 'loot-hacker'];
+const S4_VARIANTS: Exclude<SpriteVariant, 'base'>[] = ['gold', 'cheat-master', 'loot-hacker', 'bounty-hunter'];
+/** Album rows: base, gold, cheat master, loot hacker, then bounty hunter. */
+export const SPRITE_EXPORT_VARIANTS: SpriteVariant[] = ['base', 'gold', 'cheat-master', 'loot-hacker', 'bounty-hunter'];
 
 /** Left → right: rare → epic → legendary → mythic. */
 export const SPRITE_EXPORT_ORDER = [
@@ -35,10 +35,13 @@ export const SPRITE_EXPORT_ORDER = [
   'storm-scout',
   'shadow',
   'tails',
+  'pond',
   'killswitch',
   'sonic',
   'jackrabbit',
   'x-ray',
+  'blinky',
+  'crash',
   'klombo',
   'crown'
 ] as const;
@@ -163,6 +166,29 @@ export const SPRITE_FAMILIES: SpriteFamily[] = [
     rarity: 'rare',
     ability: 'Concede Sobrescudo. A quantidade aumenta a cada nível.',
     variants: [...S4_VARIANTS]
+  },
+  {
+    slug: 'pond',
+    name: 'Elemental Pond',
+    rarity: 'epic',
+    ability:
+      'Jump shortly after landing to launch a Super Jump. It goes higher and more often with each level.',
+    variants: [...S4_VARIANTS]
+  },
+  {
+    slug: 'blinky',
+    name: 'Elemental Blinky',
+    rarity: 'legendary',
+    ability: 'Taking damage cloaks you for a short time. The cloak lasts longer with each level.',
+    variants: [...S4_VARIANTS]
+  },
+  {
+    slug: 'crash',
+    name: 'Elemental Crash Bandicoot',
+    rarity: 'legendary',
+    ability:
+      'Spin attack in midair, damaging and knocking back nearby opponents. Damage rises and the cooldown drops with each level.',
+    variants: [...S4_VARIANTS]
   }
 ];
 
@@ -257,8 +283,19 @@ export const SPRITE_RELIC_FAMILIES: Record<string, string> = {
   winnerb: 'x-ray',
   winnerc: 'onigiri',
   improvedslide: 'mega-man',
-  rockman: 'mega-man'
+  rockman: 'mega-man',
+  crashbandicoot: 'crash'
 };
+
+/** Magpie / trophy suffix → album variant. Unknown tokens stay base. */
+export function spriteVariantFromToken(raw: string): SpriteVariant {
+  const token = raw.toLowerCase().replace(/[\s_-]/g, '');
+  if (token === 'cheatmaster') return 'cheat-master';
+  if (token === 'gold') return 'gold';
+  if (token === 'loothacker' || token === 'galaxy') return 'loot-hacker';
+  if (token === 'bountyhunter' || token === 'bounty') return 'bounty-hunter';
+  return 'base';
+}
 
 export type SpriteProgress = {
   /** Entry keys (`family:variant`) whose Mastery reward was already claimed. */
@@ -280,7 +317,7 @@ type QuestItem = {
 const MASTERY_QUEST = /^Quest:quest_s4\d_spritemastery_(redeem_)?p\d+_(q\d+)([a-z]?)$/;
 const MASTERY_TOKEN = /^Token:athena_s4\d_spritemastery_token_([a-z0-9_]+)$/i;
 const TROPHY_REWARD =
-  /^CosmeticVariantToken:vtid_backpack_coldtrophy_([a-z0-9_]+?)(?:_(gummy|galaxy|gold|gem|holofoil|cube|quack|cheatmaster|loothacker))?$/i;
+  /^CosmeticVariantToken:vtid_backpack_coldtrophy_([a-z0-9_]+?)(?:_(gummy|galaxy|gold|gem|holofoil|cube|quack|cheatmaster|loothacker|bountyhunter|bounty))?$/i;
 
 /**
  * Epic exposes Mastery through athena quests. Dust, gizmos and per-Sprite levels live in Magpie
@@ -315,15 +352,7 @@ export function parseSpriteProgress(profile: unknown): SpriteProgress {
       const family = mapApiSpriteFamilyId(trophy[1]);
       if (!family) continue;
 
-      const variantRaw = trophy[2]?.toLowerCase();
-      const variant =
-        variantRaw === 'cheatmaster'
-          ? 'cheat-master'
-          : variantRaw === 'gold'
-            ? 'gold'
-            : variantRaw === 'galaxy' || variantRaw === 'loothacker'
-              ? 'loot-hacker'
-              : 'base';
+      const variant = spriteVariantFromToken(trophy[2] ?? '');
 
       familyByQuest[questId] = family;
       if (claimed) mastered.add(`${family}:${variant}`);

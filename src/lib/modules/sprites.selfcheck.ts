@@ -9,6 +9,7 @@ import {
   SPRITE_EXPORT_VARIANTS,
   SPRITE_FAMILIES,
   spriteShortName,
+  spriteVariantFromToken,
   writeSpriteCollection
 } from './sprites';
 import {
@@ -25,8 +26,8 @@ import {
   SPRITE_GIZMO_CATALOG
 } from './sprites-account';
 
-assert.equal(SPRITE_FAMILIES.length, 16);
-assert.equal(SPRITE_ENTRIES.length, 61);
+assert.equal(SPRITE_FAMILIES.length, 19);
+assert.equal(SPRITE_ENTRIES.length, 91);
 assert.equal(new Set(SPRITE_ENTRIES.map((entry) => entry.key)).size, SPRITE_ENTRIES.length);
 assert.equal(SPRITE_FAMILIES.find((f) => f.slug === 'sonic')?.name, 'Elemental Sonic');
 assert.equal(SPRITE_FAMILIES.find((f) => f.slug === 'klombo')?.rarity, 'mythic');
@@ -57,12 +58,21 @@ assert.equal(mapApiSpriteFamilyId('Mega_Man'), 'mega-man');
 assert.equal(mapApiSpriteFamilyId('WinnerBSprite'), 'x-ray');
 assert.equal(mapApiSpriteFamilyId('WinnerC'), 'onigiri');
 assert.equal(mapApiSpriteFamilyId('ImprovedSlideSprite'), 'mega-man');
+assert.equal(mapApiSpriteFamilyId('CrashBandicootSprite'), 'crash');
+assert.equal(mapApiSpriteFamilyId('PondSprite'), 'pond');
+assert.equal(mapApiSpriteFamilyId('Blinky'), 'blinky');
 assert.equal(mapApiSpriteFamilyId('UnknownSprite'), null);
+assert.equal(spriteVariantFromToken('BountyHunter'), 'bounty-hunter');
+assert.equal(spriteVariantFromToken('galaxy'), 'loot-hacker');
 assert.equal(SPRITE_FAMILIES.every((f) => f.name.startsWith('Elemental')), true);
 assert.equal(SPRITE_FAMILIES.find((f) => f.slug === 'mega-man')?.variants.length, 0);
 assert.equal(SPRITE_FAMILIES.find((f) => f.slug === 'overshield')?.variants.includes('loot-hacker'), true);
-assert.equal(SPRITE_FAMILIES.filter((f) => f.slug !== 'mega-man').every((f) => f.variants.includes('loot-hacker')), true);
-assert.deepEqual(SPRITE_EXPORT_VARIANTS, ['base', 'gold', 'cheat-master', 'loot-hacker']);
+assert.equal(SPRITE_FAMILIES.find((f) => f.slug === 'pond')?.variants.includes('bounty-hunter'), true);
+assert.equal(
+  SPRITE_FAMILIES.filter((f) => f.slug !== 'mega-man').every((f) => f.variants.includes('bounty-hunter')),
+  true
+);
+assert.deepEqual(SPRITE_EXPORT_VARIANTS, ['base', 'gold', 'cheat-master', 'loot-hacker', 'bounty-hunter']);
 assert.equal(spriteShortName('Elemental Sonic'), 'Sonic');
 assert.equal(spriteShortName('Elemental Storm Scout'), 'Storm Scout');
 assert.equal(spriteShortName('Elemental 8-Bit'), '8-Bit');
@@ -134,9 +144,34 @@ const progress = parseSpriteProgress({
 assert.deepEqual([...progress.mastered].sort(), ['sonic:base', 'sonic:gold', 'sonic:loot-hacker']);
 assert.deepEqual([...progress.extracted], ['sonic']);
 
+const bountyProgress = parseSpriteProgress({
+  profileChanges: [
+    {
+      profile: {
+        items: {
+          a: quest('Quest:quest_s42_spritemastery_p01_q04', 'Claimed'),
+          b: quest(
+            'Quest:quest_s42_spritemastery_redeem_p01_q04',
+            'Claimed',
+            'CosmeticVariantToken:vtid_backpack_coldtrophy_crown_bountyhunter'
+          )
+        }
+      }
+    }
+  ]
+});
+assert.deepEqual([...bountyProgress.mastered], ['crown:bounty-hunter']);
+assert.deepEqual([...bountyProgress.extracted], ['crown']);
+
 console.log(`sprites self-check passed (${SPRITE_ENTRIES.length} entries)`);
 
-for (const key of ['sprites.variants.base', 'sprites.variants.gold', 'sprites.variants.cheatMaster'] as const) {
+for (const key of [
+  'sprites.variants.base',
+  'sprites.variants.gold',
+  'sprites.variants.cheatMaster',
+  'sprites.variants.lootHacker',
+  'sprites.variants.bountyHunter'
+] as const) {
   assert.equal(typeof m[key], 'function', key);
   assert.ok(m[key]({}, { locale: 'pt-br' }));
 }
@@ -376,6 +411,15 @@ assert.deepEqual(parseRelicId('KillswitchSprite_Variant_CheatMaster'), {
   family: 'killswitch',
   variant: 'cheat-master'
 });
+assert.deepEqual(parseRelicId('CrownSprite_Variant_BountyHunter'), {
+  family: 'crown',
+  variant: 'bounty-hunter'
+});
+assert.deepEqual(parseRelicId('Crash_Variant_Bounty'), { family: 'crash', variant: 'bounty-hunter' });
+assert.deepEqual(parseCreatureSpriteId('BR_Creature_Sprite_Pond_BountyHunter'), {
+  family: 'pond',
+  variant: 'bounty-hunter'
+});
 assert.deepEqual(parseRelicId('XRaySprite_Variant_LootHacker'), {
   family: 'x-ray',
   variant: 'loot-hacker'
@@ -542,10 +586,13 @@ assert.deepEqual([...SPRITE_EXPORT_ORDER], [
   'storm-scout',
   'shadow',
   'tails',
+  'pond',
   'killswitch',
   'sonic',
   'jackrabbit',
   'x-ray',
+  'blinky',
+  'crash',
   'klombo',
   'crown'
 ]);

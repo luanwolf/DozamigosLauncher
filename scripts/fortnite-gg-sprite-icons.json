@@ -1,0 +1,131 @@
+{
+  "jonesy": {
+    "base": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_Jonesy_L.webp",
+    "gold": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_Jonesy_Gold_L.webp",
+    "cheat-master": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_Jonesy_Cheatmaster_L.webp",
+    "loot-hacker": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_Jonesy_Hacker_L.webp",
+    "bounty-hunter": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_Jonesy_BountyHunter_L.webp"
+  },
+  "adventure": {
+    "base": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_Dwarf_L.webp",
+    "gold": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_Dwarf_Gold_L.webp",
+    "cheat-master": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_Dwarf_Cheatmaster_L.webp",
+    "loot-hacker": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_Dwarf_Hacker_L.webp",
+    "bounty-hunter": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_Dwarf_BountyHunter_L.webp"
+  },
+  "bush": {
+    "base": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_BushRanger_L.webp",
+    "gold": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_BushRanger_Gold_L.webp",
+    "cheat-master": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_BushRanger_Cheatmaster_L.webp",
+    "loot-hacker": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_BushRanger_Hacker_L.webp",
+    "bounty-hunter": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_BushRanger_BountyHunter_L.webp"
+  },
+  "sonic": {
+    "base": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_NarrowFlea_Obsidian_L.webp",
+    "gold": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_NarrowFlea_Obsidian_Gold_L.webp",
+    "cheat-master": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_NarrowFlea_Obsidian_Cheatmaster_L.webp",
+    "loot-hacker": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_NarrowFlea_Hacker_L.webp",
+    "bounty-hunter": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_NarrowFlea_BountyHunter_L.webp"
+  },
+  "tails": {
+    "base": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_NarrowFlea_Monkey_L.webp",
+    "gold": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_NarrowFlea_Monkey_Gold_L.webp",
+    "cheat-master": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_NarrowFlea_Monkey_Cheatmaster_L.webp",
+    "loot-hacker": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_NarrowFlea_Monkey_Hacker_L.webp",
+    "bounty-hunter": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_NarrowFleaMonkey_BountyHunter_L.webp"
+  },
+  "shadow": {
+    "base": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_NarrowFlea_Scribe_L.webp",
+    "gold": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_NarrowFlea_Scribe_Gold_L.webp",
+    "cheat-master": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_NarrowFlea_Scribe_Cheatmaster_L.webp",
+    "loot-hacker": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_ReloadOverTime_Hacker_L.webp",
+    "bounty-hunter": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_ReloadOverTime_BountyHunter_L.webp"
+  },
+  "eight-bit": {
+    "base": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_EightBitBlaster_L.webp",
+    "gold": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_EightBitBlaster_Gold_L.webp",
+    "cheat-master": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_EightBitBlaster_Cheatmaster_L.webp",
+    "loot-hacker": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_EightBitBlaster_Hacker_L.webp",
+    "bounty-hunter": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_8BitBlaster_BountyHunter_L.webp"
+  },
+  "jackrabbit": {
+    "base": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_JazzJackrabbit_L.webp",
+    "gold": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_JazzJackrabbit_Gold_L.webp",
+    "cheat-master": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_JazzJackrabbit_Cheatmaster_L.webp",
+    "loot-hacker": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_DoubleJump_Hacker_L.webp",
+    "bounty-hunter": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_DoubleJump_BountyHunter_L.webp"
+  },
+  "crown": {
+    "base": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_Crown_L.webp",
+    "gold": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_Crown_Gold_L.webp",
+    "cheat-master": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_Crown_Cheatmaster_L.webp",
+    "loot-hacker": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_Crown_Hacker_L.webp",
+    "bounty-hunter": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_Crown_BountyHunter_L.webp"
+  },
+  "killswitch": {
+    "base": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_Killswitch_L.webp",
+    "gold": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_Killswitch_Gold_L.webp",
+    "cheat-master": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_Killswitch_Cheatmaster_L.webp",
+    "loot-hacker": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_Killswitch_Hacker_L.webp",
+    "bounty-hunter": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_Killswitch_BountyHunter_L.webp"
+  },
+  "klombo": {
+    "base": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_Klombo_L.webp",
+    "gold": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_Klombo_Gold_L.webp",
+    "cheat-master": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_Klombo_Cheatmaster_L.webp",
+    "loot-hacker": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_Klombo_Hacker_L.webp",
+    "bounty-hunter": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_Klombo_BountyHunter_L.webp"
+  },
+  "mega-man": {
+    "base": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_ImprovedSlide_L.webp"
+  },
+  "overshield": {
+    "base": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_Overshield_L.webp",
+    "gold": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_Overshield_Gold_L.webp",
+    "cheat-master": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_Overshield_Cheatmaster_L.webp",
+    "loot-hacker": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_Overshield_Hacker_L.webp",
+    "bounty-hunter": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_Overshield_BountyHunter_L.webp"
+  },
+  "x-ray": {
+    "base": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_WinnerB_L.webp",
+    "gold": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_WinnerB_Gold_L.webp",
+    "cheat-master": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_WinnerB_Cheatmaster_L.webp",
+    "loot-hacker": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_WinnerB_Hacker_L.webp",
+    "bounty-hunter": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_WinnerB_BountyHunter_L.webp"
+  },
+  "onigiri": {
+    "base": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_WinnerC_L.webp",
+    "gold": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_WinnerC_Gold_L.webp",
+    "cheat-master": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_WinnerC_Cheatmaster_L.webp",
+    "loot-hacker": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_WinnerC_Hacker_L.webp",
+    "bounty-hunter": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_WinnerC_BountyHunter_L.webp"
+  },
+  "storm-scout": {
+    "base": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_StormScout_L.webp",
+    "gold": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_StormScout_Gold_L.webp",
+    "cheat-master": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_StormScout_Cheatmaster_L.webp",
+    "loot-hacker": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_StormScout_Hacker_L.webp",
+    "bounty-hunter": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_StormScout_BountyHunter_L.webp"
+  },
+  "blinky": {
+    "base": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_GhostDamage_L.webp",
+    "gold": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_GhostDamage_Gold_L.webp",
+    "cheat-master": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_GhostDamage_Cheatmaster_L.webp",
+    "loot-hacker": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_GhostDamage_Hacker_L.webp",
+    "bounty-hunter": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_GhostDamage_BountyHunter_L.webp"
+  },
+  "crash": {
+    "base": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_BodySlam_L.webp",
+    "gold": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_BodySlam_Gold_L.webp",
+    "cheat-master": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_BodySlam_Cheatmaster_L.webp",
+    "loot-hacker": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_BodySlam_Hacker_L.webp",
+    "bounty-hunter": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_BodySlam_BountyHunter_L.webp"
+  },
+  "pond": {
+    "base": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_WinnerA_L.webp",
+    "gold": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_WinnerA_Gold_L.webp",
+    "cheat-master": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_WinnerA_Cheatmaster_L.webp",
+    "loot-hacker": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_WinnerA_Hacker_L.webp",
+    "bounty-hunter": "/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_WinnerA_BountyHunter_L.webp"
+  }
+}

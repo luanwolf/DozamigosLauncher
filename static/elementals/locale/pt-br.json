@@ -1,5 +1,5 @@
 {
-  "_readme": "Edite name e ability por slug. Salve o arquivo e recarregue a página Elementais. Slugs válidos: klombo, crown, jackrabbit, sonic, tails, shadow, killswitch, eight-bit, adventure, bush, jonesy, storm-scout, x-ray, onigiri, mega-man, overshield.",
+  "_readme": "Edite name e ability por slug. Salve o arquivo e recarregue a página Elementais. ability vazio mantém o texto em inglês do código até você escrever a descrição em PT-BR. Slugs válidos: klombo, crown, jackrabbit, sonic, tails, shadow, killswitch, eight-bit, adventure, bush, jonesy, storm-scout, x-ray, onigiri, mega-man, overshield, pond, blinky, crash.",
   "locale": "pt-br",
   "sprites": {
     "klombo": {
@@ -65,6 +65,18 @@
     "overshield": {
       "name": "Elemental Sobrescudo",
       "ability": "Concede Sobrescudo. A quantidade aumenta a cada nível."
+    },
+    "pond": {
+      "name": "Elemental Pond",
+      "ability": ""
+    },
+    "blinky": {
+      "name": "Elemental Blinky",
+      "ability": ""
+    },
+    "crash": {
+      "name": "Elemental Crash Bandicoot",
+      "ability": ""
     }
   }
 }
