@@ -5,7 +5,7 @@
 
 ---
 
-## Resumo executivo
+## Contagem
 
 | Métrica | Quantidade |
 |---------|------------|
@@ -226,10 +226,10 @@ Documentação comunitária principal: [https://github.com/LeleDerGrasshalmi/For
 
 ## Top 5 APIs ausentes mais úteis para este launcher
 
-1. **Stats Proxy Epic** (`statsproxy…/statsv2`) ou **fortnite-api.com `/v2/stats/br/v2`** — enriquecer a página de lookup com vitórias, K/D e tempo jogado (🎮 BR).
+1. **Stats Proxy Epic** (`statsproxy…/statsv2`) ou **fortnite-api.com `/v2/stats/br/v2`** — vitórias, K/D e tempo jogado na ficha do jogador (🎮 BR).
 2. **FN Content API** (`fortnitecontent-website…/content/api/pages/fortnite-game`) — metadados oficiais de desafios, UI e eventos sem depender só do MCP.
 3. **fortnite-api.com Creator Code** (`/v2/creatorcode`) — validar código SAC antes de `SetAffiliateName` na página Support a Creator.
-4. **Habanero Service** (ranked) — exibir rank competitivo na ficha do jogador (crescente relevância no BR).
+4. **Habanero Service** (ranked) — rank competitivo na ficha do jogador.
 5. **Operações MCP de Collection Book / Ventures** (perfil `campaign`) — painéis STW de progresso de coleção e Ventures além dos alertas de missão já implementados.
 
 ---

@@ -61,7 +61,8 @@
     gold: $t('sprites.variants.gold'),
     'cheat-master': $t('sprites.variants.cheatMaster'),
     'loot-hacker': $t('sprites.variants.lootHacker'),
-    'bounty-hunter': $t('sprites.variants.bountyHunter')
+    'bounty-hunter': $t('sprites.variants.bountyHunter'),
+    'trick-or-treat': $t('sprites.variants.trickOrTreat')
   });
 
   const rarityLabels: Record<SpriteRarity, string> = {

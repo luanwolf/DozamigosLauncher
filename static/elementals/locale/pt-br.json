@@ -1,5 +1,5 @@
 {
-  "_readme": "Edite name e ability por slug. Salve o arquivo e recarregue a página Elementais. ability vazio mantém o texto em inglês do código até você escrever a descrição em PT-BR. Slugs válidos: klombo, crown, jackrabbit, sonic, tails, shadow, killswitch, eight-bit, adventure, bush, jonesy, storm-scout, x-ray, onigiri, mega-man, overshield, pond, blinky, crash.",
+  "_readme": "Edite name e ability por slug. Salve o arquivo e recarregue a página Elementais. ability vazio mantém o texto em inglês do código até você escrever a descrição em PT-BR. Slugs válidos: klombo, crown, jackrabbit, sonic, tails, shadow, killswitch, eight-bit, adventure, bush, jonesy, storm-scout, x-ray, onigiri, mega-man, overshield, pond, blinky, crash, birthday, morgana, dumpster-dive, vampire, the-deer, spooky-dash.",
   "locale": "pt-br",
   "sprites": {
     "klombo": {
@@ -77,6 +77,30 @@
     "crash": {
       "name": "Elemental Crash Bandicoot",
       "ability": ""
+    },
+    "birthday": {
+      "name": "Elemental Aniversário",
+      "ability": "Baú solta um pedaço de bolo de vez em quando. No nível máximo, eliminação também. A chance sobe a cada nível."
+    },
+    "morgana": {
+      "name": "Elemental Morgana",
+      "ability": "Item de cura rende mais a cada nível."
+    },
+    "dumpster-dive": {
+      "name": "Elemental Dumpster Dive",
+      "ability": "Comida cura mais, e aparece ao sair de um esconderijo. Raramente, num baú também. A comida melhora a cada nível."
+    },
+    "vampire": {
+      "name": "Elemental Vampiro",
+      "ability": "Dano em inimigo devolve vida, e a fatia devolvida sobe a cada nível."
+    },
+    "the-deer": {
+      "name": "Elemental Cervo",
+      "ability": "Ataque corpo a corpo dá mais dano a cada nível."
+    },
+    "spooky-dash": {
+      "name": "Elemental Spooky Dash",
+      "ability": "No ar, a disparada atravessa alguns objetos. As cargas voltam com o tempo, mais rápido a cada nível."
     }
   }
 }

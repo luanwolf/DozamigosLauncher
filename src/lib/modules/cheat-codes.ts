@@ -1,6 +1,6 @@
 import type { AccountData } from '$types/account';
 
-/** Override lobby Admin Panel codes. Skip visual repeatables (LetsBlockAndRoll, DontBlockMe, InsertCoinToContinue) and expired NOPROLLAMA. */
+/** Override lobby Admin Panel codes. Skip reusable lobby visuals (LetsBlockAndRoll, DontBlockMe, InsertCoinToContinue, BRB, PowerOut, CrowsAreAfraid, PumpkinSpiceLife) and expired NoProLlama. */
 export const LOBBY_HACK_CODES = [
   'INVALIDCHEAT',
   'ChatWhereDoYouFindTheKey',
@@ -34,7 +34,17 @@ export const LOBBY_HACK_CODES = [
   'PlayToLevelUp',
   'DestinyAwaits',
   'ChatFindMeAnotherCode',
-  'MagicIsReal'
+  'MagicIsReal',
+  'WhoCrackedTheCode',
+  '9Years',
+  'WeAreTheWorldChampionsToday',
+  'BoneRattler',
+  'AlmostScaringSeason',
+  'IThinkTheKeyFoundMeChat',
+  'DustySprites',
+  'ImTheRealEdgelord',
+  'runSystemOverride',
+  'S7H-50P-R03'
 ] as const;
 
 export type CheatCodeStatus = 'redeemed' | 'skipped' | 'failed';

@@ -101,15 +101,15 @@
     },
     "battleRoyale": {
       "title": "Battle Royale",
-      "blurb": "Veja a loja de itens, vazamentos, vestiário, status do jogo e muito mais."
+      "blurb": "Loja, vazamentos, vestiário e status do jogo."
     },
     "saveTheWorld": {
       "title": "Salve o Mundo",
-      "blurb": "Veja os alertas diários, loja de eventos, lhamas e configure automações."
+      "blurb": "Alertas, loja, lhamas e automações."
     },
     "account": {
       "title": "Conta",
-      "blurb": "Veja detalhes de sua conta, resgate códigos de recompensas e muito mais."
+      "blurb": "Conta, códigos e login na Epic."
     },
     "dev": {
       "title": "Dev",
@@ -117,12 +117,12 @@
     },
     "epicLibrary": {
       "title": "Epic / Steam",
-      "blurb": "Gerencie sua biblioteca de jogos e resgate jogos gratuitos semanalmente."
+      "blurb": "Biblioteca da Epic e jogos grátis da semana."
     }
   },
   "newVersionAvailable": {
     "title": "Nova Versão Disponível",
-    "description": "A versão {version} está disponível. Baixe para atualizar.",
+    "description": "Baixe a versão {version}.",
     "download": "Baixar"
   },
   "combobox": {
@@ -203,7 +203,7 @@
   "epicGamesWebsite": {
     "page": {
       "title": "Site da Epic Games",
-      "description": "Clique no botão abaixo para fazer login na Epic Games."
+      "description": "Entra no site da Epic com esta conta."
     },
     "login": "Entrar no site da Epic Games",
     "loggingIn": "Entrando",
@@ -224,7 +224,7 @@
   "redeemCodes": {
     "page": {
       "title": "Resgatar Códigos",
-      "description": "Selecione as contas e informe os códigos para resgatar recompensas na Epic."
+      "description": "Códigos da Epic, nas contas que você marcar."
     },
     "codesPlaceholder": "Insira os códigos para resgatar e pressione Enter",
     "redeemCodes": "Resgatar Códigos",
@@ -278,7 +278,7 @@
   "accountOverview": {
     "page": {
       "title": "Visão geral",
-      "description": "Resumo BR e SoM da conta ativa, com claim de recompensa 2FA."
+      "description": "Resumo de BR e SoM, e o resgate da recompensa de 2FA."
     },
     "refresh": "Atualizar",
     "loadFailed": "Não foi possível carregar a visão geral.",
@@ -348,7 +348,7 @@
   "deviceAuth": {
     "page": {
       "title": "Autenticação de dispositivo",
-      "description": "Gerencie as autenticações de dispositivo da conta ativa."
+      "description": "Autenticações de dispositivo desta conta."
     },
     "authInfo": {
       "noName": "Sem Nome",
@@ -374,7 +374,7 @@
   "accessToken": {
     "page": {
       "title": "Token de Acesso",
-      "description": "Gere tokens de acesso para integrações e testes."
+      "description": "Token de acesso para integração e teste."
     },
     "selectTokenType": "Selecionar tipo de token",
     "selectClient": "Selecionar cliente",
@@ -386,7 +386,7 @@
   "exchangeCode": {
     "page": {
       "title": "Código de Autenticação",
-      "description": "Clique no botão abaixo para gerar um código de autenticação."
+      "description": "Gera um código e copia."
     },
     "generate": "Gerar Código de Autenticação",
     "generating": "Gerando",
@@ -396,7 +396,7 @@
   "autoKick": {
     "page": {
       "title": "Sair automaticamente",
-      "description": "Automatize a saída da missão, o resgate e a transferência de materiais no SoM."
+      "description": "Sai da missão, resgata e transfere materiais no SoM."
     },
     "mobileIncompatibilityWarning": {
       "title": "Atenção",
@@ -467,7 +467,7 @@
   "saveQuests": {
     "page": {
       "title": "Missões da campanha",
-      "description": "Veja o progresso das missões da história e resgate as concluídas."
+      "description": "Progresso das missões da história. Dá para resgatar as concluídas."
     },
     "load": "Carregar missões",
     "claimCompleted": "Resgatar concluídas",
@@ -479,10 +479,10 @@
   "supportCreator": {
     "page": {
       "title": "Apoie-um-Criador",
-      "description": "Renove automaticamente a cada 14 dias para continuar o apoio ao seu criador favorito."
+      "description": "O código de criador vence em 14 dias. Dá para renovar sozinho."
     },
     "creatorCode": "Código do Criador",
-    "codePlaceholder": "Digite o código do seu criador favorito...",
+    "codePlaceholder": "Código do criador",
     "apply": "Aplicar",
     "remove": "Remover",
     "checkCurrent": "Ver Código Atual",
@@ -492,8 +492,8 @@
     "autoRefresh": "Renovar automaticamente a cada 14 dias",
     "autoRefreshDescription": "Renova automaticamente antes do vencimento.",
     "autoRefreshing": "Renovando código \"{code}\" automaticamente...",
-    "autoRefreshDone": "Código \"{code}\" renovado com sucesso",
-    "setSuccess": "Código \"{code}\" aplicado com sucesso",
+    "autoRefreshDone": "Código \"{code}\" renovado",
+    "setSuccess": "Código \"{code}\" aplicado",
     "setError": "Falha ao definir o código do criador",
     "invalidCreator": "Esse código não existe ou está inativo.",
     "validatedAs": "Ok: {name}",
@@ -521,7 +521,7 @@
     "claiming": "Resgatando...",
     "claimed": "{count} Lhama(s) resgatada(s)!",
     "openedCount": "{count} Lhama(s) aberta(s)",
-    "noneAvailable": "Nenhuma Lhama gratuita disponível no momento",
+    "noneAvailable": "Nenhuma lhama grátis agora",
     "autoClaim": "Resgatar automaticamente",
     "autoClaimDescription": "A cada hora (UTC), verifica as contas e resgata as lhamas disponíveis.",
     "claimError": "Falha ao resgatar lhamas para esta conta",
@@ -536,7 +536,7 @@
   "dailyQuests": {
     "page": {
       "title": "Missões Diárias",
-      "description": "Visualize e configure suas missões diárias no Salve o Mundo."
+      "description": "Missões diárias do SoM, com troca automática."
     },
     "resultStatus": {
       "blacklisted": "Substituição automática",
@@ -564,7 +564,7 @@
   "earnedXP": {
     "page": {
       "title": "EXP Ganha",
-      "description": "Veja a EXP ganha do Battle Royale, Criativo e Salve o Mundo."
+      "description": "EXP do Battle Royale, Criativo e Salve o Mundo."
     },
     "check": "Verificar EXP Ganha",
     "loading": "Carregando",
@@ -574,7 +574,7 @@
   "battlePassRewards": {
     "page": {
       "title": "Passe de Batalha",
-      "description": "Veja o progresso e resgate ofertas do passe nas contas selecionadas."
+      "description": "Progresso do passe e resgate nas contas marcadas."
     },
     "check": "Verificar status",
     "loading": "Carregando…",
@@ -594,11 +594,11 @@
   "leaks": {
     "page": {
       "title": "Vazamentos",
-      "description": "Veja os cosméticos novos que ficaram disponíveis nos arquivos do jogo."
+      "description": "Cosméticos novos nos arquivos do jogo."
     },
     "refresh": "Atualizar vazamentos",
     "loading": "Carregando…",
-    "failedToFetch": "Não foi possível carregar os vazamentos. Tente novamente mais tarde.",
+    "failedToFetch": "Não foi possível carregar os vazamentos.",
     "empty": "Nada vazado por enquanto.",
     "buildInfo": "Build {build}",
     "aesInfo": "AES {key}",
@@ -618,7 +618,7 @@
   "sprites": {
     "page": {
       "title": "Elementais",
-      "description": "Veja e exporte os Elementais e variantes da temporada atual."
+      "description": "Elementais e variantes desta temporada, com exportação."
     },
     "summary": "{count} Elementais e variantes no catálogo",
     "extractedSummary": "{count} extraído(s)",
@@ -633,7 +633,8 @@
       "gold": "Dourado",
       "cheatMaster": "Trapaceiro",
       "lootHacker": "Hacker de Saque",
-      "bountyHunter": "Caçador de Recompensas"
+      "bountyHunter": "Caçador de Recompensas",
+      "trickOrTreat": "Doces ou Travessuras"
     },
     "filters": {
       "allRarities": "Todas as raridades",
@@ -645,9 +646,9 @@
     },
     "collection": {
       "title": "Sua coleção",
-      "perAccount": "Extraído só conta token de Mastery já ganho na conta — a Epic lista a quest de todo Elemental mesmo sem você ter extraído. Dust, dispositivos e nível (Lv) ficam no Magpie do Fortnite — o launcher público não tem a permissão que o jogo no PC tem.",
+      "perAccount": "Extraído é o token de mastery que a conta já ganhou. A quest aparece para todo Elemental, mesmo sem extração. Dust, bugiganga e nível vêm do Magpie, e o launcher não lê isso.",
       "noAccount": "Entre em uma conta para separar as marcações por perfil.",
-      "explanation": "A imagem exportada segue o álbum Base + Dourado + Trapaceiro + Hacker de Saque + Caçador de Recompensas (95 slots, com espaços vazios quando o jogo ainda não tem aquela variante). Dust e bugigangas no topo só aparecem se o Magpie da conta for legível.",
+      "explanation": "O álbum exportado tem seis linhas: Base, Dourado, Trapaceiro, Hacker de Saque, Caçador de Recompensas e Doces ou Travessuras. São 150 espaços. Sem a variante no jogo, o espaço fica vazio. Dust e bugigangas só entram se o Magpie da conta responder.",
       "dontShowAgain": "Não mostrar novamente"
     },
     "mastery": {
@@ -667,7 +668,7 @@
     "resources": {
       "dust": "Sprite Dust",
       "gizmos": "Bugigangas",
-      "magpieLocked": "Dust, dispositivos e nível só o Fortnite (cliente do jogo) consegue ler. O token do launcher não tem essa permissão Magpie."
+      "magpieLocked": "O launcher não lê dust, bugiganga nem nível. Isso fica no cliente do Fortnite."
     }
   },
   "itemShop": {
@@ -678,7 +679,7 @@
     "lastUpdated": "Atualizado em: {date}",
     "nextRotation": "Próxima rotação em {time}",
     "searchPlaceholder": "Buscar itens...",
-    "failedtoFetch": "Não foi possível carregar os itens da loja. Tente novamente mais tarde.",
+    "failedtoFetch": "Não foi possível carregar a loja.",
     "noItems": "Nenhum item encontrado",
     "selectFilter": "Selecionar um filtro",
     "filterByType": "Tipo",
@@ -743,7 +744,7 @@
       "description": "Tem certeza que deseja comprar {name} por {price} {vbucksIcon}?"
     },
     "purchasing": "Comprando",
-    "purchased": "Item comprado com sucesso",
+    "purchased": "Item comprado",
     "needMoreVbucksToPurchase": "Você precisa de mais {amount} V-Bucks para comprar este item",
     "alreadyOwned": "Você já possui este item",
     "failedToPurchase": "Não foi possível comprar o item",
@@ -755,7 +756,7 @@
     "selectedFriendCount": "{count} amigos selecionados",
     "sendGift": "Enviar Presente",
     "sendingGift": "Enviando presente",
-    "sentGift": "Presente enviado com sucesso",
+    "sentGift": "Presente enviado",
     "reachedDailyGiftLimit": "Você atingiu o limite diário de presentes",
     "needMoreVbucksToGift": "Você precisa de mais {amount} V-Bucks para presentear este item",
     "friendsMayOwnItem": "Não foi possível enviar o presente. Um ou mais amigos já podem ter este item.",
@@ -783,7 +784,7 @@
   "locker": {
     "page": {
       "title": "Vestiário",
-      "description": "Visualize ou exporte seus cosméticos disponíveis na conta."
+      "description": "Cosméticos da conta, com exportação em imagem."
     },
     "refresh": "Atualizar",
     "exportWebp": "Exportar Vestiário",
@@ -970,7 +971,7 @@
     },
     "refresh": "Atualizar",
     "newsFailed": "Falha ao carregar notícias Creative.",
-    "newsEmpty": "Sem notícias Creative no momento.",
+    "newsEmpty": "Sem notícias Creative.",
     "discoveryTitle": "Discovery",
     "discoveryFailed": "Discovery indisponível. Faça login novamente.",
     "discoveryEmpty": "Nenhuma ilha na superfície Discovery."
@@ -1007,7 +1008,7 @@
     "onboarding": {
       "kicker": "Primeiros passos",
       "title": "Bem-vindo ao Dozamigos Launcher",
-      "description": "Para concluir a configuração, conecte sua conta Epic e informe onde o Fortnite está instalado.",
+      "description": "Conecte sua conta Epic e indique a pasta do Fortnite.",
       "progress": "{done} de {total} concluídos",
       "account": {
         "title": "Conectar conta Epic",
@@ -1017,12 +1018,12 @@
       },
       "gamePath": {
         "title": "Localizar o Fortnite",
-        "description": "Precisamos da pasta do jogo para abrir o Fortnite pelo launcher.",
+        "description": "Sem a pasta do jogo, o launcher não abre o Fortnite.",
         "placeholder": "C:/Program Files/.../FortniteGame/Binaries/Win64"
       },
       "start": "Começar a usar",
       "skip": "Configurar depois",
-      "skipHint": "Você pode ajustar tudo depois em Configurações."
+      "skipHint": "Dá para mudar isso depois, em Configurações."
     },
     "season": {
       "title": "Temporada do Battle Royale",
@@ -1087,7 +1088,7 @@
       "brTitle": "Novidades do Battle Royale",
       "stwTitle": "Novidades do Salve o Mundo",
       "loadFailed": "Não foi possível carregar as novidades.",
-      "empty": "Nenhuma novidade no momento.",
+      "empty": "Nenhuma novidade.",
       "previous": "Novidade anterior",
       "next": "Próxima novidade",
       "goToSlide": "Ir para novidade {index}"
@@ -1128,7 +1129,7 @@
     },
     "refresh": "Atualizar loja",
     "loading": "Carregando loja...",
-    "empty": "Nenhuma oferta disponível no momento.",
+    "empty": "Nada pra comprar agora.",
     "emptyAvailable": "Não há mais itens para comprar nesta rotação (ou você já comprou tudo).",
     "availableOnlyHint": "Apenas itens que ainda podem ser comprados na sua conta.",
     "alreadyPurchased": "Esta oferta já não está disponível. A loja foi atualizada.",
@@ -1274,7 +1275,7 @@
     "refreshing": "Atualizando",
     "notifyMe": {
       "title": "Me notificar",
-      "description": "Receba uma notificação quando o Fortnite voltar a ficar online."
+      "description": "Avisa quando o Fortnite voltar."
     },
     "queue": {
       "title": "Fila Ativa",
@@ -1298,7 +1299,7 @@
     },
     "customization": {
       "accountTitle": "Identidade no launcher",
-      "accountDescription": "Escolha uma conta para definir o apelido e as tags exibidos apenas no launcher.",
+      "accountDescription": "Apelido e tags valem só neste launcher. O nome na Epic não muda.",
       "headerTitle": "Dados na barra",
       "headerDescription": "Escolha quais saldos aparecem ao lado dos V-Bucks."
     },
@@ -1316,12 +1317,12 @@
       },
       "rerunOnboarding": {
         "title": "Configuração inicial",
-        "description": "Mostra de novo a tela de boas-vindas com os primeiros passos.",
+        "description": "Mostra de novo a tela de conta e pasta do jogo.",
         "action": "Refazer"
       },
       "gamePath": {
         "title": "Caminho do Fortnite",
-        "description": "Pasta do Fortnite. Você pode selecioná-la manualmente ou detectá-la.",
+        "description": "Pasta do Fortnite. Escolha na mão ou deixe o launcher achar.",
         "autoDetect": "Detectar automaticamente",
         "detecting": "Procurando...",
         "detected": "Fortnite encontrado e caminho atualizado!",
@@ -1355,7 +1356,7 @@
       },
       "windowsNotifications": {
         "title": "Notificações do Windows",
-        "description": "Avisa no Windows sobre V-Bucks no SoM, missões, lhamas grátis, loja do BR e outras automações.",
+        "description": "Avisa no Windows sobre V-Bucks no SoM, missões, lhamas grátis e a loja do BR.",
         "denied": "O Windows bloqueou as notificações. Ative nas configurações do sistema."
       },
       "showXrayTickets": {
@@ -1384,7 +1385,7 @@
     "accounts": {
       "accountOrder": {
         "title": "Ordem das Contas",
-        "description": "Arraste para reorganizar a ordem em que as contas aparecem no launcher.",
+        "description": "Arraste para mudar a ordem das contas.",
         "moveUp": "Mover para cima",
         "moveDown": "Mover para baixo"
       }
@@ -1392,20 +1393,20 @@
     "downloader": {
       "downloadPath": {
         "title": "Pasta de Download",
-        "description": "Selecione a pasta onde o launcher vai baixar os jogos."
+        "description": "Pasta onde os jogos são baixados."
       },
       "autoUpdate": {
         "title": "Atualização Automática",
-        "description": "Atualizar jogos automaticamente quando uma nova versão estiver disponível."
+        "description": "Atualiza o jogo quando sai versão nova."
       },
       "sendNotifications": {
         "title": "Enviar Notificações",
-        "description": "Enviar notificações quando um jogo for atualizado ou baixado."
+        "description": "Avisa quando um jogo baixa ou atualiza."
       },
       "account": {
         "title": "Conta",
-        "description": "Selecione a conta usada para baixar jogos.",
-        "switched": "Conta do downloader alterada com sucesso.",
+        "description": "Conta que baixa os jogos.",
+        "switched": "Conta do downloader trocada.",
         "failedToSwitch": "Não foi possível alterar a conta do downloader.",
         "loggedOut": "Sessão da conta do downloader encerrada.",
         "failedToLogout": "Não foi possível encerrar a sessão da conta do downloader."
@@ -1418,10 +1419,10 @@
     "alreadyRunning": "O Fortnite já está em execução",
     "launching": "Iniciando o Fortnite...",
     "notInstalled": "O Fortnite não está instalado. Instale-o primeiro.",
-    "launched": "Fortnite iniciado com sucesso",
+    "launched": "Fortnite iniciado",
     "failedToLaunch": "Não foi possível iniciar o Fortnite",
     "stopping": "Encerrando o Fortnite...",
-    "stopped": "Fortnite encerrado com sucesso",
+    "stopped": "Fortnite encerrado",
     "failedToStop": "Não foi possível encerrar o Fortnite",
     "profile": {
       "title": "Iniciar Fortnite",
@@ -1458,8 +1459,8 @@
     "loginMethods": {
       "webConfirmation": {
         "title": "Confirmação Web",
-        "description": "Faça login no site da Epic e confirme o acesso em uma única etapa.",
-        "instructions": "Clique no botão abaixo para abrir o site da Epic Games. Após confirmar o acesso, clique em \"Continuar\".",
+        "description": "Entra no site da Epic e confirma o acesso.",
+        "instructions": "Abre o site da Epic. Depois de autorizar, clique em Continuar.",
         "generatingURL": "Gerando URL...",
         "openWebsite": "Abrir Site da Epic Games"
       },
@@ -1471,21 +1472,21 @@
         "openLink": "Abrir página de login da Epic",
         "copyLink": "Copiar link para um amigo",
         "linkCopied": "Link de login copiado",
-        "shareHint": "Você pode enviar o link: cada pessoa faz login na própria conta Epic e cola o próprio código aqui. Não envie o seu código, pois ele só funciona uma vez e dá acesso à sua conta."
+        "shareHint": "Dá para mandar o link. Cada um entra na própria conta e cola o próprio código. Não manda o seu: vale uma vez e abre a sua conta."
       }
     },
     "failedToLogin": "Não foi possível fazer login",
-    "confirmRequest": "Por favor, confirme o login no site da Epic Games para continuar.",
+    "confirmRequest": "Confirme o login no site da Epic.",
     "alreadyLoggedIn": "Você já está logado com {name}.",
     "welcome": {
-      "title": "👋 Bem-vindo(a), {name}",
-      "description": "Login na conta Epic Games realizado com sucesso."
+      "title": "Oi, {name}",
+      "description": "Conta Epic conectada."
     }
   },
   "friendsManagement": {
     "page": {
       "title": "Amigos",
-      "description": "Gerencie amigos, solicitações recebidas e enviadas, e a lista de bloqueados."
+      "description": "Amigos, pedidos e bloqueados."
     },
     "lists": {
       "friends": "Amigos",
@@ -1503,7 +1504,7 @@
     "noOutgoingRequests": "Nenhuma solicitação enviada",
     "noBlockedUsers": "Nenhum usuário bloqueado",
     "sendFriendRequest": "Enviar Solicitação de Amizade",
-    "sentFriendRequest": "Solicitação de amizade enviada com sucesso",
+    "sentFriendRequest": "Pedido de amizade enviado",
     "copyId": "Copiar ID",
     "acceptRequest": "Aceitar solicitação",
     "removeFriend": "Remover Amigo",
@@ -1521,11 +1522,11 @@
     "refresh": "Atualizar",
     "loading": "Carregando...",
     "fetchError": "Falha ao buscar jogos gratuitos",
-    "noGames": "Nenhum jogo gratuito disponível no momento",
+    "noGames": "Nenhum jogo grátis agora",
     "free": "GRÁTIS",
     "endsAt": "Termina em {date}",
     "claimOnStore": "Abrir Epic Launcher",
-    "claimLinkHint": "Resgatar abre a página do jogo no Epic Games Launcher para você confirmar o resgate por lá.",
+    "claimLinkHint": "Abre a página do jogo no Epic Games Launcher.",
     "claimLinkCopied": "Link de resgate copiado para {account}",
     "failedToCopyClaimLink": "Falha ao copiar o link de resgate",
     "claimGame": "Resgatar",
@@ -1556,10 +1557,10 @@
       "description": "Jogos instalados e disponíveis na Epic Games Store desta conta."
     },
     "loggingIn": "Fazendo login...",
-    "loggedIn": "Login realizado com sucesso",
+    "loggedIn": "Entrou na conta",
     "failedToLogin": "Não foi possível fazer login",
     "loggingOut": "Saindo...",
-    "loggedOut": "Sessão encerrada com sucesso",
+    "loggedOut": "Saiu da conta",
     "failedToLogout": "Não foi possível sair",
     "refresh": "Atualizar",
     "logout": "Sair",
@@ -1594,16 +1595,16 @@
         "size": "Tamanho"
       },
       "failedToLaunch": "Não foi possível iniciar {name}",
-      "stopped": "{name} encerrado com sucesso",
+      "stopped": "{name} encerrado",
       "failedToStop": "Não foi possível encerrar {name}",
-      "verified": "Arquivos de {name} verificados com sucesso",
+      "verified": "Arquivos de {name} verificados",
       "requiresRepair": "{name} precisa de reparo, adicionado à fila",
       "failedToVerify": "Não foi possível verificar os arquivos de {name}",
-      "installed": "{name} instalado com sucesso",
+      "installed": "{name} instalado",
       "failedToInstall": "Não foi possível instalar {name}",
-      "updated": "{name} atualizado com sucesso",
+      "updated": "{name} atualizado",
       "failedToUpdate": "Não foi possível atualizar {name}",
-      "repaired": "{name} reparado com sucesso",
+      "repaired": "{name} reparado",
       "failedToRepair": "Não foi possível reparar {name}",
       "startedDownload": "Download iniciado. {el}Clique aqui{elEnd} para acompanhar o progresso",
       "startedUpdate": "Atualização de {name} iniciada"
@@ -1629,7 +1630,7 @@
     "uninstallConfirmation": {
       "title": "Confirmar Desinstalação",
       "description": "Tem certeza que deseja desinstalar {name}?",
-      "uninstalled": "{name} desinstalado com sucesso",
+      "uninstalled": "{name} desinstalado",
       "failedToUninstall": "Não foi possível desinstalar {name}"
     }
   },
@@ -1652,7 +1653,7 @@
   "mcp": {
     "page": {
       "title": "MCP",
-      "description": "Execute operações MCP. Este é um recurso avançado."
+      "description": "Chama operações do MCP."
     },
     "operation": {
       "label": "Operação",
@@ -1735,13 +1736,13 @@
     "dismiss": "Dispensar",
     "moreItems": "+{count} item",
     "llamasTitle": "Lhamas resgatadas",
-    "llamasClaimed": "Resgatamos {count} pra você.",
-    "llamasClaimedSummary": "Resgatamos {count} pra você.",
+    "llamasClaimed": "{count} resgatadas.",
+    "llamasClaimedSummary": "{count} resgatadas.",
     "llamasNone": "Nenhuma lhama disponível agora.",
     "llamasError": "Não deu pra resgatar as lhamas: {detail}",
     "llamasErrorSummary": "Falha ao resgatar lhamas em {count} contas: {detail}",
     "questsTitle": "Missões diárias",
-    "gameClaimed": "{title} resgatado com sucesso",
+    "gameClaimed": "{title} resgatado",
     "gameAlreadyOwned": "{title}: você já possui este jogo",
     "gameBrowserOnly": "{title}: use o link da Epic Store para resgatar",
     "gameError": "Erro ao resgatar {title}: {detail}",

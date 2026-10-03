@@ -13,6 +13,8 @@ assert.equal(mapApiSpriteFamilyId('Mega_Man'), 'mega-man');
 assert.equal(mapApiSpriteFamilyId('WinnerBSprite'), 'x-ray');
 assert.equal(mapApiSpriteFamilyId('WinnerC'), 'onigiri');
 assert.equal(mapApiSpriteFamilyId('ImprovedSlideSprite'), 'mega-man');
+assert.equal(mapApiSpriteFamilyId('ESD_WinnerDSprite'), 'dumpster-dive');
+assert.equal(mapApiSpriteFamilyId('GhostDamage'), 'blinky');
 assert.equal(mapApiSpriteFamilyId('UnknownSprite'), null);
 
 const base = fallbackCatalog();

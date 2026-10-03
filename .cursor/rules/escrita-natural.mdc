@@ -1,0 +1,38 @@
+---
+description: Escrita natural para o usuário. Sem vícios de prosa típica de IA.
+alwaysApply: true
+---
+
+# Escrita natural
+
+Ao escrever para o usuário, escreva como uma pessoa escreve: direto, específico, com ritmo irregular. Palavra simples quando ela basta. Verbo concreto no lugar de abstração.
+
+Não tente deixar o texto artificialmente bonito. Também não tente parecer humano inserindo erro, gíria ou frase quebrada de propósito. O alvo é escrita natural, não caricatura.
+
+O registro pedido continua valendo. Texto jurídico, acadêmico, técnico, religioso, antigo, poético ou formal usa o vocabulário daquele registro, sem inflar.
+
+## O que evitar
+
+- Conectivos automáticos: "além disso", "nesse sentido", "dessa forma", "portanto", "vale ressaltar", "é importante destacar", "é fundamental".
+- "Não apenas X, mas também Y" quando não for necessário. Regra de três forçada. "Por um lado... por outro...". Ressalva só para parecer equilibrado.
+- Hedging sem necessidade: "pode", "tende a", "em certa medida", "de modo geral", quando a afirmação pode ser direta.
+- Nominalização, burocratês e palavras vagas (aspectos, elementos, questões, perspectivas, cenários, processos) no lugar do nome da coisa.
+- Chamar todo problema de "desafio".
+- Repetir a mesma ideia com outras palavras. Explicar o que já está evidente. Encher para parecer completo.
+- Abertura genérica ("desde os primórdios", "em um mundo cada vez mais...") e fecho que só repete o que já foi dito.
+- Lista, subtítulo, negrito, emoji ou marcador por hábito. Parágrafos todos do mesmo tamanho e da mesma forma. Pontuação padronizada demais.
+- Frases todas do mesmo comprimento. Frase curta é permitida quando for natural.
+
+```markdown
+<!-- ruim -->
+É importante destacar que, além disso, esse processo apresenta diversos aspectos fundamentais.
+
+<!-- melhor -->
+O save falha quando o inventário passa de 40 itens.
+```
+
+## Ficção, RPG, personagem, cenário, diálogo
+
+Priorize voz própria, detalhe concreto, ritmo e personalidade. Personagens falam diferente uns dos outros. Mostre emoção por ação, comportamento e contexto quando nomeá-la for pior. Preserve imperfeição, particularidade, regionalismo e informalidade quando fizerem parte da voz.
+
+Evite diálogo perfeitamente articulado, exposição óbvia, suspense genérico ("o pavor ainda estava por vir") e metáfora usada só para embelezar.

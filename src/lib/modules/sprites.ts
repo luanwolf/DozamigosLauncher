@@ -1,7 +1,7 @@
 import type { AccountData } from '$types/account';
 
 export type SpriteRarity = 'rare' | 'epic' | 'legendary' | 'mythic';
-export type SpriteVariant = 'base' | 'gold' | 'cheat-master' | 'loot-hacker' | 'bounty-hunter';
+export type SpriteVariant = 'base' | 'gold' | 'cheat-master' | 'loot-hacker' | 'bounty-hunter' | 'trick-or-treat';
 
 export type SpriteFamily = {
   slug: string;
@@ -20,8 +20,15 @@ export type SpriteEntry = SpriteFamily & {
 
 const IMAGE_ROOT = '/elementals';
 const S4_VARIANTS: Exclude<SpriteVariant, 'base'>[] = ['gold', 'cheat-master', 'loot-hacker', 'bounty-hunter'];
-/** Album rows: base, gold, cheat master, loot hacker, then bounty hunter. */
-export const SPRITE_EXPORT_VARIANTS: SpriteVariant[] = ['base', 'gold', 'cheat-master', 'loot-hacker', 'bounty-hunter'];
+/** Album rows: base, gold, cheat master, loot hacker, bounty hunter, then trick or treat. */
+export const SPRITE_EXPORT_VARIANTS: SpriteVariant[] = [
+  'base',
+  'gold',
+  'cheat-master',
+  'loot-hacker',
+  'bounty-hunter',
+  'trick-or-treat'
+];
 
 /** Left → right: rare → epic → legendary → mythic. */
 export const SPRITE_EXPORT_ORDER = [
@@ -33,17 +40,23 @@ export const SPRITE_EXPORT_ORDER = [
   'mega-man',
   'overshield',
   'storm-scout',
+  'birthday',
   'shadow',
   'tails',
   'pond',
+  'morgana',
+  'dumpster-dive',
   'killswitch',
   'sonic',
   'jackrabbit',
   'x-ray',
   'blinky',
   'crash',
+  'vampire',
+  'the-deer',
   'klombo',
-  'crown'
+  'crown',
+  'spooky-dash'
 ] as const;
 
 /** Chapter 7 Season 4 (Override) — season id 42 on fortnite.gg. */
@@ -57,12 +70,13 @@ export const SPRITE_FAMILIES: SpriteFamily[] = [
     variants: [...S4_VARIANTS]
   },
   {
+    // ponytail: Trick or Treat icons exist only for Crown. Add the variant to a family when its icon ships.
     slug: 'crown',
     name: 'Elemental Coroa',
     rarity: 'mythic',
     ability:
       'Só sobe de nível ao vencer partidas (mais rápido com Vitórias de Coroa). Novas variantes ao dominar.',
-    variants: [...S4_VARIANTS]
+    variants: [...S4_VARIANTS, 'trick-or-treat']
   },
   {
     slug: 'jackrabbit',
@@ -96,7 +110,7 @@ export const SPRITE_FAMILIES: SpriteFamily[] = [
   {
     slug: 'killswitch',
     name: 'Elemental Killswitch',
-    rarity: 'epic',
+    rarity: 'legendary',
     ability:
       'Entra em Hangtime com precisão melhorada ao mirar no salto/queda. A precisão sobe a cada nível.',
     variants: [...S4_VARIANTS]
@@ -189,6 +203,51 @@ export const SPRITE_FAMILIES: SpriteFamily[] = [
     ability:
       'Spin attack in midair, damaging and knocking back nearby opponents. Damage rises and the cooldown drops with each level.',
     variants: [...S4_VARIANTS]
+  },
+  {
+    slug: 'birthday',
+    name: 'Elemental Aniversário',
+    rarity: 'rare',
+    ability:
+      'Baú solta um pedaço de bolo de vez em quando. No nível máximo, eliminação também. A chance sobe a cada nível.',
+    variants: [...S4_VARIANTS]
+  },
+  {
+    slug: 'morgana',
+    name: 'Elemental Morgana',
+    rarity: 'epic',
+    ability: 'Item de cura rende mais a cada nível.',
+    variants: [...S4_VARIANTS]
+  },
+  {
+    slug: 'dumpster-dive',
+    name: 'Elemental Dumpster Dive',
+    rarity: 'epic',
+    ability:
+      'Comida cura mais, e aparece ao sair de um esconderijo. Raramente, num baú também. A comida melhora a cada nível.',
+    variants: [...S4_VARIANTS]
+  },
+  {
+    slug: 'vampire',
+    name: 'Elemental Vampiro',
+    rarity: 'legendary',
+    ability: 'Dano em inimigo devolve vida, e a fatia devolvida sobe a cada nível.',
+    variants: [...S4_VARIANTS]
+  },
+  {
+    slug: 'the-deer',
+    name: 'Elemental Cervo',
+    rarity: 'legendary',
+    ability: 'Ataque corpo a corpo dá mais dano a cada nível.',
+    variants: [...S4_VARIANTS]
+  },
+  {
+    slug: 'spooky-dash',
+    name: 'Elemental Spooky Dash',
+    rarity: 'mythic',
+    ability:
+      'No ar, a disparada atravessa alguns objetos. As cargas voltam com o tempo, mais rápido a cada nível.',
+    variants: [...S4_VARIANTS]
   }
 ];
 
@@ -201,11 +260,19 @@ const FAMILY_BY_COMPACT: Record<string, string> = Object.fromEntries(
   SPRITE_FAMILIES.map((family) => [family.slug.replace(/-/g, ''), family.slug])
 );
 
-/** Map Epic / api-fortnite ids (`KlomboSprite`, `Mega_Man`, tokens) onto launcher slugs. */
+function lookupSpriteStem(stem: string): string | null {
+  return SPRITE_RELIC_FAMILIES[stem] ?? FAMILY_BY_COMPACT[stem] ?? null;
+}
+
+/** Map Epic / api-fortnite ids (`KlomboSprite`, `Mega_Man`, `ESD_WinnerDSprite`, tokens) onto launcher slugs. */
 export function mapApiSpriteFamilyId(id: string): string | null {
   const stem = id.replace(/Sprite$/i, '').toLowerCase().replace(/[^a-z0-9]/g, '');
   if (!stem) return null;
-  return SPRITE_RELIC_FAMILIES[stem] ?? FAMILY_BY_COMPACT[stem] ?? null;
+  const direct = lookupSpriteStem(stem);
+  if (direct) return direct;
+  // ponytail: wiki item ids are ESD_<Name>Sprite. Ceiling: a family whose compact name starts with "esd" needs an explicit alias.
+  if (stem.startsWith('esd')) return lookupSpriteStem(stem.slice(3));
+  return null;
 }
 
 export const SPRITE_ENTRIES: SpriteEntry[] = SPRITE_FAMILIES.flatMap((family) => [
@@ -284,7 +351,15 @@ export const SPRITE_RELIC_FAMILIES: Record<string, string> = {
   winnerc: 'onigiri',
   improvedslide: 'mega-man',
   rockman: 'mega-man',
-  crashbandicoot: 'crash'
+  crashbandicoot: 'crash',
+  bodyslam: 'crash',
+  ghostdamage: 'blinky',
+  winnera: 'pond',
+  increaseheals: 'morgana',
+  phasedash: 'spooky-dash',
+  healthsiphon: 'vampire',
+  increasedmelee: 'the-deer',
+  winnerd: 'dumpster-dive'
 };
 
 /** Magpie / trophy suffix → album variant. Unknown tokens stay base. */
@@ -293,7 +368,8 @@ export function spriteVariantFromToken(raw: string): SpriteVariant {
   if (token === 'cheatmaster') return 'cheat-master';
   if (token === 'gold') return 'gold';
   if (token === 'loothacker' || token === 'galaxy') return 'loot-hacker';
-  if (token === 'bountyhunter' || token === 'bounty') return 'bounty-hunter';
+  if (token === 'bountyhunter' || token === 'bounty' || token === 'reaper') return 'bounty-hunter';
+  if (token === 'tricktreat' || token === 'trickortreat') return 'trick-or-treat';
   return 'base';
 }
 
@@ -317,7 +393,7 @@ type QuestItem = {
 const MASTERY_QUEST = /^Quest:quest_s4\d_spritemastery_(redeem_)?p\d+_(q\d+)([a-z]?)$/;
 const MASTERY_TOKEN = /^Token:athena_s4\d_spritemastery_token_([a-z0-9_]+)$/i;
 const TROPHY_REWARD =
-  /^CosmeticVariantToken:vtid_backpack_coldtrophy_([a-z0-9_]+?)(?:_(gummy|galaxy|gold|gem|holofoil|cube|quack|cheatmaster|loothacker|bountyhunter|bounty))?$/i;
+  /^CosmeticVariantToken:vtid_backpack_coldtrophy_([a-z0-9_]+?)(?:_(gummy|galaxy|gold|gem|holofoil|cube|quack|cheatmaster|loothacker|bountyhunter|bounty|reaper|tricktreat|trickortreat))?$/i;
 
 /**
  * Epic exposes Mastery through athena quests. Dust, gizmos and per-Sprite levels live in Magpie

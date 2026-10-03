@@ -33,6 +33,7 @@ const MASTERY_CROWN_URL = '/elementals/mastery-crown.webp';
 
 function variantRowLabel(variant: SpriteVariant, locale: Locale): string {
   if (variant === 'bounty-hunter') return String(m['sprites.variants.bountyHunter']({}, { locale })).toUpperCase();
+  if (variant === 'trick-or-treat') return String(m['sprites.variants.trickOrTreat']({}, { locale })).toUpperCase();
   if (variant === 'loot-hacker') return String(m['sprites.variants.lootHacker']({}, { locale })).toUpperCase();
   if (variant === 'cheat-master') return String(m['sprites.variants.cheatMaster']({}, { locale })).toUpperCase();
   if (variant === 'gold') return String(m['sprites.variants.gold']({}, { locale })).toUpperCase();
@@ -41,6 +42,7 @@ function variantRowLabel(variant: SpriteVariant, locale: Locale): string {
 
 const GOLD_BAR = '#f5c542';
 const BOUNTY_BAR = '#e879f9';
+const TRICK_BAR = '#f97316';
 
 const RARITY_BAR: Record<SpriteRarity, string> = {
   rare: '#3d9bf7',
@@ -365,7 +367,10 @@ export async function exportSpriteAlbumWebp(options: SpriteExportOptions): Promi
       ctx.drawImage(crownBmp, x + CELL - crown - 6, y + 6, crown, crown);
     }
 
-    if (slot.entry?.variant === 'bounty-hunter') {
+    if (slot.entry?.variant === 'trick-or-treat') {
+      ctx.fillStyle = TRICK_BAR;
+      ctx.fillRect(x, y + CELL - BAR_H, CELL, BAR_H);
+    } else if (slot.entry?.variant === 'bounty-hunter') {
       ctx.fillStyle = BOUNTY_BAR;
       ctx.fillRect(x, y + CELL - BAR_H, CELL, BAR_H);
     } else if (slot.entry?.variant === 'loot-hacker') {

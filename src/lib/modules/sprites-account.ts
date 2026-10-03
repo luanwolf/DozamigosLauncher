@@ -79,13 +79,13 @@ const MAGPIE_MODULE_UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-
 const EOS_MAGPIE_UA =
   'EOS-SDK/1.19.4200.0-56705564@Fortnite (Windows/10.0.26100.8972.64bit) Fortnite/++Fortnite+Release-42.00-CL-56878558';
 const RELIC_ID_RE =
-  /^([A-Za-z0-9]+(?:_[A-Za-z0-9]+)*)(?:Sprite)?_Variant_(A|Gold|CheatMaster|LootHacker|Galaxy|BountyHunter|Bounty)$/i;
+  /^([A-Za-z0-9]+(?:_[A-Za-z0-9]+)*)(?:Sprite)?_Variant_(A|Gold|CheatMaster|LootHacker|Galaxy|BountyHunter|Bounty|Reaper|TrickTreat|TrickOrTreat)$/i;
 
 const GIZMO_ICON_ROOT = '/elementals/gizmos';
 
 /**
- * Override (Ch7S4) gizmos — match Epic plugin / WID names from the live inventory.
- * Order matches the in-game Dispositivos row / Magpie Item00–04.
+ * Override gizmos — match Epic plugin / WID names from the live inventory.
+ * Slots are Magpie Item00–06, not the wheel's visual order.
  * ponytail: Magpie keys are slot paths, not item names. Ceiling: remap magpieKey if Epic reshuffles the wheel.
  */
 export const SPRITE_GIZMO_CATALOG: {
@@ -121,7 +121,7 @@ export const SPRITE_GIZMO_CATALOG: {
     id: 'cheat-code-locator',
     label: 'Localizador de Códigos',
     match:
-      /cheat.?code.?(finder|locator)|code.?(finder|locator)|cheatcodefinder|sprite.?locator|lucky.?locator|magpiereward_morningbell_cheatcode/i,
+      /cheat.?code.?(finder|locator)|code.?(finder|locator)|cheatcodefinder|sprite.?locator|magpiereward_morningbell_cheatcode/i,
     iconUrl: GIZMO_ICON_ROOT + '/cheat-code-locator.png',
     magpieKey: '/MorningBell/CosmicThunder/Item03'
   },
@@ -131,6 +131,20 @@ export const SPRITE_GIZMO_CATALOG: {
     match: /spicy.?taco|taco.?tuesday|tacotuesday|spicytaco|magpiereward_morningbell_spicytaco/i,
     iconUrl: GIZMO_ICON_ROOT + '/spicy-taco.png',
     magpieKey: '/MorningBell/CosmicThunder/Item00'
+  },
+  {
+    id: 'snack-o-lantern',
+    label: 'Lanterna de Petiscos',
+    match: /junk.?food.?bucket|snack.?o.?lantern|wid_junkfoodbucket|magpiereward_morningbell_junkfoodbucket/i,
+    iconUrl: GIZMO_ICON_ROOT + '/snack-o-lantern.png',
+    magpieKey: '/MorningBell/CosmicThunder/Item05'
+  },
+  {
+    id: 'lucky-locator',
+    label: 'Localizador da Sorte',
+    match: /lucky.?locator|wid_luckylocator|magpiereward_morningbell_luckylocator/i,
+    iconUrl: GIZMO_ICON_ROOT + '/lucky-locator.png',
+    magpieKey: '/MorningBell/CosmicThunder/Item06'
   }
 ];
 
@@ -179,7 +193,9 @@ export function parseCreatureSpriteId(id: string): { family: string; variant: Sp
   if (!match) return null;
   let name = match[1];
   let variant: SpriteVariant = 'base';
-  const suffix = name.match(/[_-]?(bountyhunter|bounty|loothacker|galaxy|cheatmaster|gold)$/i);
+  const suffix = name.match(
+    /[_-]?(tricktreat|trickortreat|bountyhunter|bounty|reaper|loothacker|galaxy|cheatmaster|gold)$/i
+  );
   if (suffix && !(suffix[1].toLowerCase() === 'gold' && /cheatmaster/i.test(name))) {
     variant = spriteVariantFromToken(suffix[1]);
     name = name.slice(0, name.length - suffix[0].length);
@@ -199,7 +215,8 @@ function familyFromTemplate(templateId: string): { family: string; variant: Spri
   if (!/sprite|elemental|magpie|collectible|collectable|creature|_variant_/.test(lower)) return null;
 
   let variant: SpriteVariant = 'base';
-  if (/bounty\s?hunter|bountyhunter/.test(lower)) variant = 'bounty-hunter';
+  if (/trick\s?or\s?treat|tricktreat|trickortreat/.test(lower)) variant = 'trick-or-treat';
+  else if (/bounty\s?hunter|bountyhunter|reaper/.test(lower)) variant = 'bounty-hunter';
   else if (/loot\s?hacker|loothacker|\bgalaxy\b/.test(lower)) variant = 'loot-hacker';
   else if (/cheat\s?master|cheatmaster/.test(lower)) variant = 'cheat-master';
   else if (/\bgold\b|dourad/.test(lower)) variant = 'gold';
@@ -224,8 +241,8 @@ function matchGizmo(templateId: string) {
   });
   if (byKey) return byKey;
 
-  // Magpie parent folders change per season; slots stay Item00–04 — look up by key, not catalog index.
-  const slot = templateId.match(/Item0([0-4])(?![0-9])/i);
+  // Magpie parent folders change per season; slots stay Item00–06 — look up by key, not catalog index.
+  const slot = templateId.match(/Item0([0-6])(?![0-9])/i);
   if (slot) {
     return SPRITE_GIZMO_CATALOG.find((gizmo) => gizmo.magpieKey.endsWith(`Item0${slot[1]}`)) ?? null;
   }

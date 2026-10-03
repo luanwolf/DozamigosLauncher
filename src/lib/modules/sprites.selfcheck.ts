@@ -26,8 +26,8 @@ import {
   SPRITE_GIZMO_CATALOG
 } from './sprites-account';
 
-assert.equal(SPRITE_FAMILIES.length, 19);
-assert.equal(SPRITE_ENTRIES.length, 91);
+assert.equal(SPRITE_FAMILIES.length, 25);
+assert.equal(SPRITE_ENTRIES.length, 122);
 assert.equal(new Set(SPRITE_ENTRIES.map((entry) => entry.key)).size, SPRITE_ENTRIES.length);
 assert.equal(SPRITE_FAMILIES.find((f) => f.slug === 'sonic')?.name, 'Elemental Sonic');
 assert.equal(SPRITE_FAMILIES.find((f) => f.slug === 'klombo')?.rarity, 'mythic');
@@ -59,10 +59,25 @@ assert.equal(mapApiSpriteFamilyId('WinnerBSprite'), 'x-ray');
 assert.equal(mapApiSpriteFamilyId('WinnerC'), 'onigiri');
 assert.equal(mapApiSpriteFamilyId('ImprovedSlideSprite'), 'mega-man');
 assert.equal(mapApiSpriteFamilyId('CrashBandicootSprite'), 'crash');
+assert.equal(mapApiSpriteFamilyId('BodySlamSprite'), 'crash');
+assert.equal(mapApiSpriteFamilyId('ESD_BodySlamSprite'), 'crash');
 assert.equal(mapApiSpriteFamilyId('PondSprite'), 'pond');
+assert.equal(mapApiSpriteFamilyId('WinnerASprite'), 'pond');
+assert.equal(mapApiSpriteFamilyId('ESD_WinnerASprite'), 'pond');
 assert.equal(mapApiSpriteFamilyId('Blinky'), 'blinky');
+assert.equal(mapApiSpriteFamilyId('GhostDamageSprite'), 'blinky');
+assert.equal(mapApiSpriteFamilyId('BirthdaySprite'), 'birthday');
+assert.equal(mapApiSpriteFamilyId('ESD_BirthdaySprite'), 'birthday');
+assert.equal(mapApiSpriteFamilyId('IncreaseHeals'), 'morgana');
+assert.equal(mapApiSpriteFamilyId('PhaseDashSprite'), 'spooky-dash');
+assert.equal(mapApiSpriteFamilyId('HealthSiphon'), 'vampire');
+assert.equal(mapApiSpriteFamilyId('IncreasedMeleeSprite'), 'the-deer');
+assert.equal(mapApiSpriteFamilyId('WinnerD'), 'dumpster-dive');
+assert.equal(mapApiSpriteFamilyId('ESD_WinnerDSprite'), 'dumpster-dive');
 assert.equal(mapApiSpriteFamilyId('UnknownSprite'), null);
 assert.equal(spriteVariantFromToken('BountyHunter'), 'bounty-hunter');
+assert.equal(spriteVariantFromToken('Reaper'), 'bounty-hunter');
+assert.equal(spriteVariantFromToken('TrickTreat'), 'trick-or-treat');
 assert.equal(spriteVariantFromToken('galaxy'), 'loot-hacker');
 assert.equal(SPRITE_FAMILIES.every((f) => f.name.startsWith('Elemental')), true);
 assert.equal(SPRITE_FAMILIES.find((f) => f.slug === 'mega-man')?.variants.length, 0);
@@ -72,7 +87,18 @@ assert.equal(
   SPRITE_FAMILIES.filter((f) => f.slug !== 'mega-man').every((f) => f.variants.includes('bounty-hunter')),
   true
 );
-assert.deepEqual(SPRITE_EXPORT_VARIANTS, ['base', 'gold', 'cheat-master', 'loot-hacker', 'bounty-hunter']);
+assert.deepEqual(
+  SPRITE_FAMILIES.filter((f) => f.variants.includes('trick-or-treat')).map((f) => f.slug),
+  ['crown']
+);
+assert.deepEqual(SPRITE_EXPORT_VARIANTS, [
+  'base',
+  'gold',
+  'cheat-master',
+  'loot-hacker',
+  'bounty-hunter',
+  'trick-or-treat'
+]);
 assert.equal(spriteShortName('Elemental Sonic'), 'Sonic');
 assert.equal(spriteShortName('Elemental Storm Scout'), 'Storm Scout');
 assert.equal(spriteShortName('Elemental 8-Bit'), '8-Bit');
@@ -170,7 +196,8 @@ for (const key of [
   'sprites.variants.gold',
   'sprites.variants.cheatMaster',
   'sprites.variants.lootHacker',
-  'sprites.variants.bountyHunter'
+  'sprites.variants.bountyHunter',
+  'sprites.variants.trickOrTreat'
 ] as const) {
   assert.equal(typeof m[key], 'function', key);
   assert.ok(m[key]({}, { locale: 'pt-br' }));
@@ -195,9 +222,11 @@ const resourceProfile = {
 };
 
 const resources = parseSpriteResources(resourceProfile);
-assert.equal(SPRITE_GIZMO_CATALOG.length, 5);
+assert.equal(SPRITE_GIZMO_CATALOG.length, 7);
 assert.equal(resources.dust, 140);
-assert.equal(resources.gizmos.length, 5);
+assert.equal(resources.gizmos.length, 7);
+assert.ok(resources.gizmos.some((g) => g.id === 'snack-o-lantern' && g.quantity === 0));
+assert.ok(resources.gizmos.some((g) => g.id === 'lucky-locator' && g.quantity === 0));
 assert.ok(resources.gizmos.every((g) => SPRITE_GIZMO_CATALOG.some((c) => c.id === g.id)));
 assert.ok(resources.gizmos.some((g) => g.id === 'portable-extractor' && g.quantity === 4));
 assert.ok(resources.gizmos.some((g) => g.id === 'cheat-code-locator' && g.quantity === 2));
@@ -366,6 +395,45 @@ assert.equal(liveTokenProgress.extracted.has('onigiri'), true);
 assert.equal(liveTokenProgress.extracted.has('mega-man'), true);
 assert.equal(liveTokenProgress.extracted.has('overshield'), true);
 
+const newSpriteProgress = parseSpriteProgress({
+  profileChanges: [
+    {
+      profile: {
+        items: {
+          a: { templateId: 'Token:athena_s42_spritemastery_token_winnerd', quantity: 1 },
+          b: { templateId: 'Token:athena_s42_spritemastery_token_ghostdamage_01', quantity: 1 },
+          c: { templateId: 'Token:athena_s42_spritemastery_token_phasedash', quantity: 1 },
+          d: { templateId: 'Token:athena_s42_spritemastery_token_birthday', quantity: 1 },
+          e: quest(
+            'Quest:quest_s42_spritemastery_p02_q01',
+            'Claimed'
+          ),
+          f: quest(
+            'Quest:quest_s42_spritemastery_redeem_p02_q01',
+            'Claimed',
+            'CosmeticVariantToken:vtid_backpack_coldtrophy_crown_tricktreat'
+          ),
+          g: quest(
+            'Quest:quest_s42_spritemastery_p03_q01',
+            'Claimed'
+          ),
+          h: quest(
+            'Quest:quest_s42_spritemastery_redeem_p03_q01',
+            'Claimed',
+            'CosmeticVariantToken:vtid_backpack_coldtrophy_birthday_reaper'
+          )
+        }
+      }
+    }
+  ]
+});
+assert.equal(newSpriteProgress.extracted.has('dumpster-dive'), true);
+assert.equal(newSpriteProgress.extracted.has('blinky'), true);
+assert.equal(newSpriteProgress.extracted.has('spooky-dash'), true);
+assert.equal(newSpriteProgress.extracted.has('birthday'), true);
+assert.equal(newSpriteProgress.mastered.has('crown:trick-or-treat'), true);
+assert.equal(newSpriteProgress.mastered.has('birthday:bounty-hunter'), true);
+
 const catalogTokenItems = Object.fromEntries(
   SPRITE_FAMILIES.flatMap((family, i) => [
     [
@@ -414,6 +482,35 @@ assert.deepEqual(parseRelicId('KillswitchSprite_Variant_CheatMaster'), {
 assert.deepEqual(parseRelicId('CrownSprite_Variant_BountyHunter'), {
   family: 'crown',
   variant: 'bounty-hunter'
+});
+assert.deepEqual(parseRelicId('ESD_CrownSprite_Variant_TrickTreat'), {
+  family: 'crown',
+  variant: 'trick-or-treat'
+});
+assert.deepEqual(parseRelicId('ESD_BirthdaySprite_Variant_Reaper'), {
+  family: 'birthday',
+  variant: 'bounty-hunter'
+});
+assert.deepEqual(parseRelicId('WinnerDSprite_Variant_Gold'), {
+  family: 'dumpster-dive',
+  variant: 'gold'
+});
+assert.deepEqual(parseRelicId('PhaseDash_Variant_A'), { family: 'spooky-dash', variant: 'base' });
+assert.deepEqual(parseRelicId('HealthSiphonSprite_Variant_CheatMaster'), {
+  family: 'vampire',
+  variant: 'cheat-master'
+});
+assert.deepEqual(parseRelicId('IncreasedMelee_Variant_LootHacker'), {
+  family: 'the-deer',
+  variant: 'loot-hacker'
+});
+assert.deepEqual(parseRelicId('GhostDamageSprite_Variant_Reaper'), {
+  family: 'blinky',
+  variant: 'bounty-hunter'
+});
+assert.deepEqual(parseCreatureSpriteId('BR_Creature_Sprite_IncreaseHeals_TrickTreat'), {
+  family: 'morgana',
+  variant: 'trick-or-treat'
 });
 assert.deepEqual(parseRelicId('Crash_Variant_Bounty'), { family: 'crash', variant: 'bounty-hunter' });
 assert.deepEqual(parseCreatureSpriteId('BR_Creature_Sprite_Pond_BountyHunter'), {
@@ -584,17 +681,23 @@ assert.deepEqual([...SPRITE_EXPORT_ORDER], [
   'mega-man',
   'overshield',
   'storm-scout',
+  'birthday',
   'shadow',
   'tails',
   'pond',
+  'morgana',
+  'dumpster-dive',
   'killswitch',
   'sonic',
   'jackrabbit',
   'x-ray',
   'blinky',
   'crash',
+  'vampire',
+  'the-deer',
   'klombo',
-  'crown'
+  'crown',
+  'spooky-dash'
 ]);
 
 function itemsAsProfileForCheck(
@@ -655,6 +758,28 @@ assert.ok(renamedSlots.gizmos.some((g) => g.id === 'llama-supply-drop' && g.quan
 assert.ok(renamedSlots.gizmos.some((g) => g.id === 'extraction-accelerator' && g.quantity === 7));
 assert.ok(renamedSlots.gizmos.some((g) => g.id === 'cheat-code-locator' && g.quantity === 2));
 assert.ok(renamedSlots.gizmos.some((g) => g.id === 'portable-extractor' && g.quantity === 9));
+assert.ok(renamedSlots.gizmos.some((g) => g.id === 'snack-o-lantern' && g.quantity === 0));
+assert.ok(renamedSlots.gizmos.some((g) => g.id === 'lucky-locator' && g.quantity === 0));
+
+const fortnitemaresGizmos = parseSpriteResources(
+  itemsAsProfileForCheck(
+    parseMagpieV2Inventory({
+      inventory: [
+        {
+          counts: {
+            '/MorningBell/CosmicThunder/Item05': 2,
+            '/MorningBell/Override/Item06': 4,
+            WID_JunkFoodBucket_Gizmo: 1,
+            MagpieReward_MorningBell_LuckyLocator: 3
+          }
+        }
+      ]
+    })
+  )
+);
+assert.ok(fortnitemaresGizmos.gizmos.some((g) => g.id === 'snack-o-lantern' && g.quantity === 2));
+assert.ok(fortnitemaresGizmos.gizmos.some((g) => g.id === 'lucky-locator' && g.quantity === 4));
+assert.ok(fortnitemaresGizmos.gizmos.some((g) => g.id === 'cheat-code-locator' && g.quantity === 0));
 
 const spriteBag = parseMagpieV2Inventory({
   inventory: [
