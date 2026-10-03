@@ -1,6 +1,7 @@
 import { strict as assert } from 'node:assert';
 import {
   aggregateCheatCodeResults,
+  classifyLobbyHackError,
   emptyCheatCodeSummary,
   isLobbyHackUnavailable,
   LOBBY_HACK_CODES,
@@ -26,6 +27,58 @@ assert.equal(
 );
 assert.equal(isLobbyHackUnavailable({ errorCode: 'errors.com.epicgames.bad_request' }), false);
 
+assert.deepEqual(
+  classifyLobbyHackError({
+    errorCode: 'errors.com.epicgames.fortnite.terminal_command_failure',
+    errorMessage: 'command not currently available'
+  }),
+  { status: 'failed', reason: 'unavailable' }
+);
+assert.deepEqual(
+  classifyLobbyHackError({
+    errorCode: 'errors.com.epicgames.fortnite.terminal_command_failure',
+    errorMessage: 'errors.com.epicgames.fortnite.terminal_command_failure',
+    messageVars: ['Lobby Hack not currently available']
+  }),
+  { status: 'failed', reason: 'unavailable' }
+);
+assert.deepEqual(
+  classifyLobbyHackError({
+    errorCode: 'errors.com.epicgames.fortnite.terminal_command_failure',
+    errorMessage: 'Lobby Hack already used.'
+  }),
+  { status: 'skipped', reason: 'used' }
+);
+assert.deepEqual(
+  classifyLobbyHackError({
+    errorCode: 'errors.com.epicgames.fortnite.terminal_command_failure',
+    errorMessage: 'Unknown Lobby Hack. Try something else.'
+  }),
+  { status: 'failed', reason: 'unknown' }
+);
+assert.deepEqual(
+  classifyLobbyHackError({
+    errorCode: 'errors.com.epicgames.fortnite.terminal_command_failure',
+    errorMessage: 'Still cooling off. You\'ll live.'
+  }),
+  { status: 'failed', reason: 'cooldown' }
+);
+assert.deepEqual(
+  classifyLobbyHackError({
+    errorCode: 'errors.com.epicgames.fortnite.terminal_command_failure',
+    errorMessage: 'errors.com.epicgames.fortnite.terminal_command_failure',
+    messageVars: ['The island has questions about your choices.']
+  }),
+  { status: 'failed', reason: 'unknown' }
+);
+assert.deepEqual(
+  classifyLobbyHackError({
+    errorCode: 'errors.com.epicgames.common.server_error',
+    errorMessage: 'upstream timed out'
+  }),
+  { status: 'failed', reason: 'rejected', detail: 'upstream timed out' }
+);
+
 assert.equal(LOBBY_HACK_CODES.includes('LetsBlockAndRoll' as never), false);
 assert.equal(LOBBY_HACK_CODES.includes('DontBlockMe' as never), false);
 assert.ok(LOBBY_HACK_CODES.includes('GottaGoFast'));
@@ -45,13 +98,13 @@ assert.ok(LOBBY_HACK_CODES.includes('IThinkTheKeyFoundMeChat'));
 assert.ok(LOBBY_HACK_CODES.includes('DustySprites'));
 assert.ok(LOBBY_HACK_CODES.includes('ImTheRealEdgelord'));
 assert.ok(LOBBY_HACK_CODES.includes('runSystemOverride'));
-assert.ok(LOBBY_HACK_CODES.includes('S7H-50P-R03'));
+assert.ok(LOBBY_HACK_CODES.includes('NoProLlama'));
+assert.equal(LOBBY_HACK_CODES.includes('S7H-50P-R03' as never), false);
 assert.ok(LOBBY_HACK_CODES.includes('PlayToLevelUp'));
 assert.ok(LOBBY_HACK_CODES.includes('ChatFindMeAnotherCode'));
 assert.ok(LOBBY_HACK_CODES.includes('BLINKYINKYPINKYCLYDE'));
 assert.equal(LOBBY_HACK_CODES.includes('InsertCoinToContinue' as never), false);
 assert.equal(LOBBY_HACK_CODES.includes('NOPROLLAMA' as never), false);
-assert.equal(LOBBY_HACK_CODES.includes('NoProLlama' as never), false);
 assert.equal(LOBBY_HACK_CODES.includes('BRB' as never), false);
 assert.equal(LOBBY_HACK_CODES.includes('PowerOut' as never), false);
 assert.equal(LOBBY_HACK_CODES.includes('CrowsAreAfraid' as never), false);

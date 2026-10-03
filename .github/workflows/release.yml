@@ -57,25 +57,19 @@ jobs:
           tagName: v__VERSION__
           releaseName: 'v__VERSION__'
           releaseBody: |
-            ## Dozamigos Launcher v0.2.2
+            ## Dozamigos Launcher v0.2.3
 
             Baixe o instalador **Windows NSIS** (`.exe`) abaixo. Quem já tem o launcher instalado recebe o aviso de atualização na próxima abertura.
 
             ### Arquivos desta release
-            - `Dozamigos Launcher_0.2.2_x64-setup.exe` — instalador Windows (recomendado)
+            - `Dozamigos Launcher_0.2.3_x64-setup.exe` — instalador Windows (recomendado)
             - `latest.json` — manifesto da atualização automática
             - assinatura do instalador (usada pelo updater)
 
-            ### Elementais
-            - Aniversário, Morgana, Dumpster Dive, Vampiro, Cervo e Spooky Dash
-            - Variante Doces ou Travessuras na Coroa
-            - Álbum de exportação com seis linhas e 150 espaços
-
-            ### Lobby Hacks
-            - 10 códigos novos que entregam item
-
-            ### Interface
-            - Textos das páginas e avisos mais diretos
+            ### Painel admin
+            - NoProLlama de volta. O glitch da história (S7H-50P-R03) e os visuais de lobby continuam de fora
+            - O aviso diz se resgatou, se já foi usado, se não está disponível ou se não existe
+            - No Todos, a conta vem em uma linha, sem listar cada código
           releaseDraft: false
           prerelease: false
           uploadUpdaterJson: true

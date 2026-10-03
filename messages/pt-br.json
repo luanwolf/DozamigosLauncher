@@ -1073,15 +1073,42 @@
       "open": "Comprar V-Bucks"
     },
     "adminPanel": {
-      "label": "./admin panel",
+      "label": "./painel admin",
       "placeholder": "GottaGoFast",
       "submit": "Resgatar",
       "all": "Todos",
       "busy": "Resgatando códigos…",
-      "done": "{redeemed} código(s) resgatado(s), {skipped} já usados.",
+      "redeemedOne": "{code} resgatado.",
+      "usedOne": "{code} já foi usado.",
+      "unavailableOne": "{code} não está disponível agora.",
+      "unknownOne": "{code} não existe.",
+      "cooldownOne": "Calma. O painel ainda não aceita outro código.",
+      "rejectedOne": "{code} foi recusado: {detail}.",
+      "rejectedPlain": "{code} foi recusado.",
+      "redeemedCount": {
+        "one": "{count} resgatado.",
+        "other": "{count} resgatados."
+      },
+      "usedCount": {
+        "one": "{count} já usado.",
+        "other": "{count} já usados."
+      },
+      "unavailableCount": {
+        "one": "{count} não disponível.",
+        "other": "{count} não disponíveis."
+      },
+      "unknownCount": {
+        "one": "{count} não existe.",
+        "other": "{count} não existem."
+      },
+      "rejectedCount": {
+        "one": "{count} recusado.",
+        "other": "{count} recusados."
+      },
+      "cooldown": "O painel pediu pra esperar.",
       "none": "Nenhum código novo pra resgatar.",
       "unavailable": "Não foi possível autenticar o perfil Athena pra resgatar os códigos.",
-      "failed": "Não foi possível resgatar os códigos da temporada.",
+      "failed": "Não deu pra falar com a Epic.",
       "needAccount": "Entre numa conta para resgatar os códigos."
     },
     "news": {

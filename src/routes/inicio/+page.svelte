@@ -115,16 +115,68 @@
     }
   }
 
+  function countLine(
+    count: number,
+    one: 'home.adminPanel.redeemedCount.one' | 'home.adminPanel.usedCount.one' | 'home.adminPanel.unavailableCount.one' | 'home.adminPanel.unknownCount.one' | 'home.adminPanel.rejectedCount.one',
+    other: 'home.adminPanel.redeemedCount.other' | 'home.adminPanel.usedCount.other' | 'home.adminPanel.unavailableCount.other' | 'home.adminPanel.unknownCount.other' | 'home.adminPanel.rejectedCount.other'
+  ) {
+    if (!count) return '';
+    return count === 1 ? $t(one, { count }) : $t(other, { count });
+  }
+
   function toastHackSummary(summary: Awaited<ReturnType<typeof redeemCheatCodes>>) {
     if (summary.unavailable) {
       toast.error($t('home.adminPanel.unavailable'));
-    } else if (summary.redeemed > 0) {
-      toast.success($t('home.adminPanel.done', { redeemed: summary.redeemed, skipped: summary.skipped }));
-    } else if (summary.skipped > 0 && summary.failed === 0) {
-      toast.success($t('home.adminPanel.none'));
-    } else {
-      toast.error($t('home.adminPanel.failed'));
+      return;
     }
+
+    const only = summary.results.length === 1 ? summary.results[0] : undefined;
+    if (only?.status === 'redeemed') {
+      toast.success($t('home.adminPanel.redeemedOne', { code: only.code }));
+      return;
+    }
+    if (only?.reason === 'used') {
+      toast.message($t('home.adminPanel.usedOne', { code: only.code }));
+      return;
+    }
+    if (only?.reason === 'unavailable') {
+      toast.error($t('home.adminPanel.unavailableOne', { code: only.code }));
+      return;
+    }
+    if (only?.reason === 'unknown') {
+      toast.error($t('home.adminPanel.unknownOne', { code: only.code }));
+      return;
+    }
+    if (only?.reason === 'cooldown') {
+      toast.error($t('home.adminPanel.cooldownOne'));
+      return;
+    }
+    if (only?.reason === 'rejected') {
+      toast.error(
+        only.detail
+          ? $t('home.adminPanel.rejectedOne', { code: only.code, detail: only.detail })
+          : $t('home.adminPanel.rejectedPlain', { code: only.code })
+      );
+      return;
+    }
+
+    const unavailable = summary.results.filter((result) => result.reason === 'unavailable').length;
+    const unknown = summary.results.filter((result) => result.reason === 'unknown').length;
+    const rejected = summary.results.filter((result) => result.reason === 'rejected').length;
+    const parts = [
+      countLine(summary.redeemed, 'home.adminPanel.redeemedCount.one', 'home.adminPanel.redeemedCount.other'),
+      countLine(summary.skipped, 'home.adminPanel.usedCount.one', 'home.adminPanel.usedCount.other'),
+      countLine(unavailable, 'home.adminPanel.unavailableCount.one', 'home.adminPanel.unavailableCount.other'),
+      countLine(unknown, 'home.adminPanel.unknownCount.one', 'home.adminPanel.unknownCount.other'),
+      countLine(rejected, 'home.adminPanel.rejectedCount.one', 'home.adminPanel.rejectedCount.other'),
+      summary.results.some((result) => result.reason === 'cooldown') ? $t('home.adminPanel.cooldown') : ''
+    ].filter(Boolean);
+
+    const text = parts.join(' ') || $t('home.adminPanel.none');
+    const bad = unavailable + unknown + rejected > 0 || summary.results.some((result) => result.reason === 'cooldown');
+    if (bad) toast.error(text);
+    else if (summary.redeemed) toast.success(text);
+    else toast.message(text);
   }
 
   async function redeemLobbyHacks() {
