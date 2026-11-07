@@ -413,7 +413,7 @@
       "claim": "Resgatar Recompensas",
       "transferMaterials": "Transferir Materiais",
       "invite": "Convidar"
-  },
+    },
     "notifications": {
       "leftBase": {
         "title": "Saiu da base SoM",
@@ -627,14 +627,15 @@
     "level": "Lv {level}",
     "search": "Buscar Elemental ou variante…",
     "results": "{count} resultado(s)",
-    "source": "Imagens do jogo armazenadas localmente no launcher.",
+    "source": "Imagens dos Elementais da temporada: Fortnite.GG.",
     "variants": {
       "base": "Base",
       "gold": "Dourado",
       "cheatMaster": "Trapaceiro",
       "lootHacker": "Hacker de Saque",
       "bountyHunter": "Caçador de Recompensas",
-      "trickOrTreat": "Doces ou Travessuras"
+      "trickOrTreat": "Doces ou Travessuras",
+      "fortune": "Fortuna"
     },
     "filters": {
       "allRarities": "Todas as raridades",
@@ -648,7 +649,7 @@
       "title": "Sua coleção",
       "perAccount": "Extraído é o token de mastery que a conta já ganhou. A quest aparece para todo Elemental, mesmo sem extração. Dust, bugiganga e nível vêm do Magpie, e o launcher não lê isso.",
       "noAccount": "Entre em uma conta para separar as marcações por perfil.",
-      "explanation": "O álbum exportado tem seis linhas: Base, Dourado, Trapaceiro, Hacker de Saque, Caçador de Recompensas e Doces ou Travessuras. São 150 espaços. Sem a variante no jogo, o espaço fica vazio. Dust e bugigangas só entram se o Magpie da conta responder.",
+      "explanation": "O álbum exportado tem duas linhas: Base e Fortuna. Sem a variante no jogo, o espaço fica vazio. Dust e bugigangas só entram se o Magpie da conta responder.",
       "dontShowAgain": "Não mostrar novamente"
     },
     "mastery": {

@@ -1,16 +1,13 @@
 <script lang="ts">
   import { toast } from 'svelte-sonner';
-  import DownloadIcon from '@lucide/svelte/icons/download';
   import CheckIcon from '@lucide/svelte/icons/check';
+  import DownloadIcon from '@lucide/svelte/icons/download';
   import SearchIcon from '@lucide/svelte/icons/search';
   import { HUD_PAGE_WIDTH } from '$lib/constants/page-layout';
-  import { t, language } from '$lib/i18n';
-  import { rarityBackgroundStyle } from '$lib/modules/locker-export-rarity';
+  import { language, t } from '$lib/i18n';
   import { spriteAccountCache, spriteCatalogCache } from '$lib/modules/account-data';
-  import { SPRITE_DUST_ICON } from '$lib/modules/sprites-account';
-  import { resolveSpriteLabel } from '$lib/modules/sprites-catalog';
   import { beginExportToast } from '$lib/modules/export-toast';
-  import { exportSpriteAlbumWebp } from '$lib/modules/sprites-export';
+  import { rarityBackgroundStyle } from '$lib/modules/locker-export-rarity';
   import {
     SPRITE_ENTRIES,
     SPRITE_EXPORT_ORDER,
@@ -19,6 +16,9 @@
     type SpriteRarity,
     type SpriteVariant
   } from '$lib/modules/sprites';
+  import { SPRITE_DUST_ICON } from '$lib/modules/sprites-account';
+  import { resolveSpriteLabel } from '$lib/modules/sprites-catalog';
+  import { exportSpriteAlbumWebp } from '$lib/modules/sprites-export';
   import { accountStore } from '$lib/storage';
   import { handleError } from '$lib/utils';
   import PageActionButton from '$components/layout/PageActionButton.svelte';
@@ -62,7 +62,8 @@
     'cheat-master': $t('sprites.variants.cheatMaster'),
     'loot-hacker': $t('sprites.variants.lootHacker'),
     'bounty-hunter': $t('sprites.variants.bountyHunter'),
-    'trick-or-treat': $t('sprites.variants.trickOrTreat')
+    'trick-or-treat': $t('sprites.variants.trickOrTreat'),
+    fortune: $t('sprites.variants.fortune')
   });
 
   const rarityLabels: Record<SpriteRarity, string> = {
@@ -86,6 +87,7 @@
     const query = search.trim().toLowerCase();
     return SPRITE_ENTRIES.filter(
       (entry) =>
+        Object.hasOwn(familyOrder, entry.slug) &&
         (rarity === 'all' || entry.rarity === rarity) &&
         (variant === 'all' || entry.variant === variant) &&
         (status === 'all' ||
@@ -162,7 +164,12 @@
   });
 </script>
 
-<PageContent center centerClass={HUD_PAGE_WIDTH} description={$t('sprites.page.description')} title={$t('sprites.page.title')}>
+<PageContent
+  center
+  centerClass={HUD_PAGE_WIDTH}
+  description={$t('sprites.page.description')}
+  title={$t('sprites.page.title')}
+>
   {#snippet actions()}
     {#if $activeAccount}
       <PageActionButton
@@ -198,8 +205,8 @@
       </select>
       <select class="h-9 rounded-md border border-input bg-background px-3 text-sm" bind:value={variant}>
         <option value="all">{$t('sprites.filters.allVariants')}</option>
-        {#each Object.entries(variantLabels) as [value, label]}
-          <option {value}>{label}</option>
+        {#each SPRITE_EXPORT_VARIANTS as value (value)}
+          <option {value}>{variantLabels[value]}</option>
         {/each}
       </select>
     </div>

@@ -3,6 +3,7 @@
   import { path } from '@tauri-apps/api';
   import { defaultClient, launcherAppClient2 } from '$lib/constants/clients';
   import { t } from '$lib/i18n';
+  import { logger } from '$lib/logger';
   import { getCachedToken } from '$lib/modules/auth-session';
   import { getAccessTokenUsingExchangeCode, getExchangeCodeUsingAccessToken } from '$lib/modules/authentication';
   import { getFortniteManifest } from '$lib/modules/manifest';
@@ -74,8 +75,12 @@
 
     try {
       const settings = settingsStore.get();
-      const manifestData = await getFortniteManifest();
       const customPath = settings.app?.gamePath;
+      const manifestData = await getFortniteManifest().catch((error) => {
+        if (!customPath) throw error;
+        logger.warn('Failed to read Epic manifest; using configured game path', { error });
+        return null;
+      });
 
       let gameDirectory = manifestData?.installLocation;
       if (customPath) {

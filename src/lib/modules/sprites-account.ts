@@ -1,4 +1,3 @@
-import type { AccountData } from '$types/account';
 import {
   mapApiSpriteFamilyId,
   parseSpriteProgress,
@@ -7,6 +6,7 @@ import {
   type SpriteProgress,
   type SpriteVariant
 } from '$lib/modules/sprites';
+import type { AccountData } from '$types/account';
 
 export type SpriteGizmo = {
   id: string;
@@ -35,15 +35,16 @@ type ProfileItem = {
 };
 
 function profileItems(profile: unknown): ProfileItem[] {
-  const changes = (profile as { profileChanges?: { profile?: { items?: Record<string, unknown> } }[] })
-    ?.profileChanges;
+  const changes = (profile as { profileChanges?: { profile?: { items?: Record<string, unknown> } }[] })?.profileChanges;
   return Object.values(changes?.[0]?.profile?.items ?? {}).map((item) => item as ProfileItem);
 }
 
 function profileAttrs(profile: unknown): Record<string, unknown> {
-  const changes = (profile as {
-    profileChanges?: { profile?: { stats?: { attributes?: Record<string, unknown> } } }[];
-  })?.profileChanges;
+  const changes = (
+    profile as {
+      profileChanges?: { profile?: { stats?: { attributes?: Record<string, unknown> } } }[];
+    }
+  )?.profileChanges;
   return changes?.[0]?.profile?.stats?.attributes ?? {};
 }
 
@@ -79,7 +80,7 @@ const MAGPIE_MODULE_UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-
 const EOS_MAGPIE_UA =
   'EOS-SDK/1.19.4200.0-56705564@Fortnite (Windows/10.0.26100.8972.64bit) Fortnite/++Fortnite+Release-42.00-CL-56878558';
 const RELIC_ID_RE =
-  /^([A-Za-z0-9]+(?:_[A-Za-z0-9]+)*)(?:Sprite)?_Variant_(A|Gold|CheatMaster|LootHacker|Galaxy|BountyHunter|Bounty|Reaper|TrickTreat|TrickOrTreat)$/i;
+  /^([A-Za-z0-9]+(?:_[A-Za-z0-9]+)*)(?:Sprite)?_Variant_(A|Gold|CheatMaster|LootHacker|Galaxy|BountyHunter|Bounty|Reaper|TrickTreat|TrickOrTreat|Fortune|Jeweled)$/i;
 
 const GIZMO_ICON_ROOT = '/elementals/gizmos';
 
@@ -98,14 +99,16 @@ export const SPRITE_GIZMO_CATALOG: {
   {
     id: 'portable-extractor',
     label: 'Extrator Portátil',
-    match: /relic.?extractor|portable.?extractor|extractionrelic|wid_relicextractor|magpiereward_morningbell_relicextractor/i,
+    match:
+      /relic.?extractor|portable.?extractor|extractionrelic|wid_relicextractor|magpiereward_morningbell_relicextractor/i,
     iconUrl: GIZMO_ICON_ROOT + '/portable-extractor.png',
     magpieKey: '/MorningBell/CosmicThunder/Item04'
   },
   {
     id: 'llama-supply-drop',
     label: 'Entrega de Suprimentos da Lhama',
-    match: /llama.?supply|supply.?drop.?caller|llamasupplydrop|llama.?drop.?radio|magpiereward_morningbell_llamasupply/i,
+    match:
+      /llama.?supply|supply.?drop.?caller|llamasupplydrop|llama.?drop.?radio|magpiereward_morningbell_llamasupply/i,
     iconUrl: GIZMO_ICON_ROOT + '/llama-supply-drop.png',
     magpieKey: '/MorningBell/CosmicThunder/Item01'
   },
@@ -194,7 +197,7 @@ export function parseCreatureSpriteId(id: string): { family: string; variant: Sp
   let name = match[1];
   let variant: SpriteVariant = 'base';
   const suffix = name.match(
-    /[_-]?(tricktreat|trickortreat|bountyhunter|bounty|reaper|loothacker|galaxy|cheatmaster|gold)$/i
+    /[_-]?(tricktreat|trickortreat|bountyhunter|bounty|reaper|loothacker|galaxy|cheatmaster|gold|fortune|jeweled)$/i
   );
   if (suffix && !(suffix[1].toLowerCase() === 'gold' && /cheatmaster/i.test(name))) {
     variant = spriteVariantFromToken(suffix[1]);
@@ -215,7 +218,8 @@ function familyFromTemplate(templateId: string): { family: string; variant: Spri
   if (!/sprite|elemental|magpie|collectible|collectable|creature|_variant_/.test(lower)) return null;
 
   let variant: SpriteVariant = 'base';
-  if (/trick\s?or\s?treat|tricktreat|trickortreat/.test(lower)) variant = 'trick-or-treat';
+  if (/fortune|jeweled/.test(lower)) variant = 'fortune';
+  else if (/trick\s?or\s?treat|tricktreat|trickortreat/.test(lower)) variant = 'trick-or-treat';
   else if (/bounty\s?hunter|bountyhunter|reaper/.test(lower)) variant = 'bounty-hunter';
   else if (/loot\s?hacker|loothacker|\bgalaxy\b/.test(lower)) variant = 'loot-hacker';
   else if (/cheat\s?master|cheatmaster/.test(lower)) variant = 'cheat-master';
@@ -303,7 +307,8 @@ export function flattenMagpie(value: unknown, path = 'root', depth = 0): Profile
             : typeof obj.count === 'number' || typeof obj.count === 'string'
               ? obj.count
               : 1,
-      attributes: obj.attributes && typeof obj.attributes === 'object' ? (obj.attributes as Record<string, unknown>) : obj
+      attributes:
+        obj.attributes && typeof obj.attributes === 'object' ? (obj.attributes as Record<string, unknown>) : obj
     });
   }
 
@@ -459,9 +464,7 @@ export function collectMagpieModuleIds(value: unknown, depth = 0): string[] {
   const walk = (node: unknown, d: number) => {
     if (d > 8 || node == null) return;
     if (typeof node === 'string') {
-      const prefixed = node.match(
-        /^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}):/i
-      );
+      const prefixed = node.match(/^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}):/i);
       if (prefixed) add(prefixed[1]);
       return;
     }
@@ -471,9 +474,7 @@ export function collectMagpieModuleIds(value: unknown, depth = 0): string[] {
     }
     if (typeof node !== 'object') return;
     for (const [key, child] of Object.entries(node as Record<string, unknown>)) {
-      const prefixed = key.match(
-        /^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}):/i
-      );
+      const prefixed = key.match(/^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}):/i);
       if (prefixed) add(prefixed[1]);
       if (/^module(id|_id)?$/i.test(key) && typeof child === 'string' && MAGPIE_MODULE_UUID_RE.test(child)) {
         add(child);
@@ -513,7 +514,12 @@ async function fetchMagpieModules(
     `deployment/${EOS_DEPLOYMENT_ID}/domain/FN1/account/${accountId}/workspace/default/modules`
   ];
   const listed = await Promise.all(
-    paths.map((path) => magpieV2Service.get(path, { headers }).json().catch(() => null))
+    paths.map((path) =>
+      magpieV2Service
+        .get(path, { headers })
+        .json()
+        .catch(() => null)
+    )
   );
   return collectMagpieModuleIds(listed);
 }

@@ -35,8 +35,13 @@
   let freeGames = $state<FreeGame[]>([]);
   let steamGames = $state<SteamFreeGame[]>([]);
   let slideIndex = $state(0);
+  let pirateArtFailed = $state(false);
 
-  const seasonBanner = $derived(season?.keyArt || null);
+  const seasonBanner = $derived(
+    !pirateArtFailed && Date.now() <= new Date('2026-12-04T23:59:59Z').getTime()
+      ? 'https://pbs.twimg.com/media/HV4oqdwawAA7fu3?format=jpg&name=large'
+      : season?.keyArt || null
+  );
   const seasonTitle = $derived(
     season?.name || (requiresLogin ? $t('home.season.loginForTimeline') : $t('home.season.title'))
   );
@@ -143,16 +148,15 @@
         class="storm-hero-media storm-hero-media-fade {i === activeIndex ? 'is-active' : ''}"
         decoding="async"
         loading={i === 0 ? 'eager' : 'lazy'}
+        onerror={() => {
+          if (slide.kind === 'season' && !pirateArtFailed) pirateArtFailed = true;
+        }}
         {src}
       />
     {/if}
   {/each}
 
   <div class="storm-hero-veil" aria-hidden="true"></div>
-
-  {#key activeIndex}
-    <div class="storm-hero-burst" aria-hidden="true"></div>
-  {/key}
 
   <div class="storm-hero-copy">
     {#key activeIndex}

@@ -1,4 +1,4 @@
-import { getManifestByName } from '$lib/modules/manifest';
+import { getFortniteManifest } from '$lib/modules/manifest';
 
 /**
  * Folder the launcher needs to start Fortnite, resolved from the Epic Games
@@ -6,7 +6,7 @@ import { getManifestByName } from '$lib/modules/manifest';
  * manifest can't be read, e.g. outside Windows).
  */
 export async function detectFortnitePath(): Promise<string | null> {
-  const manifest = await getManifestByName('fortnite');
+  const manifest = await getFortniteManifest();
   if (!manifest?.installLocation) return null;
 
   return `${manifest.installLocation.replaceAll('\\', '/')}/FortniteGame/Binaries/Win64`;

@@ -111,6 +111,7 @@ pub fn run() {
     builder
         .invoke_handler(generate_handler![
             get_locale,
+            #[cfg(windows)] get_fortnite_manifest,
             #[cfg(windows)] run_legendary,
             #[cfg(windows)] start_legendary_stream,
             #[cfg(windows)] stop_legendary_stream,

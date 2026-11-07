@@ -3,35 +3,36 @@ import {
   APP_NAME,
   DISPLAY_FONT,
   ensureDisplayFont,
-  fillRarityBackground,
   fillOutlinedText,
+  fillRarityBackground,
   fitText,
   loadBitmap,
   loadRarityBackground,
   roundRect,
-  saveExportBlob,
   sanitizeFilename,
+  saveExportBlob,
   UI_FONT
 } from '$lib/modules/locker-export';
-import { m } from '$lib/paraglide/messages';
-import type { Locale } from '$lib/paraglide/runtime';
-import { fetchSpriteCatalogLabels, resolveSpriteLabel, type SpriteCatalogLabels } from '$lib/modules/sprites-catalog';
-import { SPRITE_DUST_ICON, type SpriteResources } from '$lib/modules/sprites-account';
 import {
   SPRITE_ENTRIES,
   SPRITE_EXPORT_ORDER,
   SPRITE_EXPORT_VARIANTS,
   SPRITE_FAMILIES,
   spriteShortName,
-  type SpriteFamily,
   type SpriteEntry,
+  type SpriteFamily,
   type SpriteRarity,
   type SpriteVariant
 } from '$lib/modules/sprites';
+import { SPRITE_DUST_ICON, type SpriteResources } from '$lib/modules/sprites-account';
+import { fetchSpriteCatalogLabels, resolveSpriteLabel, type SpriteCatalogLabels } from '$lib/modules/sprites-catalog';
+import { m } from '$lib/paraglide/messages';
+import type { Locale } from '$lib/paraglide/runtime';
 
 const MASTERY_CROWN_URL = '/elementals/mastery-crown.webp';
 
 function variantRowLabel(variant: SpriteVariant, locale: Locale): string {
+  if (variant === 'fortune') return String(m['sprites.variants.fortune']({}, { locale })).toUpperCase();
   if (variant === 'bounty-hunter') return String(m['sprites.variants.bountyHunter']({}, { locale })).toUpperCase();
   if (variant === 'trick-or-treat') return String(m['sprites.variants.trickOrTreat']({}, { locale })).toUpperCase();
   if (variant === 'loot-hacker') return String(m['sprites.variants.lootHacker']({}, { locale })).toUpperCase();
@@ -101,7 +102,7 @@ function isOwned(entry: SpriteEntry | null, ownedKeys: ReadonlySet<string>) {
   return false;
 }
 
-/** BASE + GOLD + CHEAT MASTER + LOOT HACKER + BOUNTY HUNTER grid. Blank when Epic has no variant. */
+/** Keep a blank slot when a family has no variant. */
 export function buildSpriteExportSlots(
   ownedKeys: ReadonlySet<string>,
   levels: Record<string, number> = {},
@@ -129,11 +130,7 @@ export function buildSpriteExportSlots(
 
 function exportColumnLabel(slug: string, catalog: SpriteCatalogLabels | null): string {
   const family = SPRITE_FAMILIES.find((item) => item.slug === slug);
-  const { name } = resolveSpriteLabel(
-    slug,
-    { name: family?.name ?? slug, ability: family?.ability ?? '' },
-    catalog
-  );
+  const { name } = resolveSpriteLabel(slug, { name: family?.name ?? slug, ability: family?.ability ?? '' }, catalog);
   return spriteShortName(name).toUpperCase();
 }
 
@@ -145,13 +142,7 @@ function drawRainbowBar(ctx: CanvasRenderingContext2D, x: number, y: number, w: 
   ctx.fillRect(x, y, w, h);
 }
 
-function drawVerticalLabel(
-  ctx: CanvasRenderingContext2D,
-  text: string,
-  x: number,
-  y: number,
-  height: number
-) {
+function drawVerticalLabel(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, height: number) {
   ctx.save();
   ctx.translate(x, y + height / 2);
   ctx.rotate(-Math.PI / 2);
@@ -216,7 +207,7 @@ export async function exportSpriteAlbumWebp(options: SpriteExportOptions): Promi
 
   const cols = SPRITE_EXPORT_ORDER.length;
   const rows = SPRITE_EXPORT_VARIANTS.length;
-  const slotCount = cols * rows;
+  const slotCount = slots.filter((slot) => slot.entry).length;
   const gridW = cols * CELL + (cols - 1) * GAP;
   const gridH = rows * CELL + (rows - 1) * GAP;
   const width = PAD * 2 + LABEL_COL + gridW;
@@ -307,13 +298,7 @@ export async function exportSpriteAlbumWebp(options: SpriteExportOptions): Promi
   });
 
   SPRITE_EXPORT_VARIANTS.forEach((variant, row) => {
-    drawVerticalLabel(
-      ctx,
-      variantRowLabel(variant, locale),
-      PAD + LABEL_COL / 2,
-      gridTop + row * (CELL + GAP),
-      CELL
-    );
+    drawVerticalLabel(ctx, variantRowLabel(variant, locale), PAD + LABEL_COL / 2, gridTop + row * (CELL + GAP), CELL);
   });
 
   for (let i = 0; i < slots.length; i++) {
@@ -377,7 +362,7 @@ export async function exportSpriteAlbumWebp(options: SpriteExportOptions): Promi
       drawRainbowBar(ctx, x, y + CELL - BAR_H, CELL, BAR_H);
     } else if (slot.entry?.variant === 'cheat-master') {
       drawRainbowBar(ctx, x, y + CELL - BAR_H, CELL, BAR_H);
-    } else if (slot.entry?.variant === 'gold') {
+    } else if (slot.entry?.variant === 'gold' || slot.entry?.variant === 'fortune') {
       ctx.fillStyle = GOLD_BAR;
       ctx.fillRect(x, y + CELL - BAR_H, CELL, BAR_H);
     } else {
@@ -411,16 +396,9 @@ export async function exportSpriteAlbumWebp(options: SpriteExportOptions): Promi
   ctx.fillText(APP_NAME, brandX, footerY);
 
   const blob = await new Promise<Blob>((resolve, reject) => {
-    canvas.toBlob(
-      (b) => (b ? resolve(b) : reject(new Error('WebP encode failed'))),
-      'image/webp',
-      EXPORT_WEBP_QUALITY
-    );
+    canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('WebP encode failed'))), 'image/webp', EXPORT_WEBP_QUALITY);
   });
 
-  const filePath = await saveExportBlob(
-    blob,
-    'sprites-' + sanitizeFilename(accountLabel || 'account') + '.webp'
-  );
-  return { count: slots.length, owned: ownedCount, path: filePath };
+  const filePath = await saveExportBlob(blob, 'sprites-' + sanitizeFilename(accountLabel || 'account') + '.webp');
+  return { count: slotCount, owned: ownedCount, path: filePath };
 }

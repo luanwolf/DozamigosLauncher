@@ -13,21 +13,21 @@ import {
   writeSpriteCollection
 } from './sprites';
 import {
+  collectMagpieModuleIds,
+  flattenMagpie,
+  mergeMagpieItems,
+  parseCreatureSpriteId,
+  parseMagpieV2Inventory,
+  parseRelicId,
   parseSpriteLevels,
   parseSpriteMastered,
   parseSpriteResources,
-  flattenMagpie,
-  parseCreatureSpriteId,
-  parseRelicId,
-  parseMagpieV2Inventory,
-  mergeMagpieItems,
-  collectMagpieModuleIds,
-  spriteXpToLevel,
-  SPRITE_GIZMO_CATALOG
+  SPRITE_GIZMO_CATALOG,
+  spriteXpToLevel
 } from './sprites-account';
 
-assert.equal(SPRITE_FAMILIES.length, 25);
-assert.equal(SPRITE_ENTRIES.length, 122);
+assert.equal(SPRITE_FAMILIES.length, 37);
+assert.equal(SPRITE_ENTRIES.length, 144);
 assert.equal(new Set(SPRITE_ENTRIES.map((entry) => entry.key)).size, SPRITE_ENTRIES.length);
 assert.equal(SPRITE_FAMILIES.find((f) => f.slug === 'sonic')?.name, 'Elemental Sonic');
 assert.equal(SPRITE_FAMILIES.find((f) => f.slug === 'klombo')?.rarity, 'mythic');
@@ -79,26 +79,28 @@ assert.equal(spriteVariantFromToken('BountyHunter'), 'bounty-hunter');
 assert.equal(spriteVariantFromToken('Reaper'), 'bounty-hunter');
 assert.equal(spriteVariantFromToken('TrickTreat'), 'trick-or-treat');
 assert.equal(spriteVariantFromToken('galaxy'), 'loot-hacker');
-assert.equal(SPRITE_FAMILIES.every((f) => f.name.startsWith('Elemental')), true);
+assert.equal(
+  SPRITE_FAMILIES.every((f) => f.name.startsWith('Elemental')),
+  true
+);
 assert.equal(SPRITE_FAMILIES.find((f) => f.slug === 'mega-man')?.variants.length, 0);
 assert.equal(SPRITE_FAMILIES.find((f) => f.slug === 'overshield')?.variants.includes('loot-hacker'), true);
 assert.equal(SPRITE_FAMILIES.find((f) => f.slug === 'pond')?.variants.includes('bounty-hunter'), true);
 assert.equal(
-  SPRITE_FAMILIES.filter((f) => f.slug !== 'mega-man').every((f) => f.variants.includes('bounty-hunter')),
+  SPRITE_FAMILIES.filter((f) => f.slug !== 'mega-man' && !SPRITE_EXPORT_ORDER.some((slug) => slug === f.slug)).every(
+    (f) => f.variants.includes('bounty-hunter')
+  ),
   true
 );
 assert.deepEqual(
   SPRITE_FAMILIES.filter((f) => f.variants.includes('trick-or-treat')).map((f) => f.slug),
   ['crown']
 );
-assert.deepEqual(SPRITE_EXPORT_VARIANTS, [
-  'base',
-  'gold',
-  'cheat-master',
-  'loot-hacker',
-  'bounty-hunter',
-  'trick-or-treat'
-]);
+assert.deepEqual(SPRITE_EXPORT_VARIANTS, ['base', 'fortune']);
+assert.equal(SPRITE_ENTRIES.filter((entry) => SPRITE_EXPORT_ORDER.some((slug) => slug === entry.slug)).length, 22);
+assert.equal(spriteVariantFromToken('Jeweled'), 'fortune');
+assert.equal(mapApiSpriteFamilyId('PeelyBonesSprite'), 'halfpeeld');
+assert.deepEqual(parseRelicId('Parrot_Variant_Jeweled'), { family: 're-pete', variant: 'fortune' });
 assert.equal(spriteShortName('Elemental Sonic'), 'Sonic');
 assert.equal(spriteShortName('Elemental Storm Scout'), 'Storm Scout');
 assert.equal(spriteShortName('Elemental 8-Bit'), '8-Bit');
@@ -404,19 +406,13 @@ const newSpriteProgress = parseSpriteProgress({
           b: { templateId: 'Token:athena_s42_spritemastery_token_ghostdamage_01', quantity: 1 },
           c: { templateId: 'Token:athena_s42_spritemastery_token_phasedash', quantity: 1 },
           d: { templateId: 'Token:athena_s42_spritemastery_token_birthday', quantity: 1 },
-          e: quest(
-            'Quest:quest_s42_spritemastery_p02_q01',
-            'Claimed'
-          ),
+          e: quest('Quest:quest_s42_spritemastery_p02_q01', 'Claimed'),
           f: quest(
             'Quest:quest_s42_spritemastery_redeem_p02_q01',
             'Claimed',
             'CosmeticVariantToken:vtid_backpack_coldtrophy_crown_tricktreat'
           ),
-          g: quest(
-            'Quest:quest_s42_spritemastery_p03_q01',
-            'Claimed'
-          ),
+          g: quest('Quest:quest_s42_spritemastery_p03_q01', 'Claimed'),
           h: quest(
             'Quest:quest_s42_spritemastery_redeem_p03_q01',
             'Claimed',
@@ -436,10 +432,7 @@ assert.equal(newSpriteProgress.mastered.has('birthday:bounty-hunter'), true);
 
 const catalogTokenItems = Object.fromEntries(
   SPRITE_FAMILIES.flatMap((family, i) => [
-    [
-      `t${i}`,
-      { templateId: `Token:athena_s42_spritemastery_token_${family.slug.replace(/-/g, '_')}`, quantity: 1 }
-    ],
+    [`t${i}`, { templateId: `Token:athena_s42_spritemastery_token_${family.slug.replace(/-/g, '_')}`, quantity: 1 }],
     [
       `s${i}`,
       { templateId: `Token:athena_s42_spritemastery_token_${family.slug.replace(/-/g, '')}sprite`, quantity: 1 }
@@ -608,18 +601,20 @@ assert.equal(
   5
 );
 assert.deepEqual(
-  [...parseSpriteMastered({
-    profileChanges: [
-      {
-        profile: {
-          items: {
-            a: { templateId: 'OnigiriSprite_Variant_A', quantity: 1, attributes: { ml: true, level: 5 } },
-            b: { templateId: 'Mega_Man_Variant_A', quantity: 1, attributes: { ml: true, level: 5 } }
+  [
+    ...parseSpriteMastered({
+      profileChanges: [
+        {
+          profile: {
+            items: {
+              a: { templateId: 'OnigiriSprite_Variant_A', quantity: 1, attributes: { ml: true, level: 5 } },
+              b: { templateId: 'Mega_Man_Variant_A', quantity: 1, attributes: { ml: true, level: 5 } }
+            }
           }
         }
-      }
-    ]
-  })].sort(),
+      ]
+    })
+  ].sort(),
   ['mega-man:base', 'onigiri:base']
 );
 
@@ -662,43 +657,11 @@ const v2Items = parseMagpieV2Inventory({
 assert.equal(v2Items.find((item) => item.templateId === 'Currency_ExtractionPoints')?.quantity, 8765);
 assert.equal(v2Items.find((item) => item.templateId === 'Jonesy_Variant_A')?.attributes?.level, 5);
 assert.equal(v2Items.find((item) => item.templateId === 'NarrowFleaSprite_Variant_A')?.attributes?.level, 4);
-assert.equal(
-  parseSpriteLevels(itemsAsProfileForCheck(v2Items))['jonesy:base'],
-  5
-);
+assert.equal(parseSpriteLevels(itemsAsProfileForCheck(v2Items))['jonesy:base'], 5);
 assert.deepEqual([...parseSpriteMastered(itemsAsProfileForCheck(v2Items))].sort(), ['jonesy:base']);
 assert.equal(parseSpriteResources(itemsAsProfileForCheck(v2Items)).dust, 8765);
 
-assert.ok(SPRITE_EXPORT_ORDER.indexOf('jackrabbit') < SPRITE_EXPORT_ORDER.indexOf('x-ray'));
-assert.ok(SPRITE_EXPORT_ORDER.indexOf('sonic') < SPRITE_EXPORT_ORDER.indexOf('jackrabbit'));
-assert.ok(SPRITE_EXPORT_ORDER.indexOf('storm-scout') < SPRITE_EXPORT_ORDER.indexOf('shadow'));
-assert.deepEqual([...SPRITE_EXPORT_ORDER], [
-  'bush',
-  'adventure',
-  'jonesy',
-  'eight-bit',
-  'onigiri',
-  'mega-man',
-  'overshield',
-  'storm-scout',
-  'birthday',
-  'shadow',
-  'tails',
-  'pond',
-  'morgana',
-  'dumpster-dive',
-  'killswitch',
-  'sonic',
-  'jackrabbit',
-  'x-ray',
-  'blinky',
-  'crash',
-  'vampire',
-  'the-deer',
-  'klombo',
-  'crown',
-  'spooky-dash'
-]);
+assert.equal(new Set(SPRITE_EXPORT_ORDER).size, 12);
 
 function itemsAsProfileForCheck(
   list: { templateId?: string; quantity?: number | string; attributes?: Record<string, unknown> }[]

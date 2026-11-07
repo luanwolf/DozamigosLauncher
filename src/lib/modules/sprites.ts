@@ -1,11 +1,14 @@
 import type { AccountData } from '$types/account';
 
 export type SpriteRarity = 'rare' | 'epic' | 'legendary' | 'mythic';
-export type SpriteVariant = 'base' | 'gold' | 'cheat-master' | 'loot-hacker' | 'bounty-hunter' | 'trick-or-treat';
+export type SpriteVariant =
+  'base' | 'gold' | 'cheat-master' | 'loot-hacker' | 'bounty-hunter' | 'trick-or-treat' | 'fortune';
 
 export type SpriteFamily = {
   slug: string;
   imageSlug?: string;
+  imageUrl?: string;
+  fortuneImageUrl?: string;
   name: string;
   rarity: SpriteRarity;
   ability: string;
@@ -21,46 +24,135 @@ export type SpriteEntry = SpriteFamily & {
 const IMAGE_ROOT = '/elementals';
 const S4_VARIANTS: Exclude<SpriteVariant, 'base'>[] = ['gold', 'cheat-master', 'loot-hacker', 'bounty-hunter'];
 /** Album rows: base, gold, cheat master, loot hacker, bounty hunter, then trick or treat. */
-export const SPRITE_EXPORT_VARIANTS: SpriteVariant[] = [
-  'base',
-  'gold',
-  'cheat-master',
-  'loot-hacker',
-  'bounty-hunter',
-  'trick-or-treat'
-];
+export const SPRITE_EXPORT_VARIANTS: SpriteVariant[] = ['base', 'fortune'];
 
 /** Left → right: rare → epic → legendary → mythic. */
 export const SPRITE_EXPORT_ORDER = [
-  'bush',
-  'adventure',
-  'jonesy',
-  'eight-bit',
-  'onigiri',
-  'mega-man',
-  'overshield',
-  'storm-scout',
-  'birthday',
-  'shadow',
-  'tails',
-  'pond',
-  'morgana',
-  'dumpster-dive',
-  'killswitch',
-  'sonic',
-  'jackrabbit',
-  'x-ray',
-  'blinky',
-  'crash',
-  'vampire',
-  'the-deer',
-  'klombo',
-  'crown',
-  'spooky-dash'
+  'halfpeeld',
+  're-pete',
+  'barry-o-fish',
+  'wayfinder',
+  'chester',
+  'kelper',
+  'exmarks',
+  'lil-squibbly',
+  'lil-flacko',
+  'transponder-snail',
+  'plundarrgh',
+  'sweet-dreams'
 ] as const;
 
-/** Chapter 7 Season 4 (Override) — season id 42 on fortnite.gg. */
 export const SPRITE_FAMILIES: SpriteFamily[] = [
+  {
+    slug: 'halfpeeld',
+    name: 'Elemental Halfpeel\'d',
+    rarity: 'rare',
+    ability: 'Marca eliminações no mapa. O raio aumenta a cada nível.',
+    imageUrl: 'https://fortnite.gg/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_PeelyBones_L.webp',
+    fortuneImageUrl: 'https://fortnite.gg/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_PeelyBones_Jeweled_L.webp',
+    variants: ['fortune']
+  },
+  {
+    slug: 're-pete',
+    name: 'Elemental Re-Pete',
+    rarity: 'rare',
+    ability:
+      'Recarrega mais rápido e tem chance de recuperar munição ao recarregar. Os dois efeitos aumentam a cada nível.',
+    imageUrl: 'https://fortnite.gg/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_Parrot_L.webp',
+    fortuneImageUrl: 'https://fortnite.gg/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_Parrot_Jeweled_L.webp',
+    variants: ['fortune']
+  },
+  {
+    slug: 'barry-o-fish',
+    name: 'Elemental Barry O\'Fish',
+    rarity: 'rare',
+    ability: 'Reduz o gasto de energia da corrida na água. No nível máximo, concede efeito Tapa.',
+    imageUrl: 'https://fortnite.gg/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_BarrelOfFish_L.webp',
+    fortuneImageUrl: 'https://fortnite.gg/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_BarrelOfFish_Jeweled_L.webp',
+    variants: ['fortune']
+  },
+  {
+    slug: 'wayfinder',
+    name: 'Elemental Wayfinder',
+    rarity: 'rare',
+    ability: 'Revela Elementais próximos e concede mais itens em baús enterrados. O alcance aumenta a cada nível.',
+    imageUrl: 'https://fortnite.gg/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_Compass_L.webp',
+    fortuneImageUrl: 'https://fortnite.gg/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_Compass_Jeweled_L.webp',
+    variants: ['fortune']
+  },
+  {
+    slug: 'chester',
+    name: 'Elemental Chester',
+    rarity: 'epic',
+    ability: 'Anula dano de queda e pode acrescentar itens aos baús de tesouro. A chance aumenta a cada nível.',
+    imageUrl: 'https://fortnite.gg/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_TreasureChest_L.webp',
+    fortuneImageUrl: 'https://fortnite.gg/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_TreasureChest_Jeweled_L.webp',
+    variants: ['fortune']
+  },
+  {
+    slug: 'kelper',
+    name: 'Elemental Kelper',
+    rarity: 'epic',
+    ability: 'Recupera vida com o tempo enquanto você está na água. A cura aumenta a cada nível.',
+    imageUrl: 'https://fortnite.gg/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_UnbotheredFish_L.webp',
+    fortuneImageUrl: 'https://fortnite.gg/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_UnbotheredFish_Jeweled_L.webp',
+    variants: ['fortune']
+  },
+  {
+    slug: 'exmarks',
+    name: 'Elemental Exmarks',
+    rarity: 'epic',
+    ability: 'Revela mapas do tesouro e cartazes de procurado. No nível máximo, cria um mapa do tesouro.',
+    imageUrl: 'https://fortnite.gg/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_TreasureMap_L.webp',
+    fortuneImageUrl: 'https://fortnite.gg/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_TreasureMap_Jeweled_L.webp',
+    variants: ['fortune']
+  },
+  {
+    slug: 'lil-squibbly',
+    name: 'Elemental Lil\' Squibbly',
+    rarity: 'epic',
+    ability:
+      'Ao pular em um ponto de pesca, pesca automaticamente e concede itens extras. A quantidade aumenta a cada nível.',
+    imageUrl: 'https://fortnite.gg/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_SquibblySprite_L.webp',
+    fortuneImageUrl: 'https://fortnite.gg/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_SquibblySprite_Jeweled_L.webp',
+    variants: ['fortune']
+  },
+  {
+    slug: 'lil-flacko',
+    name: 'Elemental Lil\' Flacko',
+    rarity: 'legendary',
+    ability: 'Cria uma onda de choque ao aterrissar e afasta inimigos. A força aumenta a cada nível.',
+    imageUrl: 'https://fortnite.gg/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_PlaymakerBrewery_L.webp',
+    fortuneImageUrl:
+      'https://fortnite.gg/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_PlaymakerBrewery_Jeweled_L.webp',
+    variants: ['fortune']
+  },
+  {
+    slug: 'transponder-snail',
+    name: 'Elemental Transponder Snail',
+    rarity: 'legendary',
+    ability:
+      'Concede recursos extras ao coletá-los, inclusive para aliados com o mesmo Elemental equipado. A quantidade aumenta a cada nível.',
+    imageUrl: 'https://fortnite.gg/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_FeedJet_L.webp',
+    variants: []
+  },
+  {
+    slug: 'plundarrgh',
+    name: 'Elemental Plundarrgh',
+    rarity: 'mythic',
+    ability: 'Abrir baús aumenta a velocidade de movimento e de uso da picareta.',
+    imageUrl: 'https://fortnite.gg/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_CoinPile_L.webp',
+    fortuneImageUrl: 'https://fortnite.gg/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_CoinPile_Jeweled_L.webp',
+    variants: ['fortune']
+  },
+  {
+    slug: 'sweet-dreams',
+    name: 'Elemental Sweet Dreams',
+    rarity: 'mythic',
+    ability: 'Concede um item aleatório a cada nível. No nível máximo, libera itens míticos.',
+    imageUrl: 'https://fortnite.gg/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_StarLight_L.webp',
+    variants: []
+  },
   {
     slug: 'klombo',
     name: 'Elemental Klimbo',
@@ -74,8 +166,7 @@ export const SPRITE_FAMILIES: SpriteFamily[] = [
     slug: 'crown',
     name: 'Elemental Coroa',
     rarity: 'mythic',
-    ability:
-      'Só sobe de nível ao vencer partidas (mais rápido com Vitórias de Coroa). Novas variantes ao dominar.',
+    ability: 'Só sobe de nível ao vencer partidas (mais rápido com Vitórias de Coroa). Novas variantes ao dominar.',
     variants: [...S4_VARIANTS, 'trick-or-treat']
   },
   {
@@ -111,8 +202,7 @@ export const SPRITE_FAMILIES: SpriteFamily[] = [
     slug: 'killswitch',
     name: 'Elemental Killswitch',
     rarity: 'legendary',
-    ability:
-      'Entra em Hangtime com precisão melhorada ao mirar no salto/queda. A precisão sobe a cada nível.',
+    ability: 'Entra em Hangtime com precisão melhorada ao mirar no salto/queda. A precisão sobe a cada nível.',
     variants: [...S4_VARIANTS]
   },
   {
@@ -133,16 +223,14 @@ export const SPRITE_FAMILIES: SpriteFamily[] = [
     slug: 'bush',
     name: 'Elemental Arbusto',
     rarity: 'rare',
-    ability:
-      'Concede um Arbusto após um tempo; no nível máximo, ganha um ao eliminar. O intervalo diminui por nível.',
+    ability: 'Concede um Arbusto após um tempo; no nível máximo, ganha um ao eliminar. O intervalo diminui por nível.',
     variants: [...S4_VARIANTS]
   },
   {
     slug: 'jonesy',
     name: 'Elemental Jonesy',
     rarity: 'rare',
-    ability:
-      'Após sofrer dano, recupera um pouco de vida ou escudo. A cura aumenta a cada nível.',
+    ability: 'Após sofrer dano, recupera um pouco de vida ou escudo. A cura aumenta a cada nível.',
     variants: [...S4_VARIANTS]
   },
   {
@@ -185,8 +273,7 @@ export const SPRITE_FAMILIES: SpriteFamily[] = [
     slug: 'pond',
     name: 'Elemental Pond',
     rarity: 'epic',
-    ability:
-      'Jump shortly after landing to launch a Super Jump. It goes higher and more often with each level.',
+    ability: 'Jump shortly after landing to launch a Super Jump. It goes higher and more often with each level.',
     variants: [...S4_VARIANTS]
   },
   {
@@ -245,8 +332,7 @@ export const SPRITE_FAMILIES: SpriteFamily[] = [
     slug: 'spooky-dash',
     name: 'Elemental Spooky Dash',
     rarity: 'mythic',
-    ability:
-      'No ar, a disparada atravessa alguns objetos. As cargas voltam com o tempo, mais rápido a cada nível.',
+    ability: 'No ar, a disparada atravessa alguns objetos. As cargas voltam com o tempo, mais rápido a cada nível.',
     variants: [...S4_VARIANTS]
   }
 ];
@@ -266,7 +352,10 @@ function lookupSpriteStem(stem: string): string | null {
 
 /** Map Epic / api-fortnite ids (`KlomboSprite`, `Mega_Man`, `ESD_WinnerDSprite`, tokens) onto launcher slugs. */
 export function mapApiSpriteFamilyId(id: string): string | null {
-  const stem = id.replace(/Sprite$/i, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  const stem = id
+    .replace(/Sprite$/i, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '');
   if (!stem) return null;
   const direct = lookupSpriteStem(stem);
   if (direct) return direct;
@@ -280,13 +369,16 @@ export const SPRITE_ENTRIES: SpriteEntry[] = SPRITE_FAMILIES.flatMap((family) =>
     ...family,
     key: `${family.slug}:base`,
     variant: 'base',
-    image: `${IMAGE_ROOT}/${family.slug}-sprite.webp`
+    image: family.imageUrl ?? `${IMAGE_ROOT}/${family.slug}-sprite.webp`
   },
   ...family.variants.map((variant) => ({
     ...family,
     key: `${family.slug}:${variant}`,
     variant,
-    image: `${IMAGE_ROOT}/variants/${family.imageSlug ?? family.slug}__${variant}.webp`
+    image:
+      variant === 'fortune' && family.fortuneImageUrl
+        ? family.fortuneImageUrl
+        : `${IMAGE_ROOT}/variants/${family.imageSlug ?? family.slug}__${variant}.webp`
   }))
 ]);
 
@@ -334,6 +426,19 @@ export function writeSpriteCollection(
 
 /** Ability-code aliases. Slug match is automatic from SPRITE_FAMILIES. */
 export const SPRITE_RELIC_FAMILIES: Record<string, string> = {
+  peelybones: 'halfpeeld',
+  parrot: 're-pete',
+  barreloffish: 'barry-o-fish',
+  compass: 'wayfinder',
+  treasurechest: 'chester',
+  unbotheredfish: 'kelper',
+  treasuremap: 'exmarks',
+  squibbly: 'lil-squibbly',
+  squibblysprite: 'lil-squibbly',
+  playmakerbrewery: 'lil-flacko',
+  feedjet: 'transponder-snail',
+  coinpile: 'plundarrgh',
+  starlight: 'sweet-dreams',
   cosmicthunderdoublejump: 'jackrabbit',
   doublejump: 'jackrabbit',
   jazzjackrabbit: 'jackrabbit',
@@ -370,6 +475,7 @@ export function spriteVariantFromToken(raw: string): SpriteVariant {
   if (token === 'loothacker' || token === 'galaxy') return 'loot-hacker';
   if (token === 'bountyhunter' || token === 'bounty' || token === 'reaper') return 'bounty-hunter';
   if (token === 'tricktreat' || token === 'trickortreat') return 'trick-or-treat';
+  if (token === 'fortune' || token === 'jeweled') return 'fortune';
   return 'base';
 }
 
@@ -393,7 +499,7 @@ type QuestItem = {
 const MASTERY_QUEST = /^Quest:quest_s4\d_spritemastery_(redeem_)?p\d+_(q\d+)([a-z]?)$/;
 const MASTERY_TOKEN = /^Token:athena_s4\d_spritemastery_token_([a-z0-9_]+)$/i;
 const TROPHY_REWARD =
-  /^CosmeticVariantToken:vtid_backpack_coldtrophy_([a-z0-9_]+?)(?:_(gummy|galaxy|gold|gem|holofoil|cube|quack|cheatmaster|loothacker|bountyhunter|bounty|reaper|tricktreat|trickortreat))?$/i;
+  /^CosmeticVariantToken:vtid_backpack_coldtrophy_([a-z0-9_]+?)(?:_(gummy|galaxy|gold|gem|holofoil|cube|quack|cheatmaster|loothacker|bountyhunter|bounty|reaper|tricktreat|trickortreat|fortune|jeweled))?$/i;
 
 /**
  * Epic exposes Mastery through athena quests. Dust, gizmos and per-Sprite levels live in Magpie
@@ -401,8 +507,7 @@ const TROPHY_REWARD =
  * only has accolades; Magpie HTTP path is undocumented (bots that show dust use a private route).
  */
 export function parseSpriteProgress(profile: unknown): SpriteProgress {
-  const changes = (profile as { profileChanges?: { profile?: { items?: Record<string, unknown> } }[] })
-    ?.profileChanges;
+  const changes = (profile as { profileChanges?: { profile?: { items?: Record<string, unknown> } }[] })?.profileChanges;
   const quests = Object.values(changes?.[0]?.profile?.items ?? {})
     .map((item) => item as QuestItem)
     .map((quest) => ({ quest, match: quest.templateId?.match(MASTERY_QUEST) }))

@@ -2,6 +2,11 @@ name: 'publish'
 
 on:
   workflow_dispatch:
+    inputs:
+      draft:
+        description: 'Criar release como rascunho para validação'
+        type: boolean
+        default: false
   push:
     branches:
       - main
@@ -48,6 +53,12 @@ jobs:
       - name: Install frontend dependencies
         run: bun install --frozen-lockfile
 
+      - name: Test release changes
+        run: |
+          bun src/lib/modules/fortnite-season.selfcheck.ts
+          bun src/lib/modules/sprites.selfcheck.ts
+          cargo test --manifest-path src-tauri/Cargo.toml manifest_tests --lib
+
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -57,20 +68,22 @@ jobs:
           tagName: v__VERSION__
           releaseName: 'v__VERSION__'
           releaseBody: |
-            ## Dozamigos Launcher v0.2.3
+            ## Dozamigos Launcher v0.2.4
 
             Baixe o instalador **Windows NSIS** (`.exe`) abaixo. Quem já tem o launcher instalado recebe o aviso de atualização na próxima abertura.
 
             ### Arquivos desta release
-            - `Dozamigos Launcher_0.2.3_x64-setup.exe` — instalador Windows (recomendado)
+            - `Dozamigos Launcher_0.2.4_x64-setup.exe` — instalador Windows (recomendado)
             - `latest.json` — manifesto da atualização automática
             - assinatura do instalador (usada pelo updater)
 
-            ### Painel admin
-            - NoProLlama de volta. O glitch da história (S7H-50P-R03) e os visuais de lobby continuam de fora
-            - O aviso diz se resgatou, se já foi usado, se não está disponível ou se não existe
-            - No Todos, a conta vem em uma linha, sem listar cada código
-          releaseDraft: false
+            ### Novidades
+            - Visual pirata e nova arte da temporada, sem os efeitos de glitch.
+            - Catálogo de Elementais da temporada atualizado.
+            - Correção da detecção do Fortnite instalado pela Epic.
+            - Data de fim da temporada ajustada para 04/12/2026.
+            - Painel admin removido.
+          releaseDraft: ${{ github.event_name == 'workflow_dispatch' && inputs.draft }}
           prerelease: false
           uploadUpdaterJson: true
           updaterJsonPreferNsis: true

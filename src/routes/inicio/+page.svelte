@@ -10,14 +10,13 @@
   import { getWeeklySuperchargerInfo } from '$lib/constants/stw/weekly-supercharger';
   import { language, t } from '$lib/i18n';
   import { fetchSeasonInfo, type SeasonInfo } from '$lib/modules/fortnite-season';
-  import { redeemAllCheatCodes, redeemCheatCodes, LOBBY_HACK_CODES } from '$lib/modules/cheat-codes';
   import { queryProfile } from '$lib/modules/mcp';
   import { aggregateMissionAlertsOverview } from '$lib/modules/mission-alerts-buckets';
   import { resolveWeeklySuperchargerType } from '$lib/modules/weekly-supercharger';
   import { setWorldInfoCache } from '$lib/modules/world-info';
   import { accountStore, settingsStore } from '$lib/storage';
   import { claimedAlerts, worldInfoCache } from '$lib/stores';
-  import { formatRemainingDuration, handleError, msUntilNextUtcMidnight } from '$lib/utils';
+  import { formatRemainingDuration, msUntilNextUtcMidnight } from '$lib/utils';
   import PageContent from '$components/layout/PageContent.svelte';
   import HomeOnboarding from '$components/modules/home/HomeOnboarding.svelte';
   import HomeSeasonHero from '$components/modules/home/HomeSeasonHero.svelte';
@@ -32,20 +31,6 @@
   let seasonInfo = $state<SeasonInfo | null>(null);
   let battlePass = $state<{ level: number; xp: number } | null>(null);
   let weeklySuperchargerType = $state(resolveWeeklySuperchargerType(null));
-  let isRedeemingHacks = $state(false);
-  let customHackCode = $state('');
-  let hackListOpen = $state(false);
-  let hackHighlight = $state(0);
-  let cheatHeroEl = $state<HTMLDivElement>();
-  let hackInputEl = $state<HTMLInputElement>();
-  let hackListBox = $state({ top: 0, left: 0, width: 0 });
-
-  const hackMatches = $derived(
-    LOBBY_HACK_CODES.filter((code) =>
-      customHackCode.trim() ? code.toLowerCase().includes(customHackCode.trim().toLowerCase()) : true
-    )
-  );
-
   const alertsOverview = $derived(aggregateMissionAlertsOverview($worldInfoCache));
   const weeklySuperchargerInfo = $derived(getWeeklySuperchargerInfo(weeklySuperchargerType, $t));
   const isLoadingAlertsOverview = $derived(!alertsLoadError && !$worldInfoCache?.size);
@@ -115,161 +100,6 @@
     }
   }
 
-  function countLine(
-    count: number,
-    one: 'home.adminPanel.redeemedCount.one' | 'home.adminPanel.usedCount.one' | 'home.adminPanel.unavailableCount.one' | 'home.adminPanel.unknownCount.one' | 'home.adminPanel.rejectedCount.one',
-    other: 'home.adminPanel.redeemedCount.other' | 'home.adminPanel.usedCount.other' | 'home.adminPanel.unavailableCount.other' | 'home.adminPanel.unknownCount.other' | 'home.adminPanel.rejectedCount.other'
-  ) {
-    if (!count) return '';
-    return count === 1 ? $t(one, { count }) : $t(other, { count });
-  }
-
-  function toastHackSummary(summary: Awaited<ReturnType<typeof redeemCheatCodes>>) {
-    if (summary.unavailable) {
-      toast.error($t('home.adminPanel.unavailable'));
-      return;
-    }
-
-    const only = summary.results.length === 1 ? summary.results[0] : undefined;
-    if (only?.status === 'redeemed') {
-      toast.success($t('home.adminPanel.redeemedOne', { code: only.code }));
-      return;
-    }
-    if (only?.reason === 'used') {
-      toast.message($t('home.adminPanel.usedOne', { code: only.code }));
-      return;
-    }
-    if (only?.reason === 'unavailable') {
-      toast.error($t('home.adminPanel.unavailableOne', { code: only.code }));
-      return;
-    }
-    if (only?.reason === 'unknown') {
-      toast.error($t('home.adminPanel.unknownOne', { code: only.code }));
-      return;
-    }
-    if (only?.reason === 'cooldown') {
-      toast.error($t('home.adminPanel.cooldownOne'));
-      return;
-    }
-    if (only?.reason === 'rejected') {
-      toast.error(
-        only.detail
-          ? $t('home.adminPanel.rejectedOne', { code: only.code, detail: only.detail })
-          : $t('home.adminPanel.rejectedPlain', { code: only.code })
-      );
-      return;
-    }
-
-    const unavailable = summary.results.filter((result) => result.reason === 'unavailable').length;
-    const unknown = summary.results.filter((result) => result.reason === 'unknown').length;
-    const rejected = summary.results.filter((result) => result.reason === 'rejected').length;
-    const parts = [
-      countLine(summary.redeemed, 'home.adminPanel.redeemedCount.one', 'home.adminPanel.redeemedCount.other'),
-      countLine(summary.skipped, 'home.adminPanel.usedCount.one', 'home.adminPanel.usedCount.other'),
-      countLine(unavailable, 'home.adminPanel.unavailableCount.one', 'home.adminPanel.unavailableCount.other'),
-      countLine(unknown, 'home.adminPanel.unknownCount.one', 'home.adminPanel.unknownCount.other'),
-      countLine(rejected, 'home.adminPanel.rejectedCount.one', 'home.adminPanel.rejectedCount.other'),
-      summary.results.some((result) => result.reason === 'cooldown') ? $t('home.adminPanel.cooldown') : ''
-    ].filter(Boolean);
-
-    const text = parts.join(' ') || $t('home.adminPanel.none');
-    const bad = unavailable + unknown + rejected > 0 || summary.results.some((result) => result.reason === 'cooldown');
-    if (bad) toast.error(text);
-    else if (summary.redeemed) toast.success(text);
-    else toast.message(text);
-  }
-
-  async function redeemLobbyHacks() {
-    if (!$activeAccount || isRedeemingHacks) return;
-    isRedeemingHacks = true;
-    try {
-      toastHackSummary(await redeemAllCheatCodes($activeAccount));
-    } catch (error) {
-      handleError({ error, message: $t('home.adminPanel.failed'), account: $activeAccount });
-    } finally {
-      isRedeemingHacks = false;
-    }
-  }
-
-  function placeHackList() {
-    if (!hackInputEl || !cheatHeroEl) return;
-    const input = hackInputEl.getBoundingClientRect();
-    const hero = cheatHeroEl.getBoundingClientRect();
-    hackListBox = {
-      top: input.bottom - hero.top - 1,
-      left: input.left - hero.left,
-      width: input.width
-    };
-  }
-
-  function openHackList() {
-    if (!$activeAccount || isRedeemingHacks) return;
-    const exact = hackMatches.findIndex((code) => code.toLowerCase() === customHackCode.trim().toLowerCase());
-    hackHighlight = exact >= 0 ? exact : 0;
-    placeHackList();
-    hackListOpen = true;
-  }
-
-  function pickHackCode(code: string) {
-    customHackCode = code;
-    hackListOpen = false;
-    hackInputEl?.focus();
-  }
-
-  function closeHackList(event: PointerEvent) {
-    const target = event.target as Node | null;
-    if (hackInputEl?.contains(target) || (target instanceof Element && target.closest('.cheat-admin-list'))) return;
-    hackListOpen = false;
-  }
-
-  function onHackKeydown(event: KeyboardEvent) {
-    if (event.key === 'Escape') {
-      hackListOpen = false;
-      return;
-    }
-    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
-      event.preventDefault();
-      if (!hackListOpen) openHackList();
-      if (!hackMatches.length) return;
-      const delta = event.key === 'ArrowDown' ? 1 : -1;
-      hackHighlight = (hackHighlight + delta + hackMatches.length) % hackMatches.length;
-      return;
-    }
-    if (event.key === 'Enter' && hackListOpen) {
-      const match = hackMatches[hackHighlight];
-      if (match && match !== customHackCode) {
-        event.preventDefault();
-        pickHackCode(match);
-      } else {
-        hackListOpen = false;
-      }
-    }
-  }
-
-  $effect(() => {
-    if (!hackListOpen) return;
-    placeHackList();
-    const onMove = () => placeHackList();
-    window.addEventListener('resize', onMove);
-    window.addEventListener('scroll', onMove, true);
-    return () => {
-      window.removeEventListener('resize', onMove);
-      window.removeEventListener('scroll', onMove, true);
-    };
-  });
-
-  async function redeemTypedHack() {
-    if (!$activeAccount || isRedeemingHacks || !customHackCode.trim()) return;
-    isRedeemingHacks = true;
-    try {
-      toastHackSummary(await redeemCheatCodes($activeAccount, [customHackCode]));
-    } catch (error) {
-      handleError({ error, message: $t('home.adminPanel.failed'), account: $activeAccount });
-    } finally {
-      isRedeemingHacks = false;
-    }
-  }
-
   async function refreshAll() {
     isRefreshing = true;
     await Promise.all([loadSeason(), loadAccountBalances(), refreshWorldInfo()]);
@@ -317,81 +147,13 @@
       refreshAll();
     }
   }}
-  onpointerdown={closeHackList}
 />
 
 <PageContent class="gap-6" bare center centerClass={HUD_PAGE_WIDTH}>
   {#if showOnboarding}
     <HomeOnboarding />
   {:else}
-    <div class="cheat-admin-hero" bind:this={cheatHeroEl}>
-      <form
-        class="cheat-admin-chip"
-        class:is-locked={!$activeAccount}
-        onsubmit={(event) => {
-          event.preventDefault();
-          redeemTypedHack();
-        }}
-      >
-        <span>{isRedeemingHacks ? $t('home.adminPanel.busy') : $t('home.adminPanel.label')}</span>
-        <input
-          class="cheat-admin-input"
-          type="text"
-          autocomplete="off"
-          spellcheck="false"
-          placeholder={$t('home.adminPanel.placeholder')}
-          disabled={!$activeAccount || isRedeemingHacks}
-          title={!$activeAccount ? $t('home.adminPanel.needAccount') : $t('home.adminPanel.placeholder')}
-          role="combobox"
-          aria-autocomplete="list"
-          aria-expanded={hackListOpen}
-          aria-controls="lobby-hack-codes"
-          bind:this={hackInputEl}
-          bind:value={customHackCode}
-          onfocus={openHackList}
-          oninput={openHackList}
-          onkeydown={onHackKeydown}
-        />
-        <button
-          class="cheat-admin-action"
-          type="submit"
-          disabled={!$activeAccount || isRedeemingHacks || !customHackCode.trim()}
-        >
-          {$t('home.adminPanel.submit')}
-        </button>
-        <button
-          class="cheat-admin-action"
-          type="button"
-          disabled={!$activeAccount || isRedeemingHacks}
-          title={!$activeAccount ? $t('home.adminPanel.needAccount') : $t('home.adminPanel.all')}
-          onclick={redeemLobbyHacks}
-        >
-          {$t('home.adminPanel.all')}
-        </button>
-      </form>
-      {#if hackListOpen && hackMatches.length}
-        <ul
-          class="cheat-admin-list"
-          id="lobby-hack-codes"
-          role="listbox"
-          style="top: {hackListBox.top}px; left: {hackListBox.left}px; width: {hackListBox.width}px"
-        >
-          {#each hackMatches as code, index (code)}
-            <li role="option" aria-selected={index === hackHighlight}>
-              <button
-                class:is-active={index === hackHighlight}
-                onmousedown={(event) => event.preventDefault()}
-                onclick={() => pickHackCode(code)}
-                type="button"
-              >
-                {code}
-              </button>
-            </li>
-          {/each}
-        </ul>
-      {/if}
-      <HomeSeasonHero {battlePass} loading={isLoadingSeason} requiresLogin={!$activeAccount} season={seasonInfo} />
-    </div>
+    <HomeSeasonHero {battlePass} loading={isLoadingSeason} requiresLogin={!$activeAccount} season={seasonInfo} />
 
     <section class="deck-grid">
       {#each deckZones as zone (zone.id)}

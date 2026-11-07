@@ -17,6 +17,70 @@ use {
 
 use tauri::command;
 
+#[cfg(windows)]
+#[command]
+pub fn get_fortnite_manifest() -> Result<Option<serde_json::Value>, String> {
+    let program_data = std::env::var_os("PROGRAMDATA")
+        .ok_or_else(|| "PROGRAMDATA is not set".to_string())?;
+    let dir = std::path::PathBuf::from(program_data)
+        .join("Epic")
+        .join("EpicGamesLauncher")
+        .join("Data")
+        .join("Manifests");
+    let entries = match std::fs::read_dir(&dir) {
+        Ok(entries) => entries,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(None),
+        Err(error) => return Err(format!("Cannot read Epic manifests: {error}")),
+    };
+    for entry in entries {
+        let entry = entry.map_err(|error| error.to_string())?;
+        if entry.path().extension().and_then(|ext| ext.to_str()) != Some("item") {
+            continue;
+        }
+        let content = match std::fs::read_to_string(entry.path()) {
+            Ok(content) => content,
+            Err(error) => {
+                eprintln!("Cannot read Epic manifest {}: {error}", entry.path().display());
+                continue;
+            }
+        };
+        let manifest: serde_json::Value = match serde_json::from_str(&content) {
+            Ok(manifest) => manifest,
+            Err(error) => {
+                eprintln!("Invalid Epic manifest {}: {error}", entry.path().display());
+                continue;
+            }
+        };
+        if is_fortnite_manifest(&manifest) {
+            return Ok(Some(manifest));
+        }
+    }
+    Ok(None)
+}
+
+#[cfg(windows)]
+fn is_fortnite_manifest(manifest: &serde_json::Value) -> bool {
+    ["AppName", "DisplayName"].iter().any(|key| {
+        manifest.get(key).and_then(|value| value.as_str())
+            .is_some_and(|name| name.eq_ignore_ascii_case("Fortnite"))
+    }) && manifest.get("InstallLocation").and_then(|value| value.as_str())
+        .is_some_and(|location| !location.trim().is_empty())
+}
+
+#[cfg(all(test, windows))]
+mod manifest_tests {
+    use super::is_fortnite_manifest;
+    use serde_json::json;
+
+    #[test]
+    fn identifies_fortnite_without_relying_on_its_display_name() {
+        assert!(is_fortnite_manifest(&json!({"AppName": "Fortnite", "DisplayName": "Changed", "InstallLocation": "D:\\Games\\Fortnite"})));
+        assert!(is_fortnite_manifest(&json!({"DisplayName": "FORTNITE", "InstallLocation": "D:\\Games\\Fortnite"})));
+        assert!(!is_fortnite_manifest(&json!({"AppName": "Fortnite", "InstallLocation": ""})));
+        assert!(!is_fortnite_manifest(&json!({"AppName": "AnotherGame", "InstallLocation": "D:\\Games"})));
+    }
+}
+
 #[command]
 pub fn get_locale() -> String {
     sys_locale::get_locale()

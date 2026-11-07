@@ -40,9 +40,9 @@ type FetchSeasonInfoOptions = {
   locale?: string;
 };
 
-/** Chapter 7 Season 4 (Override) — used only when Epic/API omit end dates. */
+/** Used when Epic/API omit season dates. */
 export const FALLBACK_SEASON_BEGIN = new Date('2026-08-20T07:00:00.000Z');
-export const FALLBACK_SEASON_END = new Date('2026-10-31T23:59:59.000Z');
+export const FALLBACK_SEASON_END = new Date('2026-12-04T23:59:59.000Z');
 
 function parseDate(value: unknown): Date | null {
   if (typeof value !== 'string' || !value) return null;
@@ -80,6 +80,19 @@ function daysUntil(end: Date) {
   return Math.max(0, Math.ceil(ms / 86_400_000));
 }
 
+function currentSeasonEnd(begin: Date, end: Date): Date {
+  // Keep the correction limited to the season ending in 2026, not future seasons.
+  if (
+    begin.getUTCFullYear() === 2026 &&
+    end >= new Date('2026-10-25T00:00:00.000Z') &&
+    end < FALLBACK_SEASON_END &&
+    Date.now() <= FALLBACK_SEASON_END.getTime()
+  ) {
+    return FALLBACK_SEASON_END;
+  }
+  return end;
+}
+
 function withFallbackTimeline(season: SeasonInfo): SeasonInfo {
   if (season.begin && season.displayedEnd) return season;
 
@@ -107,9 +120,10 @@ function parseTimelineResponse(response: CalendarTimelineResponse, seasonNameHin
   const seasonNumber = typeof state.seasonNumber === 'number' ? state.seasonNumber : Number(state.seasonNumber);
   const begin = parseDate(state.seasonBegin);
   const end = parseDate(state.seasonEnd);
-  const displayedEnd = parseDate(state.seasonDisplayedEnd) ?? end;
+  const rawDisplayedEnd = parseDate(state.seasonDisplayedEnd) ?? end;
 
-  if (!seasonNumber || !begin || !end || !displayedEnd) return null;
+  if (!seasonNumber || !begin || !end || !rawDisplayedEnd) return null;
+  const displayedEnd = currentSeasonEnd(begin, rawDisplayedEnd);
 
   const name =
     seasonNameHint?.trim() ||
@@ -130,9 +144,10 @@ function parseTimelineResponse(response: CalendarTimelineResponse, seasonNameHin
 
 export function parsePublicSeasonResponse(response: PublicSeasonResponse, seasonNameHint?: string): SeasonInfo | null {
   const begin = parseDate(response.seasonDateBegin);
-  const end = parseDate(response.seasonDateEnd);
+  const rawEnd = parseDate(response.seasonDateEnd);
   const seasonNumber = Number(response.seasonNumber);
-  if (!seasonNumber || !begin || !end) return null;
+  if (!seasonNumber || !begin || !rawEnd) return null;
+  const end = currentSeasonEnd(begin, rawEnd);
 
   return {
     seasonNumber,

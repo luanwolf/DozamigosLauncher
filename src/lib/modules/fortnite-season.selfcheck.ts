@@ -37,6 +37,25 @@ assert.equal(publicSeason?.hasTimeline, true);
 assert.equal(parsePublicSeasonResponse({ seasonDateBegin: '', seasonDateEnd: '', seasonNumber: 0 }), null);
 
 assert.equal(FALLBACK_SEASON_BEGIN.toISOString().slice(0, 10), '2026-08-20');
-assert.equal(FALLBACK_SEASON_END.toISOString().slice(0, 10), '2026-10-31');
+assert.equal(FALLBACK_SEASON_END.toISOString().slice(0, 10), '2026-12-04');
+
+const realNow = Date.now;
+try {
+  Date.now = () => Date.parse('2026-11-06T12:00:00Z');
+  const corrected = parsePublicSeasonResponse({
+    seasonDateBegin: '2026-11-01T00:00:00Z',
+    seasonDateEnd: '2026-12-01T00:00:00Z',
+    seasonNumber: 43
+  });
+  assert.equal(corrected?.displayedEnd?.toISOString(), FALLBACK_SEASON_END.toISOString());
+  const later = parsePublicSeasonResponse({
+    seasonDateBegin: '2026-12-05T00:00:00Z',
+    seasonDateEnd: '2027-03-01T00:00:00Z',
+    seasonNumber: 44
+  });
+  assert.equal(later?.displayedEnd?.toISOString(), '2027-03-01T00:00:00.000Z');
+} finally {
+  Date.now = realNow;
+}
 
 console.log('fortnite-season.selfcheck: ok');

@@ -16,31 +16,31 @@
 :root {
   --app-header-height: 3.75rem;
 
-  /* Assuma o Controle — blue HUD, magenta as the signal accent */
-  --background: oklch(0.12 0.04 268);
+  /* Deep sea, weathered wood and gold. */
+  --background: oklch(0.14 0.035 225);
   --foreground: oklch(0.96 0.01 95);
 
-  --card: oklch(0.16 0.05 268);
+  --card: oklch(0.19 0.035 225);
   --card-foreground: oklch(0.96 0.01 95);
-  --popover: oklch(0.17 0.05 268);
+  --popover: oklch(0.2 0.035 225);
   --popover-foreground: oklch(0.96 0.01 95);
 
-  --primary: oklch(0.72 0.17 250);
-  --primary-foreground: oklch(0.98 0.01 95);
+  --primary: oklch(0.79 0.13 80);
+  --primary-foreground: oklch(0.16 0.03 70);
 
-  --secondary: oklch(0.22 0.055 265);
+  --secondary: oklch(0.24 0.04 220);
   --secondary-foreground: oklch(0.92 0.02 95);
-  --muted: oklch(0.2 0.045 265);
-  --muted-foreground: oklch(0.7 0.035 265);
+  --muted: oklch(0.22 0.035 220);
+  --muted-foreground: oklch(0.75 0.035 85);
 
-  --accent: oklch(0.24 0.065 262);
+  --accent: oklch(0.28 0.045 200);
   --accent-foreground: oklch(0.96 0.01 95);
   --destructive: oklch(0.58 0.2 25);
   --destructive-foreground: oklch(0.98 0 0);
 
-  --border: oklch(0.34 0.07 262);
-  --input: oklch(0.24 0.055 265);
-  --ring: oklch(0.72 0.17 250);
+  --border: oklch(0.38 0.055 80);
+  --input: oklch(0.25 0.04 220);
+  --ring: var(--primary);
 
   --chart-1: oklch(0.72 0.17 250);
   --chart-2: oklch(0.72 0.24 340);
@@ -48,27 +48,27 @@
   --chart-4: oklch(0.55 0.11 265);
   --chart-5: oklch(0.4 0.07 265);
 
-  --sidebar: oklch(0.1 0.04 268);
+  --sidebar: oklch(0.12 0.03 225);
   --sidebar-foreground: var(--card-foreground);
   --sidebar-primary: var(--primary);
   --sidebar-primary-foreground: var(--primary-foreground);
-  --sidebar-accent: oklch(0.2 0.06 262);
+  --sidebar-accent: oklch(0.24 0.045 200);
   --sidebar-accent-foreground: var(--accent-foreground);
-  --sidebar-border: oklch(0.3 0.06 262);
+  --sidebar-border: oklch(0.34 0.055 80);
   --sidebar-ring: var(--ring);
 
   /* Surface tokens — HUD components use these instead of literal colors */
-  --surface-1: oklch(0.17 0.05 268 / 0.95);
-  --surface-2: oklch(0.14 0.042 268 / 0.92);
-  --surface-3: oklch(0.2 0.055 265 / 0.9);
-  --edge: oklch(0.38 0.08 262 / 0.7);
-  --edge-soft: oklch(0.38 0.08 262 / 0.55);
-  --glow-magenta: oklch(0.72 0.24 340);
-  --glow-cyan: oklch(0.85 0.14 200);
-  --glow-blue: oklch(0.72 0.17 250);
+  --surface-1: oklch(0.2 0.035 225 / 0.95);
+  --surface-2: oklch(0.16 0.035 225 / 0.92);
+  --surface-3: oklch(0.25 0.04 210 / 0.9);
+  --edge: oklch(0.48 0.08 80 / 0.7);
+  --edge-soft: oklch(0.48 0.08 80 / 0.55);
+  --glow-magenta: oklch(0.72 0.13 55);
+  --glow-cyan: oklch(0.77 0.1 190);
+  --glow-blue: oklch(0.67 0.1 205);
   --glow-yellow: oklch(0.88 0.16 95);
-  --veil: oklch(0.1 0.04 268);
-  --canvas-mid: oklch(0.14 0.042 268);
+  --veil: oklch(0.12 0.03 225);
+  --canvas-mid: oklch(0.17 0.035 225);
 
   /*
    * Three tiers from the season key art:
@@ -372,8 +372,8 @@
     isolation: isolate;
     background-color: var(--background);
     background-image:
-      radial-gradient(ellipse 90% 55% at 70% -10%, oklch(0.38 0.12 258 / 0.35), transparent 55%),
-      radial-gradient(ellipse 55% 38% at 8% 100%, oklch(0.45 0.16 340 / 0.14), transparent 52%),
+      radial-gradient(ellipse 90% 55% at 70% -10%, oklch(0.38 0.1 205 / 0.35), transparent 55%),
+      radial-gradient(ellipse 55% 38% at 8% 100%, oklch(0.45 0.1 75 / 0.14), transparent 52%),
       repeating-linear-gradient(
         -18deg,
         transparent,
@@ -592,11 +592,8 @@
   }
 
   .surface-tile-interactive:hover {
-    border-color: oklch(0.72 0.24 340 / 0.55);
+    border-color: var(--primary);
     background: var(--surface-3);
-    animation:
-      glitch-shift 0.18s steps(2, end) 1,
-      glitch-chroma 0.18s steps(2, end) 1;
   }
 
   .label-kicker {
@@ -626,10 +623,6 @@
 
   .hud-list-item-interactive {
     @apply flex gap-3 px-3 py-2.5 text-sm transition-colors hover:bg-muted/40;
-  }
-
-  .hud-list-item-interactive:hover {
-    animation: glitch-shift 0.16s steps(2, end) 1;
   }
 
   .hud-list-item-active {
@@ -673,14 +666,11 @@
   }
 
   .launch-cta:hover:not(:disabled) {
-    animation:
-      storm-sheen 1.1s linear,
-      glitch-shift 0.2s steps(2, end) 1,
-      glitch-chroma 0.2s steps(2, end) 1;
+    animation: storm-sheen 1.1s linear;
   }
 
   .page-enter {
-    animation: glitch-slice 0.42s steps(4, end) both;
+    animation: storm-fade-up 0.3s ease-out both;
   }
 
   .storm-hero {
@@ -713,7 +703,6 @@
   /* Incoming banner cuts in as torn bands instead of a plain crossfade. */
   .storm-hero-media-fade.is-active {
     opacity: 1;
-    animation: hero-media-cut 0.5s steps(2, end) 1;
   }
 
   @keyframes hero-media-cut {
@@ -749,9 +738,7 @@
   }
 
   .storm-hero-slide {
-    animation:
-      glitch-slice 0.42s steps(4, end) both,
-      glitch-shift 0.3s steps(3, end) 1;
+    animation: storm-fade-up 0.3s ease-out both;
   }
 
   /* One-shot RGB tear that sweeps the whole hero on every slide change. */
@@ -821,8 +808,14 @@
     position: absolute;
     inset: 0;
     background:
-      linear-gradient(90deg, var(--veil) 0%, oklch(0.1 0.04 268 / 0.5) 38%, oklch(0.1 0.04 268 / 0.35) 62%, oklch(0.1 0.04 268 / 0.75) 100%),
-      linear-gradient(0deg, oklch(0.1 0.04 268 / 0.88) 0%, transparent 48%);
+      linear-gradient(
+        90deg,
+        var(--veil) 0%,
+        oklch(0.12 0.03 225 / 0.5) 38%,
+        oklch(0.12 0.03 225 / 0.35) 62%,
+        oklch(0.12 0.03 225 / 0.75) 100%
+      ),
+      linear-gradient(0deg, oklch(0.12 0.03 225 / 0.88) 0%, transparent 48%);
   }
 
   .storm-hero-copy {
@@ -893,11 +886,8 @@
   }
 
   .deck-tile:hover {
-    border-color: oklch(0.72 0.24 340 / 0.55);
+    border-color: var(--primary);
     transform: translateY(-1px);
-    animation:
-      glitch-shift 0.18s steps(2, end) 1,
-      glitch-chroma 0.18s steps(2, end) 1;
   }
 
   .deck-tile-icon {
@@ -959,22 +949,10 @@
   .header-glitch-edge {
     border-bottom: none;
     box-shadow: inset 0 -2px 0 0 transparent;
-    background-image: linear-gradient(
-      90deg,
-      var(--glow-blue) 0%,
-      var(--glow-magenta) 50%,
-      var(--glow-blue) 100%
-    );
+    background-image: linear-gradient(90deg, var(--glow-blue) 0%, var(--glow-magenta) 50%, var(--glow-blue) 100%);
     background-size: 100% 2px;
     background-repeat: no-repeat;
     background-position: bottom;
-  }
-
-  .dev-glitch-badge,
-  .launch-cta {
-    text-shadow:
-      -1px 0 var(--glow-cyan),
-      1px 0 var(--glow-magenta);
   }
 
   .hud-panel::after,
@@ -992,7 +970,7 @@
       linear-gradient(90deg, transparent 0 22%, oklch(0.72 0.24 340 / 0.5) 22% 26%, transparent 26% 100%),
       linear-gradient(90deg, transparent 0 61%, oklch(0.72 0.17 250 / 0.5) 61% 68%, transparent 68% 100%);
     mix-blend-mode: screen;
-    animation: idle-fault 17s steps(1, end) infinite;
+    animation: none;
   }
 
   .hud-panel:nth-of-type(2n)::after,
@@ -1029,18 +1007,13 @@
    * the toast root stays untouched so Sonner keeps driving its own stacking.
    */
   .glitch-toast::after {
-    background: linear-gradient(
-      90deg,
-      oklch(0.72 0.24 340 / 0.35),
-      transparent 40%,
-      oklch(0.85 0.14 200 / 0.3)
-    );
-    animation: toast-slice 5.7s steps(1, end) infinite;
+    background: linear-gradient(90deg, oklch(0.72 0.24 340 / 0.35), transparent 40%, oklch(0.85 0.14 200 / 0.3));
+    animation: none;
   }
 
   .glitch-toast-title {
     position: relative;
-    animation: toast-chroma 2.8s steps(2, end) infinite;
+    animation: none;
   }
 
   /* Ghost layers that only flicker during bursts; empty without data-text. */
@@ -1057,19 +1030,17 @@
 
   .glitch-toast-title::before {
     color: var(--glow-cyan);
-    animation: toast-ghost-cyan 2.8s steps(1, end) infinite;
+    animation: none;
   }
 
   .glitch-toast-title::after {
     color: var(--glow-magenta);
-    animation: toast-ghost-magenta 2.8s steps(1, end) infinite;
+    animation: none;
   }
 
   /* Entry jolt + idle jitter, only for the card we position ourselves. */
   .glitch-toast-drop {
-    animation:
-      toast-drop 0.34s cubic-bezier(0.2, 0.9, 0.3, 1) both,
-      toast-jitter 4.8s steps(1, end) infinite;
+    animation: storm-fade-up 0.3s ease-out both;
   }
 
   .glitch-toast-error::before {
@@ -1223,19 +1194,6 @@
     }
   }
 
-  .glitch-target:hover:not(:disabled):not([aria-disabled='true']),
-  .glitch-target:focus-visible:not(:disabled):not([aria-disabled='true']) {
-    animation:
-      glitch-shift 0.18s steps(2, end) 1,
-      glitch-chroma 0.18s steps(2, end) 1;
-  }
-
-  .glitch-target:active:not(:disabled):not([aria-disabled='true']) {
-    animation:
-      glitch-shift 0.12s steps(3, end) 1,
-      glitch-chroma 0.12s steps(3, end) 1;
-  }
-
   .pt-safe {
     padding-top: env(safe-area-inset-top);
   }
@@ -1348,11 +1306,5 @@
 
   .storm-hero-burst {
     opacity: 0;
-  }
-
-  .glitch-toast-title {
-    text-shadow:
-      -1px 0 var(--glow-cyan),
-      1px 0 var(--glow-magenta);
   }
 }
