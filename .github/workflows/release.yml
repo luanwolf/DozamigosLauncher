@@ -73,7 +73,7 @@ jobs:
             Baixe o instalador **Windows NSIS** (`.exe`) abaixo. Quem já tem o launcher instalado recebe o aviso de atualização na próxima abertura.
 
             ### Arquivos desta release
-            - `Dozamigos Launcher_0.2.4_x64-setup.exe` — instalador Windows (recomendado)
+            - `Dozamigos.Launcher_0.2.4_x64-setup.exe` — instalador Windows (recomendado)
             - `latest.json` — manifesto da atualização automática
             - assinatura do instalador (usada pelo updater)
 
