@@ -2,20 +2,20 @@ import { get } from 'svelte/store';
 import { isFortniteApiConfigured } from '$lib/env';
 import { language } from '$lib/i18n';
 import { logger } from '$lib/logger';
-import { createCache } from '$lib/modules/data-cache.svelte';
 import { fetchBrStatsByAccountId } from '$lib/modules/br-stats';
 import type { BrStatsSummary } from '$lib/modules/br-stats-summary';
+import { createCache } from '$lib/modules/data-cache.svelte';
 import { fetchEpicBrStats } from '$lib/modules/epic-stats';
-import { fetchFreeGames, type FreeGame } from '$lib/modules/free-games';
 import { fetchMap, type FortniteMapData } from '$lib/modules/fortnite-api';
 import { fetchFortniteLeaks, type LeaksData } from '$lib/modules/fortnite-leaks';
+import { fetchFreeGames, type FreeGame } from '$lib/modules/free-games';
 import { ensureLibrary } from '$lib/modules/legendary';
 import { fetchLocker, type LockerData } from '$lib/modules/locker';
 import { fetchAccountProfile } from '$lib/modules/lookup';
 import { clientQuestLogin, queryProfile } from '$lib/modules/mcp';
 import { runProbes } from '$lib/modules/process-validator';
-import { fetchSpriteCatalogLabels, type SpriteCatalogLabels } from '$lib/modules/sprites-catalog';
 import { fetchSpriteAccountState, type SpriteAccountState } from '$lib/modules/sprites-account';
+import { fetchSpriteCatalogLabels, type SpriteCatalogLabels } from '$lib/modules/sprites-catalog';
 import { fetchStwStore } from '$lib/modules/stw-catalog';
 import { accountStore } from '$lib/storage';
 import type { AccountData } from '$types/account';
@@ -44,22 +44,14 @@ export const accountProfileCache = createCache<AccountData, EpicAccountById>(byA
   fetchAccountProfile(account, account.accountId)
 );
 
-export const stwStoreCache = createCache<AccountData, StwStoreData>(
-  byAccount,
-  async (account) => {
-    const [profile, commonCore] = await Promise.all([
-      clientQuestLogin(account, 'campaign'),
-      queryProfile(account, 'common_core')
-    ]);
+export const stwStoreCache = createCache<AccountData, StwStoreData>(byAccount, async (account) => {
+  const [profile, commonCore] = await Promise.all([
+    clientQuestLogin(account, 'campaign'),
+    queryProfile(account, 'common_core')
+  ]);
 
-    return fetchStwStore(
-      account,
-      profile.profileChanges[0].profile,
-      commonCore.profileChanges[0].profile,
-      get(language)
-    );
-  }
-);
+  return fetchStwStore(account, profile.profileChanges[0].profile, commonCore.profileChanges[0].profile, get(language));
+});
 
 export const brStatsCache = createCache<AccountData, BrStatsSummary>(
   byAccount,
@@ -90,11 +82,9 @@ export const mapCache = createCache<string, FortniteMapData>(byLocale, (locale) 
   maxAgeMs: BR_LIVE_MAX_AGE_MS
 });
 
-export const leaksCache = createCache<string, LeaksData>(
-  byLocale,
-  (locale) => fetchFortniteLeaks(locale),
-  { maxAgeMs: BR_LIVE_MAX_AGE_MS }
-);
+export const leaksCache = createCache<string, LeaksData>(byLocale, (locale) => fetchFortniteLeaks(locale), {
+  maxAgeMs: BR_LIVE_MAX_AGE_MS
+});
 
 export const freeGamesCache = createCache<string, FreeGame[]>(byLocale, () => fetchFreeGames(), {
   maxAgeMs: HOURLY_MAX_AGE_MS
@@ -133,7 +123,6 @@ export async function warmAccountData(account: AccountData | null | undefined): 
       accountProfileCache.ensure(account),
       stwStoreCache.ensure(account),
       brStatsCache.ensure(account),
-      spriteAccountCache.ensure(account),
       ensureLibrary(account).catch((error) => {
         logger.warn('Failed to warm game library', { error });
       })
@@ -175,7 +164,6 @@ export async function refreshHourlyLauncherData(account: AccountData | null | un
       accountProfileCache.ensure(account, { force: true }),
       stwStoreCache.ensure(account, { force: true }),
       brStatsCache.ensure(account, { force: true }),
-      spriteAccountCache.ensure(account, { force: true }),
       ensureLibrary(account).catch((error) => {
         logger.warn('Failed to refresh game library', { error });
       })

@@ -387,30 +387,52 @@ export type SpriteCollection = {
   mastered: string[];
 };
 
+export function updateSpriteCollection(
+  collection: SpriteCollection,
+  key: string,
+  field: 'extracted' | 'mastered',
+  checked: boolean
+): SpriteCollection {
+  const extracted = new Set(collection.extracted);
+  const mastered = new Set(collection.mastered);
+  if (field === 'extracted') {
+    if (checked) extracted.add(key);
+    else {
+      extracted.delete(key);
+      mastered.delete(key);
+    }
+  } else if (checked) {
+    extracted.add(key);
+    mastered.add(key);
+  } else {
+    mastered.delete(key);
+  }
+  return { extracted: [...extracted], mastered: [...mastered] };
+}
+
 /** Collection marks live per Epic account (Epic does not expose per-Sprite ownership). */
 export function spriteCollectionKey(accountId?: string) {
   return `dozamigos:sprites:${accountId ?? 'local'}`;
 }
 
 export function readSpriteCollection(accountId?: string): SpriteCollection {
-  try {
-    const saved: unknown = JSON.parse(localStorage.getItem(spriteCollectionKey(accountId)) ?? '[]');
-    const valid = new Set(SPRITE_ENTRIES.map((entry) => entry.key));
-    const filter = (keys: unknown) =>
-      Array.isArray(keys) ? keys.filter((key): key is string => typeof key === 'string' && valid.has(key)) : [];
+  const saved: unknown = JSON.parse(localStorage.getItem(spriteCollectionKey(accountId)) ?? '[]');
+  const valid = new Set(SPRITE_ENTRIES.map((entry) => entry.key));
+  const filter = (keys: unknown) =>
+    Array.isArray(keys) ? keys.filter((key): key is string => typeof key === 'string' && valid.has(key)) : [];
 
-    // Migrate the original extracted-only checklist.
-    if (Array.isArray(saved)) return { extracted: filter(saved), mastered: [] };
-    if (!saved || typeof saved !== 'object') return { extracted: [], mastered: [] };
+  // Migrate the original extracted-only checklist.
+  if (Array.isArray(saved)) return { extracted: filter(saved), mastered: [] };
+  if (!saved || typeof saved !== 'object') throw new Error('Invalid sprite collection');
 
-    const collection = saved as Partial<SpriteCollection>;
-    return {
-      extracted: filter(collection.extracted),
-      mastered: filter(collection.mastered)
-    };
-  } catch {
-    return { extracted: [], mastered: [] };
+  const collection = saved as Partial<SpriteCollection>;
+  if (!Array.isArray(collection.extracted) || !Array.isArray(collection.mastered)) {
+    throw new Error('Invalid sprite collection');
   }
+  return {
+    extracted: filter(collection.extracted),
+    mastered: filter(collection.mastered)
+  };
 }
 
 export function writeSpriteCollection(

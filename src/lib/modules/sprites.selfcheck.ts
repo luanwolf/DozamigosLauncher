@@ -10,6 +10,7 @@ import {
   SPRITE_FAMILIES,
   spriteShortName,
   spriteVariantFromToken,
+  updateSpriteCollection,
   writeSpriteCollection
 } from './sprites';
 import {
@@ -120,7 +121,33 @@ assert.deepEqual(readSpriteCollection('account-a'), {
   extracted: ['sonic:base', 'klombo:gold'],
   mastered: ['klombo:gold']
 });
+store.set('dozamigos:sprites:broken', '{');
+assert.throws(() => readSpriteCollection('broken'));
+store.set('dozamigos:sprites:broken', JSON.stringify({ extracted: [] }));
+assert.throws(() => readSpriteCollection('broken'));
 assert.deepEqual(readSpriteCollection('account-b'), { extracted: [], mastered: [] });
+let manual = updateSpriteCollection({ extracted: [], mastered: [] }, 'halfpeeld:fortune', 'mastered', true);
+assert.deepEqual(manual, { extracted: ['halfpeeld:fortune'], mastered: ['halfpeeld:fortune'] });
+manual = updateSpriteCollection(manual, 'halfpeeld:fortune', 'mastered', false);
+assert.deepEqual(manual, { extracted: ['halfpeeld:fortune'], mastered: [] });
+manual = updateSpriteCollection(manual, 'halfpeeld:fortune', 'mastered', true);
+manual = updateSpriteCollection(manual, 'halfpeeld:fortune', 'extracted', false);
+assert.deepEqual(manual, { extracted: [], mastered: [] });
+writeSpriteCollection('account-b', ['halfpeeld:fortune'], ['halfpeeld:fortune']);
+assert.deepEqual(readSpriteCollection('account-b'), {
+  extracted: ['halfpeeld:fortune'],
+  mastered: ['halfpeeld:fortune']
+});
+assert.deepEqual(readSpriteCollection('account-a'), {
+  extracted: ['sonic:base', 'klombo:gold'],
+  mastered: ['klombo:gold']
+});
+writeSpriteCollection(undefined, ['halfpeeld:base'], []);
+assert.deepEqual(readSpriteCollection(), { extracted: ['halfpeeld:base'], mastered: [] });
+assert.deepEqual(readSpriteCollection('account-b'), {
+  extracted: ['halfpeeld:fortune'],
+  mastered: ['halfpeeld:fortune']
+});
 
 const quest = (templateId: string, quest_state: string, reward?: string) => ({
   templateId,

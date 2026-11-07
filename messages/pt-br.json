@@ -635,7 +635,7 @@
       "lootHacker": "Hacker de Saque",
       "bountyHunter": "Caçador de Recompensas",
       "trickOrTreat": "Doces ou Travessuras",
-      "fortune": "Fortuna"
+      "fortune": "Valioso"
     },
     "filters": {
       "allRarities": "Todas as raridades",
@@ -647,9 +647,16 @@
     },
     "collection": {
       "title": "Sua coleção",
-      "perAccount": "Extraído é o token de mastery que a conta já ganhou. A quest aparece para todo Elemental, mesmo sem extração. Dust, bugiganga e nível vêm do Magpie, e o launcher não lê isso.",
-      "noAccount": "Entre em uma conta para separar as marcações por perfil.",
-      "explanation": "O álbum exportado tem duas linhas: Base e Fortuna. Sem a variante no jogo, o espaço fica vazio. Dust e bugigangas só entram se o Magpie da conta responder.",
+      "perAccount": "As marcações são salvas neste dispositivo, separadas por conta.",
+      "noAccount": "Sem conta conectada, as marcações ficam em uma coleção local separada.",
+      "explanation": "O álbum exportado tem duas linhas: Base e Valioso. Sem a variante no jogo, o espaço fica vazio.",
+      "manualHint": "Marque os Elementais que você tem e os que já dominou. As marcações ficam salvas neste dispositivo, separadas por conta.",
+      "owned": "Tenho",
+      "ownedLabel": "Tenho {name} — {variant}",
+      "masteredLabel": "Dominei {name} — {variant}",
+      "localName": "Minha coleção",
+      "loadFailed": "Não foi possível carregar as marcações dos Elementais.",
+      "saveFailed": "Não foi possível salvar as marcações dos Elementais.",
       "dontShowAgain": "Não mostrar novamente"
     },
     "mastery": {

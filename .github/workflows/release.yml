@@ -68,21 +68,19 @@ jobs:
           tagName: v__VERSION__
           releaseName: 'v__VERSION__'
           releaseBody: |
-            ## Dozamigos Launcher v0.2.4
+            ## Dozamigos Launcher v0.2.5
 
             Baixe o instalador **Windows NSIS** (`.exe`) abaixo. Quem já tem o launcher instalado recebe o aviso de atualização na próxima abertura.
 
             ### Arquivos desta release
-            - `Dozamigos.Launcher_0.2.4_x64-setup.exe` — instalador Windows (recomendado)
+            - `Dozamigos.Launcher_0.2.5_x64-setup.exe` — instalador Windows (recomendado)
             - `latest.json` — manifesto da atualização automática
             - assinatura do instalador (usada pelo updater)
 
             ### Novidades
-            - Visual pirata e nova arte da temporada, sem os efeitos de glitch.
-            - Catálogo de Elementais da temporada atualizado.
-            - Correção da detecção do Fortnite instalado pela Epic.
-            - Data de fim da temporada ajustada para 04/12/2026.
-            - Painel admin removido.
+            - Marque manualmente os Elementais que você tem e já dominou, com coleção separada por conta.
+            - Exporte o álbum com suas marcações e os nomes e habilidades traduzidos.
+            - Variante Valioso com o nome correto em português.
           releaseDraft: ${{ github.event_name == 'workflow_dispatch' && inputs.draft }}
           prerelease: false
           uploadUpdaterJson: true

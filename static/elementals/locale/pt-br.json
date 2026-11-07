@@ -1,106 +1,54 @@
 {
-  "_readme": "Edite name e ability por slug. Salve o arquivo e recarregue a página Elementais. ability vazio mantém o texto em inglês do código até você escrever a descrição em PT-BR. Slugs válidos: klombo, crown, jackrabbit, sonic, tails, shadow, killswitch, eight-bit, adventure, bush, jonesy, storm-scout, x-ray, onigiri, mega-man, overshield, pond, blinky, crash, birthday, morgana, dumpster-dive, vampire, the-deer, spooky-dash.",
+  "_readme": "Edite name e ability por slug, salve e recarregue o launcher. Campos vazios mantêm o nome ou a habilidade do catálogo.",
   "locale": "pt-br",
   "sprites": {
-    "klombo": {
-      "name": "Elemental Klimbo",
-      "ability": "Concede itens aleatórios a cada nível; só sobe de nível ao consumir itens. A qualidade dos itens aumenta por nível."
+    "halfpeeld": {
+      "name": "Descascadinho",
+      "ability": "Marca eliminações no mapa."
     },
-    "crown": {
-      "name": "Elemental de Coroa",
-      "ability": "Sobe de Nível apenas ao vencer partidas. Suba de nível mais rápido obtendo vitórias de Coroa! Novas variantes ao dominar."
+    "re-pete": {
+      "name": "Repetácio",
+      "ability": "Aumenta a velocidade de recarga, com uma chance de que a recarga reembolse munição."
     },
-    "jackrabbit": {
-      "name": "Elemental Jackrabbit",
-      "ability": "Concede a habilidade de realizar outro salto no ar!"
+    "barry-o-fish": {
+      "name": "Barrilson",
+      "ability": "Reduz o consumo de vigor da disparada tática ao estar na água. Ganhe AdrenaEfeito no nível máximo."
     },
-    "sonic": {
-      "name": "Elemental Sonic",
-      "ability": "Gotta Go Fast! Dê disparadas mais rápidas a cada Subida de Nível!"
+    "wayfinder": {
+      "name": "Localizador",
+      "ability": "Revela Elementais próximos e concede mais itens aos abrir baús enterrados."
     },
-    "tails": {
-      "name": "Elemental Tails",
-      "ability": "Concede a habilidade de flutuar com a ajuda do Tails."
+    "chester": {
+      "name": "Baunardo",
+      "ability": "Concede chance de gerar saque extra de baús de tesouro e anula o dano de queda."
     },
-    "shadow": {
-      "name": "Elemental Shadow",
-      "ability": "Recarrega automaticamente armas guardadas ao longo do tempo. Recarrega a arma equipada no nível máximo."
+    "kelper": {
+      "name": "Apatilda",
+      "ability": "Regenera Vida ao longo do tempo ao ficar na água."
     },
-    "killswitch": {
-      "name": "Elemental Disruptor",
-      "ability": "Ativa a Câmera Lenta com precisão melhorada ao mirar enquanto pula ou cai."
+    "exmarks": {
+      "name": "Xisconde",
+      "ability": "Revela mapas do tesouro e cartazes de procurado."
     },
-    "eight-bit": {
-      "name": "Elemental 8-Bit",
-      "ability": "Encontra uma Espingarda 8-Bit no primeiro baú e ganha multiplicador de pontuação nela."
+    "lil-squibbly": {
+      "name": "Polvitozinho",
+      "ability": "Mergulhar em um buraco de pesca inicia a pescaria e concede um saque bônus."
     },
-    "adventure": {
-      "name": "Elemental Aventura",
-      "ability": "Aprimora um item aleatório do inventário a cada nível!"
+    "lil-flacko": {
+      "name": "Flacko Jr.",
+      "ability": "Cria uma pequena onda de choque ao pousar, repelindo inimigos."
     },
-    "bush": {
-      "name": "Elemental Arbusto",
-      "ability": "Concede um arbusto em você após um período, e ganha um arbusto ao fazer uma eliminação no nível máximo."
+    "transponder-snail": {
+      "name": "Caracol Telepático",
+      "ability": "Concede recursos extras ao coletar, e colegas de equipe que também tenham este Elemental equipado recebem alguns recursos extras também!"
     },
-    "jonesy": {
-      "name": "Elemental Jonesy",
-      "ability": "Recupera um pouco de vida ou escudo após sofrer dano por uma curta duração."
+    "plundarrgh": {
+      "name": "Moedonho",
+      "ability": "Abrir baús concede aumento na velocidade da picareta e na velocidade de movimento."
     },
-    "storm-scout": {
-      "name": "Elemental Meteorológico",
-      "ability": "Aplica Sobrecarga após sofrer uma certa quantidade de dano da Tempestade. Revela os próximos círculos da Tempestade no nível máximo."
-    },
-    "x-ray": {
-      "name": "Elemental Raio X",
-      "ability": "Marca inimigos periodicamente em uma área ao redor. O raio de detecção aumenta a cada nível."
-    },
-    "onigiri": {
-      "name": "Elemental Onigiri",
-      "ability": "Aplica Sobrecarga depois que você come ou bebe um consumível. A duração aumenta a cada nível."
-    },
-    "mega-man": {
-      "name": "Elemental Mega Man",
-      "ability": "Deslize por aí com atrito reduzido. Deslize mais longe a cada Subida de Nível."
-    },
-    "overshield": {
-      "name": "Elemental Sobrescudo",
-      "ability": "Concede Sobrescudo. A quantidade aumenta a cada nível."
-    },
-    "pond": {
-      "name": "Elemental Pond",
-      "ability": ""
-    },
-    "blinky": {
-      "name": "Elemental Blinky",
-      "ability": ""
-    },
-    "crash": {
-      "name": "Elemental Crash Bandicoot",
-      "ability": ""
-    },
-    "birthday": {
-      "name": "Elemental Aniversário",
-      "ability": "Baú solta um pedaço de bolo de vez em quando. No nível máximo, eliminação também. A chance sobe a cada nível."
-    },
-    "morgana": {
-      "name": "Elemental Morgana",
-      "ability": "Item de cura rende mais a cada nível."
-    },
-    "dumpster-dive": {
-      "name": "Elemental Dumpster Dive",
-      "ability": "Comida cura mais, e aparece ao sair de um esconderijo. Raramente, num baú também. A comida melhora a cada nível."
-    },
-    "vampire": {
-      "name": "Elemental Vampiro",
-      "ability": "Dano em inimigo devolve vida, e a fatia devolvida sobe a cada nível."
-    },
-    "the-deer": {
-      "name": "Elemental Cervo",
-      "ability": "Ataque corpo a corpo dá mais dano a cada nível."
-    },
-    "spooky-dash": {
-      "name": "Elemental Spooky Dash",
-      "ability": "No ar, a disparada atravessa alguns objetos. As cargas voltam com o tempo, mais rápido a cada nível."
+    "sweet-dreams": {
+      "name": "Soninho",
+      "ability": "Concede um item aleatório a cada nível. No nível máximo, concede itens míticos."
     }
   }
 }
