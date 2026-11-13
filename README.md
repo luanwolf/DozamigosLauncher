@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/luanwolf/DozamigosLauncher/releases/latest"><img alt="Versão" src="https://img.shields.io/badge/vers%C3%A3o-0.2.5-a855f7"></a>
+  <a href="https://github.com/luanwolf/DozamigosLauncher/releases/latest"><img alt="Versão" src="https://img.shields.io/badge/vers%C3%A3o-0.2.6-a855f7"></a>
   <img alt="Plataforma" src="https://img.shields.io/badge/plataforma-Windows-2b3140">
   <a href="LICENSE"><img alt="Licença" src="https://img.shields.io/badge/licen%C3%A7a-GPL--3.0-2b3140"></a>
 </p>
@@ -71,7 +71,7 @@ Com a opção ligada em _Ajustes_, o launcher avisa no Windows (mesmo visual dos
 - **Jogar:** botão _Iniciar jogo_ no topo. O caminho da instalação você muda em _Ajustes_.
 - **Exportar loja, vestiário, Elementais ou Recursos:** abra a página, clique em _Exportar_ e espere a barra de progresso. O `.webp` fica em `%APPDATA%\dozamigos-launcher\exports`, e o botão _Abrir imagem_ aparece ao lado assim que termina.
 - **Elementais:** marque em cada variante se você a tem e se já a dominou. As marcações ficam neste dispositivo, separadas por conta; sem conta, ficam em uma coleção local própria. O álbum exportado usa essas marcações.
-- **Versão instalada:** aparece abaixo do ícone do GitHub na barra lateral (`v0.2.5` nesta release).
+- **Versão instalada:** aparece abaixo do ícone do GitHub na barra lateral (`v0.2.6` nesta release).
 - **Resgate automático de lhamas:** ligue em _STW → Lhamas grátis_. A varredura roda mesmo com o app minimizado.
 
 > [!IMPORTANT]

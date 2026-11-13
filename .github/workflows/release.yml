@@ -68,19 +68,19 @@ jobs:
           tagName: v__VERSION__
           releaseName: 'v__VERSION__'
           releaseBody: |
-            ## Dozamigos Launcher v0.2.5
+            ## Dozamigos Launcher v0.2.6
 
             Baixe o instalador **Windows NSIS** (`.exe`) abaixo. Quem já tem o launcher instalado recebe o aviso de atualização na próxima abertura.
 
             ### Arquivos desta release
-            - `Dozamigos.Launcher_0.2.5_x64-setup.exe` — instalador Windows (recomendado)
+            - `Dozamigos.Launcher_0.2.6_x64-setup.exe` — instalador Windows (recomendado)
             - `latest.json` — manifesto da atualização automática
             - assinatura do instalador (usada pelo updater)
 
             ### Novidades
-            - Marque manualmente os Elementais que você tem e já dominou, com coleção separada por conta.
-            - Exporte o álbum com suas marcações e os nomes e habilidades traduzidos.
-            - Variante Valioso com o nome correto em português.
+            - Álbum de Elementais com a variante Assombrados e o Lil' Uzi Vert Jr. A coroa fica na cabeça.
+            - A coleção é marcada na mão, separada por conta.
+            - A temporada atual começa em 1º de novembro e termina em 4 de dezembro.
           releaseDraft: ${{ github.event_name == 'workflow_dispatch' && inputs.draft }}
           prerelease: false
           uploadUpdaterJson: true

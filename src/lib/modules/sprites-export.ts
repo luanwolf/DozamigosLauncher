@@ -32,6 +32,7 @@ import type { Locale } from '$lib/paraglide/runtime';
 const MASTERY_CROWN_URL = '/elementals/mastery-crown.webp';
 
 function variantRowLabel(variant: SpriteVariant, locale: Locale): string {
+  if (variant === 'cursed') return String(m['sprites.variants.cursed']({}, { locale })).toUpperCase();
   if (variant === 'fortune') return String(m['sprites.variants.fortune']({}, { locale })).toUpperCase();
   if (variant === 'bounty-hunter') return String(m['sprites.variants.bountyHunter']({}, { locale })).toUpperCase();
   if (variant === 'trick-or-treat') return String(m['sprites.variants.trickOrTreat']({}, { locale })).toUpperCase();
@@ -44,6 +45,7 @@ function variantRowLabel(variant: SpriteVariant, locale: Locale): string {
 const GOLD_BAR = '#f5c542';
 const BOUNTY_BAR = '#e879f9';
 const TRICK_BAR = '#f97316';
+const CURSED_BAR = '#7c3aed';
 
 const RARITY_BAR: Record<SpriteRarity, string> = {
   rare: '#3d9bf7',
@@ -346,13 +348,16 @@ export async function exportSpriteAlbumWebp(options: SpriteExportOptions): Promi
     }
 
     if (slot.mastered && crownBmp) {
-      const crown = Math.round(CELL * 0.28);
+      const crown = Math.round(CELL * 0.22);
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = 'high';
-      ctx.drawImage(crownBmp, x + CELL - crown - 6, y + 6, crown, crown);
+      ctx.drawImage(crownBmp, x + (CELL - crown) / 2, y + Math.round(CELL * 0.01), crown, crown);
     }
 
-    if (slot.entry?.variant === 'trick-or-treat') {
+    if (slot.entry?.variant === 'cursed') {
+      ctx.fillStyle = CURSED_BAR;
+      ctx.fillRect(x, y + CELL - BAR_H, CELL, BAR_H);
+    } else if (slot.entry?.variant === 'trick-or-treat') {
       ctx.fillStyle = TRICK_BAR;
       ctx.fillRect(x, y + CELL - BAR_H, CELL, BAR_H);
     } else if (slot.entry?.variant === 'bounty-hunter') {

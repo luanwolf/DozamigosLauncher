@@ -2,7 +2,14 @@ import type { AccountData } from '$types/account';
 
 export type SpriteRarity = 'rare' | 'epic' | 'legendary' | 'mythic';
 export type SpriteVariant =
-  'base' | 'gold' | 'cheat-master' | 'loot-hacker' | 'bounty-hunter' | 'trick-or-treat' | 'fortune';
+  | 'base'
+  | 'gold'
+  | 'cheat-master'
+  | 'loot-hacker'
+  | 'bounty-hunter'
+  | 'trick-or-treat'
+  | 'fortune'
+  | 'cursed';
 
 export type SpriteFamily = {
   slug: string;
@@ -23,8 +30,8 @@ export type SpriteEntry = SpriteFamily & {
 
 const IMAGE_ROOT = '/elementals';
 const S4_VARIANTS: Exclude<SpriteVariant, 'base'>[] = ['gold', 'cheat-master', 'loot-hacker', 'bounty-hunter'];
-/** Album rows: base, gold, cheat master, loot hacker, bounty hunter, then trick or treat. */
-export const SPRITE_EXPORT_VARIANTS: SpriteVariant[] = ['base', 'fortune'];
+/** Album rows for the current season: base, fortune, then cursed (Assombrados). */
+export const SPRITE_EXPORT_VARIANTS: SpriteVariant[] = ['base', 'fortune', 'cursed'];
 
 /** Left → right: rare → epic → legendary → mythic. */
 export const SPRITE_EXPORT_ORDER = [
@@ -37,6 +44,7 @@ export const SPRITE_EXPORT_ORDER = [
   'exmarks',
   'lil-squibbly',
   'lil-flacko',
+  'lil-uzi',
   'transponder-snail',
   'plundarrgh',
   'sweet-dreams'
@@ -50,7 +58,7 @@ export const SPRITE_FAMILIES: SpriteFamily[] = [
     ability: 'Marca eliminações no mapa. O raio aumenta a cada nível.',
     imageUrl: 'https://fortnite.gg/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_PeelyBones_L.webp',
     fortuneImageUrl: 'https://fortnite.gg/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_PeelyBones_Jeweled_L.webp',
-    variants: ['fortune']
+    variants: ['fortune', 'cursed']
   },
   {
     slug: 're-pete',
@@ -60,7 +68,7 @@ export const SPRITE_FAMILIES: SpriteFamily[] = [
       'Recarrega mais rápido e tem chance de recuperar munição ao recarregar. Os dois efeitos aumentam a cada nível.',
     imageUrl: 'https://fortnite.gg/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_Parrot_L.webp',
     fortuneImageUrl: 'https://fortnite.gg/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_Parrot_Jeweled_L.webp',
-    variants: ['fortune']
+    variants: ['fortune', 'cursed']
   },
   {
     slug: 'barry-o-fish',
@@ -69,7 +77,7 @@ export const SPRITE_FAMILIES: SpriteFamily[] = [
     ability: 'Reduz o gasto de energia da corrida na água. No nível máximo, concede efeito Tapa.',
     imageUrl: 'https://fortnite.gg/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_BarrelOfFish_L.webp',
     fortuneImageUrl: 'https://fortnite.gg/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_BarrelOfFish_Jeweled_L.webp',
-    variants: ['fortune']
+    variants: ['fortune', 'cursed']
   },
   {
     slug: 'wayfinder',
@@ -78,7 +86,7 @@ export const SPRITE_FAMILIES: SpriteFamily[] = [
     ability: 'Revela Elementais próximos e concede mais itens em baús enterrados. O alcance aumenta a cada nível.',
     imageUrl: 'https://fortnite.gg/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_Compass_L.webp',
     fortuneImageUrl: 'https://fortnite.gg/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_Compass_Jeweled_L.webp',
-    variants: ['fortune']
+    variants: ['fortune', 'cursed']
   },
   {
     slug: 'chester',
@@ -87,7 +95,7 @@ export const SPRITE_FAMILIES: SpriteFamily[] = [
     ability: 'Anula dano de queda e pode acrescentar itens aos baús de tesouro. A chance aumenta a cada nível.',
     imageUrl: 'https://fortnite.gg/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_TreasureChest_L.webp',
     fortuneImageUrl: 'https://fortnite.gg/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_TreasureChest_Jeweled_L.webp',
-    variants: ['fortune']
+    variants: ['fortune', 'cursed']
   },
   {
     slug: 'kelper',
@@ -96,7 +104,7 @@ export const SPRITE_FAMILIES: SpriteFamily[] = [
     ability: 'Recupera vida com o tempo enquanto você está na água. A cura aumenta a cada nível.',
     imageUrl: 'https://fortnite.gg/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_UnbotheredFish_L.webp',
     fortuneImageUrl: 'https://fortnite.gg/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_UnbotheredFish_Jeweled_L.webp',
-    variants: ['fortune']
+    variants: ['fortune', 'cursed']
   },
   {
     slug: 'exmarks',
@@ -105,7 +113,7 @@ export const SPRITE_FAMILIES: SpriteFamily[] = [
     ability: 'Revela mapas do tesouro e cartazes de procurado. No nível máximo, cria um mapa do tesouro.',
     imageUrl: 'https://fortnite.gg/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_TreasureMap_L.webp',
     fortuneImageUrl: 'https://fortnite.gg/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_TreasureMap_Jeweled_L.webp',
-    variants: ['fortune']
+    variants: ['fortune', 'cursed']
   },
   {
     slug: 'lil-squibbly',
@@ -115,7 +123,7 @@ export const SPRITE_FAMILIES: SpriteFamily[] = [
       'Ao pular em um ponto de pesca, pesca automaticamente e concede itens extras. A quantidade aumenta a cada nível.',
     imageUrl: 'https://fortnite.gg/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_SquibblySprite_L.webp',
     fortuneImageUrl: 'https://fortnite.gg/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_SquibblySprite_Jeweled_L.webp',
-    variants: ['fortune']
+    variants: ['fortune', 'cursed']
   },
   {
     slug: 'lil-flacko',
@@ -125,7 +133,16 @@ export const SPRITE_FAMILIES: SpriteFamily[] = [
     imageUrl: 'https://fortnite.gg/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_PlaymakerBrewery_L.webp',
     fortuneImageUrl:
       'https://fortnite.gg/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_PlaymakerBrewery_Jeweled_L.webp',
-    variants: ['fortune']
+    variants: ['fortune', 'cursed']
+  },
+  {
+    slug: 'lil-uzi',
+    name: 'Elemental Lil\' Uzi Vert Jr.',
+    rarity: 'legendary',
+    ability: 'Gera um efeito de Chug Splash ao restaurar escudo. A recarga cai a cada nível.',
+    imageUrl: 'https://fortnite.gg/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_RookGecko_L.webp',
+    fortuneImageUrl: 'https://fortnite.gg/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_RookGecko_Jeweled_L.webp',
+    variants: ['fortune', 'cursed']
   },
   {
     slug: 'transponder-snail',
@@ -143,7 +160,7 @@ export const SPRITE_FAMILIES: SpriteFamily[] = [
     ability: 'Abrir baús aumenta a velocidade de movimento e de uso da picareta.',
     imageUrl: 'https://fortnite.gg/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_CoinPile_L.webp',
     fortuneImageUrl: 'https://fortnite.gg/img/x/sprites/icons/T_Icon_BR_Creature_Sprite_CoinPile_Jeweled_L.webp',
-    variants: ['fortune']
+    variants: ['fortune', 'cursed']
   },
   {
     slug: 'sweet-dreams',
@@ -364,21 +381,28 @@ export function mapApiSpriteFamilyId(id: string): string | null {
   return null;
 }
 
+function spriteVariantImage(family: SpriteFamily, variant: SpriteVariant) {
+  if (variant === 'base') return family.imageUrl ?? `${IMAGE_ROOT}/${family.slug}-sprite.webp`;
+  if (variant === 'fortune' && family.fortuneImageUrl) return family.fortuneImageUrl;
+  // ponytail: Cursed art is the base file with _Cursed_ before _L. Ceiling: a stem that doesn't end in _L.webp needs its own URL.
+  if (variant === 'cursed' && family.imageUrl?.endsWith('_L.webp')) {
+    return family.imageUrl.replace(/_L\.webp$/, '_Cursed_L.webp');
+  }
+  return `${IMAGE_ROOT}/variants/${family.imageSlug ?? family.slug}__${variant}.webp`;
+}
+
 export const SPRITE_ENTRIES: SpriteEntry[] = SPRITE_FAMILIES.flatMap((family) => [
   {
     ...family,
     key: `${family.slug}:base`,
-    variant: 'base',
-    image: family.imageUrl ?? `${IMAGE_ROOT}/${family.slug}-sprite.webp`
+    variant: 'base' as const,
+    image: spriteVariantImage(family, 'base')
   },
   ...family.variants.map((variant) => ({
     ...family,
     key: `${family.slug}:${variant}`,
     variant,
-    image:
-      variant === 'fortune' && family.fortuneImageUrl
-        ? family.fortuneImageUrl
-        : `${IMAGE_ROOT}/variants/${family.imageSlug ?? family.slug}__${variant}.webp`
+    image: spriteVariantImage(family, variant)
   }))
 ]);
 
@@ -461,6 +485,7 @@ export const SPRITE_RELIC_FAMILIES: Record<string, string> = {
   feedjet: 'transponder-snail',
   coinpile: 'plundarrgh',
   starlight: 'sweet-dreams',
+  rookgecko: 'lil-uzi',
   cosmicthunderdoublejump: 'jackrabbit',
   doublejump: 'jackrabbit',
   jazzjackrabbit: 'jackrabbit',
@@ -498,6 +523,7 @@ export function spriteVariantFromToken(raw: string): SpriteVariant {
   if (token === 'bountyhunter' || token === 'bounty' || token === 'reaper') return 'bounty-hunter';
   if (token === 'tricktreat' || token === 'trickortreat') return 'trick-or-treat';
   if (token === 'fortune' || token === 'jeweled') return 'fortune';
+  if (token === 'cursed' || token === 'assombrado' || token === 'assombrados') return 'cursed';
   return 'base';
 }
 
@@ -517,11 +543,13 @@ type QuestItem = {
   };
 };
 
-// ponytail: s41 kept so old profiles still parse; s42 is Override. Ceiling: bump when Epic rolls s43+.
+// ponytail: s41–s42 tokens use a duplicate index (_01), not a variant. s43+ is stem, _01 fortune, _02 cursed, _03 gold.
+// Ceiling: if a later season drops the _0N suffix, stop treating it as a variant.
 const MASTERY_QUEST = /^Quest:quest_s4\d_spritemastery_(redeem_)?p\d+_(q\d+)([a-z]?)$/;
-const MASTERY_TOKEN = /^Token:athena_s4\d_spritemastery_token_([a-z0-9_]+)$/i;
+const MASTERY_TOKEN = /^Token:athena_(s4\d)_spritemastery_token_([a-z0-9_]+)$/i;
+const BACKBLING_QUEST = /^Quest:quest_(s4\d)_spritebackbling_([a-z0-9]+?)(?:_0([123]))?$/i;
 const TROPHY_REWARD =
-  /^CosmeticVariantToken:vtid_backpack_coldtrophy_([a-z0-9_]+?)(?:_(gummy|galaxy|gold|gem|holofoil|cube|quack|cheatmaster|loothacker|bountyhunter|bounty|reaper|tricktreat|trickortreat|fortune|jeweled))?$/i;
+  /^CosmeticVariantToken:vtid_backpack_coldtrophy_([a-z0-9_]+?)(?:_(gummy|galaxy|gold|gem|holofoil|cube|quack|cheatmaster|loothacker|bountyhunter|bounty|reaper|tricktreat|trickortreat|fortune|jeweled|cursed))?$/i;
 
 /**
  * Epic exposes Mastery through athena quests. Dust, gizmos and per-Sprite levels live in Magpie
@@ -568,16 +596,49 @@ export function parseSpriteProgress(profile: unknown): SpriteProgress {
       .map(([, family]) => family)
   );
 
-  // s42 lists every `quest_s42_spritemastery_jonesy` as Active even if you never extracted
-  // that Creature Sprite. Owned proof is the mastery token (granted when the stage pays out).
+  // s42 lists every mastery quest as Active even if you never extracted that Sprite.
+  // Through s42 the token is extraction. From s43 the token and the claimed backbling are mastery,
+  // and _01/_02/_03 are fortune/cursed/gold rather than another copy of the base.
   for (const item of Object.values(changes?.[0]?.profile?.items ?? {})) {
-    const tokenMatch = (item as QuestItem).templateId?.match(MASTERY_TOKEN);
-    if (!tokenMatch) continue;
-    const family = mapApiSpriteFamilyId(tokenMatch[1].replace(/_\d+$/, ''));
-    if (family) extracted.add(family);
+    const quest = item as QuestItem;
+    const templateId = quest.templateId ?? '';
+    const tokenMatch = templateId.match(MASTERY_TOKEN);
+    if (tokenMatch) {
+      const season = tokenMatch[1].toLowerCase();
+      let name = tokenMatch[2];
+      if (season >= 's43') {
+        const indexed = name.match(/^(.*)_0([123])$/);
+        const variant = masterySuffixVariant(indexed?.[2]);
+        if (indexed) name = indexed[1];
+        const family = mapApiSpriteFamilyId(name);
+        if (!family) continue;
+        mastered.add(`${family}:${variant}`);
+        if (variant === 'base') extracted.add(family);
+      } else {
+        const family = mapApiSpriteFamilyId(name.replace(/_\d+$/, ''));
+        if (family) extracted.add(family);
+      }
+      continue;
+    }
+
+    const backbling = templateId.match(BACKBLING_QUEST);
+    if (!backbling || quest.attributes?.quest_state !== 'Claimed') continue;
+    if (backbling[1].toLowerCase() < 's43') continue;
+    const variant = masterySuffixVariant(backbling[3]);
+    const family = mapApiSpriteFamilyId(backbling[2]);
+    if (!family) continue;
+    mastered.add(`${family}:${variant}`);
+    if (variant === 'base') extracted.add(family);
   }
 
   return { mastered, extracted };
+}
+
+function masterySuffixVariant(index: string | undefined): SpriteVariant {
+  if (index === '1') return 'fortune';
+  if (index === '2') return 'cursed';
+  if (index === '3') return 'gold';
+  return 'base';
 }
 
 export async function fetchSpriteProgress(account: AccountData): Promise<SpriteProgress> {

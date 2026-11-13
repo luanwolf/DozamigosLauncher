@@ -80,22 +80,29 @@ const MAGPIE_MODULE_UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-
 const EOS_MAGPIE_UA =
   'EOS-SDK/1.19.4200.0-56705564@Fortnite (Windows/10.0.26100.8972.64bit) Fortnite/++Fortnite+Release-42.00-CL-56878558';
 const RELIC_ID_RE =
-  /^([A-Za-z0-9]+(?:_[A-Za-z0-9]+)*)(?:Sprite)?_Variant_(A|Gold|CheatMaster|LootHacker|Galaxy|BountyHunter|Bounty|Reaper|TrickTreat|TrickOrTreat|Fortune|Jeweled)$/i;
+  /^([A-Za-z0-9]+(?:_[A-Za-z0-9]+)*)(?:Sprite)?_Variant_(A|Gold|CheatMaster|LootHacker|Galaxy|BountyHunter|Bounty|Reaper|TrickTreat|TrickOrTreat|Fortune|Jeweled|Cursed)$/i;
 
 const GIZMO_ICON_ROOT = '/elementals/gizmos';
 
 /**
- * Override gizmos — match Epic plugin / WID names from the live inventory.
- * Slots are Magpie Item00–06, not the wheel's visual order.
- * ponytail: Magpie keys are slot paths, not item names. Ceiling: remap magpieKey if Epic reshuffles the wheel.
+ * Treasure Hunters gizmos. Override leftovers (taco, llama, cheat locator, snack lantern) are gone.
+ * ponytail: Epic still stores the three surviving gizmos on the old CosmicThunder slots.
+ * Golden Fireworks and Sprite Locator have no named key in the live bag, so they stay at 0.
+ * Ceiling: set magpieKey when a dump shows FlameCeleb or RelicFinder on a slot.
  */
 export const SPRITE_GIZMO_CATALOG: {
   id: string;
   label: string;
   match: RegExp;
   iconUrl: string;
-  magpieKey: string;
+  magpieKey?: string;
 }[] = [
+  {
+    id: 'golden-fireworks',
+    label: 'Fogos Dourados',
+    match: /golden.?firework|flameceleb|wid_flameceleb/i,
+    iconUrl: GIZMO_ICON_ROOT + '/golden-fireworks.png'
+  },
   {
     id: 'portable-extractor',
     label: 'Extrator Portátil',
@@ -105,12 +112,11 @@ export const SPRITE_GIZMO_CATALOG: {
     magpieKey: '/MorningBell/CosmicThunder/Item04'
   },
   {
-    id: 'llama-supply-drop',
-    label: 'Entrega de Suprimentos da Lhama',
-    match:
-      /llama.?supply|supply.?drop.?caller|llamasupplydrop|llama.?drop.?radio|magpiereward_morningbell_llamasupply/i,
-    iconUrl: GIZMO_ICON_ROOT + '/llama-supply-drop.png',
-    magpieKey: '/MorningBell/CosmicThunder/Item01'
+    id: 'lucky-locator',
+    label: 'Localizador da Sorte',
+    match: /lucky.?locator|wid_luckylocator|magpiereward_morningbell_luckylocator/i,
+    iconUrl: GIZMO_ICON_ROOT + '/lucky-locator.png',
+    magpieKey: '/MorningBell/CosmicThunder/Item06'
   },
   {
     id: 'extraction-accelerator',
@@ -121,33 +127,10 @@ export const SPRITE_GIZMO_CATALOG: {
     magpieKey: '/MorningBell/CosmicThunder/Item02'
   },
   {
-    id: 'cheat-code-locator',
-    label: 'Localizador de Códigos',
-    match:
-      /cheat.?code.?(finder|locator)|code.?(finder|locator)|cheatcodefinder|sprite.?locator|magpiereward_morningbell_cheatcode/i,
-    iconUrl: GIZMO_ICON_ROOT + '/cheat-code-locator.png',
-    magpieKey: '/MorningBell/CosmicThunder/Item03'
-  },
-  {
-    id: 'spicy-taco',
-    label: 'Taco Apimentado',
-    match: /spicy.?taco|taco.?tuesday|tacotuesday|spicytaco|magpiereward_morningbell_spicytaco/i,
-    iconUrl: GIZMO_ICON_ROOT + '/spicy-taco.png',
-    magpieKey: '/MorningBell/CosmicThunder/Item00'
-  },
-  {
-    id: 'snack-o-lantern',
-    label: 'Lanterna de Petiscos',
-    match: /junk.?food.?bucket|snack.?o.?lantern|wid_junkfoodbucket|magpiereward_morningbell_junkfoodbucket/i,
-    iconUrl: GIZMO_ICON_ROOT + '/snack-o-lantern.png',
-    magpieKey: '/MorningBell/CosmicThunder/Item05'
-  },
-  {
-    id: 'lucky-locator',
-    label: 'Localizador da Sorte',
-    match: /lucky.?locator|wid_luckylocator|magpiereward_morningbell_luckylocator/i,
-    iconUrl: GIZMO_ICON_ROOT + '/lucky-locator.png',
-    magpieKey: '/MorningBell/CosmicThunder/Item06'
+    id: 'sprite-locator',
+    label: 'Localizador de Elementais',
+    match: /sprite.?locator|wid_relicfinder|relic.?finder|magpiereward_morningbell_relicfinder/i,
+    iconUrl: GIZMO_ICON_ROOT + '/sprite-locator.png'
   }
 ];
 
@@ -197,7 +180,7 @@ export function parseCreatureSpriteId(id: string): { family: string; variant: Sp
   let name = match[1];
   let variant: SpriteVariant = 'base';
   const suffix = name.match(
-    /[_-]?(tricktreat|trickortreat|bountyhunter|bounty|reaper|loothacker|galaxy|cheatmaster|gold|fortune|jeweled)$/i
+    /[_-]?(tricktreat|trickortreat|bountyhunter|bounty|reaper|loothacker|galaxy|cheatmaster|gold|fortune|jeweled|cursed)$/i
   );
   if (suffix && !(suffix[1].toLowerCase() === 'gold' && /cheatmaster/i.test(name))) {
     variant = spriteVariantFromToken(suffix[1]);
@@ -219,6 +202,7 @@ function familyFromTemplate(templateId: string): { family: string; variant: Spri
 
   let variant: SpriteVariant = 'base';
   if (/fortune|jeweled/.test(lower)) variant = 'fortune';
+  else if (/\bcursed\b|assombr/.test(lower)) variant = 'cursed';
   else if (/trick\s?or\s?treat|tricktreat|trickortreat/.test(lower)) variant = 'trick-or-treat';
   else if (/bounty\s?hunter|bountyhunter|reaper/.test(lower)) variant = 'bounty-hunter';
   else if (/loot\s?hacker|loothacker|\bgalaxy\b/.test(lower)) variant = 'loot-hacker';
@@ -239,16 +223,18 @@ function matchGizmo(templateId: string) {
   if (/UnseenStatus/i.test(templateId)) return null;
 
   const byKey = SPRITE_GIZMO_CATALOG.find((gizmo) => {
+    if (!gizmo.magpieKey) return false;
     if (templateId === gizmo.magpieKey || templateId.endsWith(gizmo.magpieKey)) return true;
     const noSlash = gizmo.magpieKey.replace(/^\//, '');
     return templateId.endsWith(noSlash) || templateId.endsWith(`/${noSlash}`);
   });
   if (byKey) return byKey;
 
-  // Magpie parent folders change per season; slots stay Item00–06 — look up by key, not catalog index.
+  // Only slots that still belong to a current gizmo. Item00/01/03/05 are not taco/llama/cheat/snack anymore.
   const slot = templateId.match(/Item0([0-6])(?![0-9])/i);
   if (slot) {
-    return SPRITE_GIZMO_CATALOG.find((gizmo) => gizmo.magpieKey.endsWith(`Item0${slot[1]}`)) ?? null;
+    const hit = SPRITE_GIZMO_CATALOG.find((gizmo) => gizmo.magpieKey?.endsWith(`Item0${slot[1]}`));
+    if (hit) return hit;
   }
 
   // First hit wins — more specific Override names first (portable before generic "extractor").

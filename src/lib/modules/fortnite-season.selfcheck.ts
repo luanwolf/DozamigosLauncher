@@ -33,6 +33,7 @@ const publicSeason = parsePublicSeasonResponse(
 );
 assert.equal(publicSeason?.name, 'No Corre');
 assert.equal(publicSeason?.seasonNumber, 41);
+assert.equal(publicSeason?.begin?.toISOString(), '2026-05-30T13:00:00.000Z');
 assert.equal(publicSeason?.hasTimeline, true);
 assert.equal(parsePublicSeasonResponse({ seasonDateBegin: '', seasonDateEnd: '', seasonNumber: 0 }), null);
 
@@ -47,12 +48,14 @@ try {
     seasonDateEnd: '2026-12-01T00:00:00Z',
     seasonNumber: 43
   });
+  assert.equal(corrected?.begin?.toISOString(), '2026-11-01T00:00:00.000Z');
   assert.equal(corrected?.displayedEnd?.toISOString(), FALLBACK_SEASON_END.toISOString());
   const later = parsePublicSeasonResponse({
     seasonDateBegin: '2026-12-05T00:00:00Z',
     seasonDateEnd: '2027-03-01T00:00:00Z',
     seasonNumber: 44
   });
+  assert.equal(later?.begin?.toISOString(), '2026-12-05T00:00:00.000Z');
   assert.equal(later?.displayedEnd?.toISOString(), '2027-03-01T00:00:00.000Z');
 } finally {
   Date.now = realNow;

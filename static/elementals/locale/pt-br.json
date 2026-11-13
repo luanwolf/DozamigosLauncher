@@ -38,6 +38,10 @@
       "name": "Flacko Jr.",
       "ability": "Cria uma pequena onda de choque ao pousar, repelindo inimigos."
     },
+    "lil-uzi": {
+      "name": "Lil' Uzi Vert Jr.",
+      "ability": "Gera um efeito de Chug Splash ao restaurar escudo. A recarga cai a cada nível."
+    },
     "transponder-snail": {
       "name": "Caracol Telepático",
       "ability": "Concede recursos extras ao coletar, e colegas de equipe que também tenham este Elemental equipado recebem alguns recursos extras também!"

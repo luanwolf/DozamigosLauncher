@@ -60,7 +60,8 @@
     'loot-hacker': $t('sprites.variants.lootHacker'),
     'bounty-hunter': $t('sprites.variants.bountyHunter'),
     'trick-or-treat': $t('sprites.variants.trickOrTreat'),
-    fortune: $t('sprites.variants.fortune')
+    fortune: $t('sprites.variants.fortune'),
+    cursed: $t('sprites.variants.cursed')
   });
 
   const rarityLabels: Record<SpriteRarity, string> = {
@@ -70,9 +71,10 @@
     mythic: 'Mítico'
   };
 
-  const isExtracted = (entry: SpriteEntry) => progress.extracted.has(entry.key) || progress.mastered.has(entry.key);
+  const isExtracted = (entry: SpriteEntry) =>
+    progress.extracted.has(entry.key) || progress.mastered.has(entry.key);
 
-  const isMastered = (entry: (typeof SPRITE_ENTRIES)[number]) => progress.mastered.has(entry.key);
+  const isMastered = (entry: SpriteEntry) => progress.mastered.has(entry.key);
 
   const familyOrder = Object.fromEntries(SPRITE_EXPORT_ORDER.map((slug, index) => [slug, index]));
   const variantOrder = Object.fromEntries(SPRITE_EXPORT_VARIANTS.map((value, index) => [value, index]));
@@ -115,7 +117,8 @@
   async function exportCollection() {
     if (isExporting) return;
 
-    const ownedKeys = new Set([...progress.extracted, ...progress.mastered]);
+    const ownedKeys = new Set<string>([...progress.extracted, ...progress.mastered]);
+    const masteredKeys = new Set<string>(progress.mastered);
 
     isExporting = true;
     const exportToast = beginExportToast();
@@ -124,7 +127,7 @@
       const result = await exportSpriteAlbumWebp({
         accountLabel: $activeAccount?.displayName ?? $t('sprites.collection.localName'),
         ownedKeys,
-        masteredKeys: progress.mastered,
+        masteredKeys,
         locale: $language,
         catalog,
         onProgress: ({ done, total }) => {
@@ -211,9 +214,9 @@
     </select>
   </div>
 
-  <div class="flex flex-wrap items-center justify-between gap-2">
-    <p class="text-xs text-muted-foreground">{$t('sprites.results', { count: filtered.length })}</p>
-  </div>
+  <p class="text-xs text-muted-foreground">
+    {$t('sprites.results', { count: filtered.length })}
+  </p>
 
   <div class="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
     {#each filtered as entry (entry.key)}
@@ -235,27 +238,29 @@
             previewEntry = entry;
           }}
         >
-          <img
-            class="aspect-square w-full shrink-0 object-contain p-1"
-            alt={labels.name}
-            loading="lazy"
-            src={entry.image}
-          />
-          {#if hasMastery}
+          <div class="relative">
             <img
-              class="absolute top-1 right-1 z-10 h-7 w-auto drop-shadow-[0_2px_6px_rgba(0,0,0,0.65)]"
-              title={$t('sprites.mastery.mastered')}
-              alt=""
-              src="/elementals/mastery-crown.webp"
+              class="aspect-square w-full shrink-0 object-contain p-1"
+              alt={labels.name}
+              loading="lazy"
+              src={entry.image}
             />
-          {:else if owned}
-            <span
-              class="absolute top-2 right-2 flex size-6 items-center justify-center rounded-full bg-primary text-primary-foreground shadow"
-              title={$t('sprites.extracted')}
-            >
-              <CheckIcon class="size-4" />
-            </span>
-          {/if}
+            {#if hasMastery}
+              <img
+                class="pointer-events-none absolute top-0 left-1/2 z-10 h-[22%] w-auto -translate-x-1/2 drop-shadow-[0_2px_2px_rgba(0,0,0,0.9)]"
+                title={$t('sprites.mastery.mastered')}
+                alt=""
+                src="/elementals/mastery-crown.webp"
+              />
+            {:else if owned}
+              <span
+                class="absolute top-2 right-2 flex size-6 items-center justify-center rounded-full bg-primary text-primary-foreground shadow"
+                title={$t('sprites.extracted')}
+              >
+                <CheckIcon class="size-4" />
+              </span>
+            {/if}
+          </div>
           <div class="mt-auto flex-1 space-y-0.5 bg-black/75 px-2 pt-2 pb-2 text-white">
             <p class="truncate text-xs font-semibold">{labels.name}</p>
             <p class="text-[10px] text-white/70">

@@ -635,7 +635,8 @@
       "lootHacker": "Hacker de Saque",
       "bountyHunter": "Caçador de Recompensas",
       "trickOrTreat": "Doces ou Travessuras",
-      "fortune": "Valioso"
+      "fortune": "Valioso",
+      "cursed": "Assombrados"
     },
     "filters": {
       "allRarities": "Todas as raridades",
@@ -649,8 +650,9 @@
       "title": "Sua coleção",
       "perAccount": "As marcações são salvas neste dispositivo, separadas por conta.",
       "noAccount": "Sem conta conectada, as marcações ficam em uma coleção local separada.",
-      "explanation": "O álbum exportado tem duas linhas: Base e Valioso. Sem a variante no jogo, o espaço fica vazio.",
-      "manualHint": "Marque os Elementais que você tem e os que já dominou. As marcações ficam salvas neste dispositivo, separadas por conta.",
+      "explanation": "O álbum exportado tem três linhas: Base, Valioso e Assombrados. Sem a variante no jogo, o espaço fica vazio.",
+      "manualHint": "Marque na mão o que você extraiu e o que já dominou.",
+      "syncing": "Consultando elementais e bugigangas da conta…",
       "owned": "Tenho",
       "ownedLabel": "Tenho {name} — {variant}",
       "masteredLabel": "Dominei {name} — {variant}",

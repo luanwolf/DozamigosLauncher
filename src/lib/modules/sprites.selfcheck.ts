@@ -27,8 +27,8 @@ import {
   spriteXpToLevel
 } from './sprites-account';
 
-assert.equal(SPRITE_FAMILIES.length, 37);
-assert.equal(SPRITE_ENTRIES.length, 144);
+assert.equal(SPRITE_FAMILIES.length, 38);
+assert.equal(SPRITE_ENTRIES.length, 157);
 assert.equal(new Set(SPRITE_ENTRIES.map((entry) => entry.key)).size, SPRITE_ENTRIES.length);
 assert.equal(SPRITE_FAMILIES.find((f) => f.slug === 'sonic')?.name, 'Elemental Sonic');
 assert.equal(SPRITE_FAMILIES.find((f) => f.slug === 'klombo')?.rarity, 'mythic');
@@ -79,6 +79,8 @@ assert.equal(mapApiSpriteFamilyId('UnknownSprite'), null);
 assert.equal(spriteVariantFromToken('BountyHunter'), 'bounty-hunter');
 assert.equal(spriteVariantFromToken('Reaper'), 'bounty-hunter');
 assert.equal(spriteVariantFromToken('TrickTreat'), 'trick-or-treat');
+assert.equal(spriteVariantFromToken('Cursed'), 'cursed');
+assert.equal(mapApiSpriteFamilyId('RookGecko'), 'lil-uzi');
 assert.equal(spriteVariantFromToken('galaxy'), 'loot-hacker');
 assert.equal(
   SPRITE_FAMILIES.every((f) => f.name.startsWith('Elemental')),
@@ -97,8 +99,10 @@ assert.deepEqual(
   SPRITE_FAMILIES.filter((f) => f.variants.includes('trick-or-treat')).map((f) => f.slug),
   ['crown']
 );
-assert.deepEqual(SPRITE_EXPORT_VARIANTS, ['base', 'fortune']);
-assert.equal(SPRITE_ENTRIES.filter((entry) => SPRITE_EXPORT_ORDER.some((slug) => slug === entry.slug)).length, 22);
+assert.deepEqual(SPRITE_EXPORT_VARIANTS, ['base', 'fortune', 'cursed']);
+assert.equal(SPRITE_ENTRIES.filter((entry) => SPRITE_EXPORT_ORDER.some((slug) => slug === entry.slug)).length, 35);
+assert.ok(SPRITE_ENTRIES.find((entry) => entry.key === 'halfpeeld:cursed')?.image.endsWith('PeelyBones_Cursed_L.webp'));
+assert.ok(SPRITE_ENTRIES.find((entry) => entry.key === 'lil-uzi:fortune')?.image.endsWith('RookGecko_Jeweled_L.webp'));
 assert.equal(spriteVariantFromToken('Jeweled'), 'fortune');
 assert.equal(mapApiSpriteFamilyId('PeelyBonesSprite'), 'halfpeeld');
 assert.deepEqual(parseRelicId('Parrot_Variant_Jeweled'), { family: 're-pete', variant: 'fortune' });
@@ -226,7 +230,9 @@ for (const key of [
   'sprites.variants.cheatMaster',
   'sprites.variants.lootHacker',
   'sprites.variants.bountyHunter',
-  'sprites.variants.trickOrTreat'
+  'sprites.variants.trickOrTreat',
+  'sprites.variants.fortune',
+  'sprites.variants.cursed'
 ] as const) {
   assert.equal(typeof m[key], 'function', key);
   assert.ok(m[key]({}, { locale: 'pt-br' }));
@@ -239,10 +245,11 @@ const resourceProfile = {
         items: {
           a: { templateId: 'Currency:SpriteDust', quantity: 140 },
           b: { templateId: 'Item:AthenaGizmo_PortableExtractor', quantity: 4 },
-          c: { templateId: 'Item:AthenaGizmo_CheatCodeLocator', quantity: 2 },
-          d: { templateId: 'Item:AthenaGizmo_SpicyTaco', quantity: 4 },
-          e: { templateId: 'Item:AthenaGizmo_LlamaSupplyDrop', quantity: 2 },
-          f: { templateId: 'Item:AthenaGizmo_ExtractionAccelerator', quantity: 2 }
+          c: { templateId: 'Item:WID_RelicFinder', quantity: 2 },
+          d: { templateId: 'Item:WID_FlameCeleb_Consumable_S43', quantity: 4 },
+          e: { templateId: 'Item:WID_LuckyLocator', quantity: 2 },
+          f: { templateId: 'Item:AthenaGizmo_ExtractionAccelerator', quantity: 2 },
+          g: { templateId: 'Item:AthenaGizmo_SpicyTaco', quantity: 9 }
         },
         stats: { attributes: {} }
       }
@@ -251,17 +258,16 @@ const resourceProfile = {
 };
 
 const resources = parseSpriteResources(resourceProfile);
-assert.equal(SPRITE_GIZMO_CATALOG.length, 7);
+assert.equal(SPRITE_GIZMO_CATALOG.length, 5);
 assert.equal(resources.dust, 140);
-assert.equal(resources.gizmos.length, 7);
-assert.ok(resources.gizmos.some((g) => g.id === 'snack-o-lantern' && g.quantity === 0));
-assert.ok(resources.gizmos.some((g) => g.id === 'lucky-locator' && g.quantity === 0));
+assert.equal(resources.gizmos.length, 5);
 assert.ok(resources.gizmos.every((g) => SPRITE_GIZMO_CATALOG.some((c) => c.id === g.id)));
 assert.ok(resources.gizmos.some((g) => g.id === 'portable-extractor' && g.quantity === 4));
-assert.ok(resources.gizmos.some((g) => g.id === 'cheat-code-locator' && g.quantity === 2));
-assert.ok(resources.gizmos.some((g) => g.id === 'spicy-taco' && g.quantity === 4));
-assert.ok(resources.gizmos.some((g) => g.id === 'llama-supply-drop' && g.quantity === 2));
+assert.ok(resources.gizmos.some((g) => g.id === 'sprite-locator' && g.quantity === 2));
+assert.ok(resources.gizmos.some((g) => g.id === 'golden-fireworks' && g.quantity === 4));
+assert.ok(resources.gizmos.some((g) => g.id === 'lucky-locator' && g.quantity === 2));
 assert.ok(resources.gizmos.some((g) => g.id === 'extraction-accelerator' && g.quantity === 2));
+assert.ok(resources.gizmos.every((g) => !/taco|llama|cheat|snack/.test(g.id)));
 assert.ok(resources.gizmos.every((g) => typeof g.iconUrl === 'string' && g.iconUrl.length > 0));
 
 // Same stacks on athena + collections must not double-count.
@@ -277,10 +283,9 @@ const liveNames = {
         items: {
           a: { templateId: 'Currency:SpriteDust', quantity: '11000' },
           b: { templateId: 'Item:WID_RelicExtractor', quantity: '3' },
-          c: { templateId: 'Item:AthenaGizmo_LlamaSupplyDropCaller', quantity: '2' },
-          d: { templateId: 'Item:AthenaGizmo_SmugglerExtractionKey', quantity: '1' },
-          e: { templateId: 'Item:AthenaGizmo_CheatCodeFinder', quantity: '2' },
-          f: { templateId: 'Item:AthenaGizmo_TacoTuesday', quantity: '4' }
+          c: { templateId: 'Item:AthenaGizmo_SmugglerExtractionKey', quantity: '1' },
+          d: { templateId: 'Item:AthenaGizmo_CheatCodeFinder', quantity: '2' },
+          e: { templateId: 'Item:AthenaGizmo_TacoTuesday', quantity: '4' }
         },
         stats: { attributes: {} }
       }
@@ -290,10 +295,8 @@ const liveNames = {
 const live = parseSpriteResources(liveNames);
 assert.equal(live.dust, 11000);
 assert.ok(live.gizmos.some((g) => g.id === 'portable-extractor' && g.quantity === 3));
-assert.ok(live.gizmos.some((g) => g.id === 'llama-supply-drop' && g.quantity === 2));
 assert.ok(live.gizmos.some((g) => g.id === 'extraction-accelerator' && g.quantity === 1));
-assert.ok(live.gizmos.some((g) => g.id === 'cheat-code-locator' && g.quantity === 2));
-assert.ok(live.gizmos.some((g) => g.id === 'spicy-taco' && g.quantity === 4));
+assert.ok(live.gizmos.every((g) => g.quantity === 0 || g.id === 'portable-extractor' || g.id === 'extraction-accelerator'));
 
 const levelProfile = {
   profileChanges: [
@@ -368,10 +371,8 @@ const magpieProfile = {
 const magpieResources = parseSpriteResources(magpieProfile);
 assert.equal(magpieResources.dust, 140);
 assert.ok(magpieResources.gizmos.some((g) => g.id === 'portable-extractor' && g.quantity === 4));
-assert.ok(magpieResources.gizmos.some((g) => g.id === 'llama-supply-drop' && g.quantity === 2));
 assert.ok(magpieResources.gizmos.some((g) => g.id === 'extraction-accelerator' && g.quantity === 2));
-assert.ok(magpieResources.gizmos.some((g) => g.id === 'cheat-code-locator' && g.quantity === 2));
-assert.ok(magpieResources.gizmos.some((g) => g.id === 'spicy-taco' && g.quantity === 4));
+assert.ok(magpieResources.gizmos.every((g) => !/taco|llama|cheat|snack/.test(g.id)));
 assert.equal(parseSpriteLevels(magpieProfile)['jonesy:base'], 3);
 
 const sonicLevel = {
@@ -404,6 +405,42 @@ const familyProgress = parseSpriteProgress({
 assert.equal(familyProgress.extracted.has('jonesy'), true);
 assert.equal(familyProgress.extracted.has('eight-bit'), true);
 assert.equal(familyProgress.extracted.has('klombo'), false);
+assert.equal(familyProgress.mastered.has('eight-bit:fortune'), false);
+
+const treasureHunters = parseSpriteProgress({
+  profileChanges: [
+    {
+      profile: {
+        items: {
+          a: { templateId: 'Token:athena_s43_spritemastery_token_peelybones', quantity: 1 },
+          b: { templateId: 'Token:athena_s43_spritemastery_token_peelybones_01', quantity: 1 },
+          c: { templateId: 'Token:athena_s43_spritemastery_token_rookgecko_02', quantity: 1 },
+          d: { templateId: 'Token:athena_s43_spritemastery_token_coinpile_01', quantity: 1 },
+          e: {
+            templateId: 'Quest:quest_s43_spritebackbling_parrot',
+            attributes: { quest_state: 'Claimed' }
+          },
+          f: {
+            templateId: 'Quest:quest_s43_spritebackbling_parrot_02',
+            attributes: { quest_state: 'Active' }
+          }
+        }
+      }
+    }
+  ]
+});
+assert.equal(treasureHunters.extracted.has('halfpeeld'), true);
+assert.equal(treasureHunters.extracted.has('lil-uzi'), false);
+assert.equal(treasureHunters.extracted.has('plundarrgh'), false);
+assert.equal(treasureHunters.mastered.has('halfpeeld:base'), true);
+assert.equal(treasureHunters.mastered.has('halfpeeld:fortune'), true);
+assert.equal(treasureHunters.mastered.has('halfpeeld:cursed'), false);
+assert.equal(treasureHunters.mastered.has('lil-uzi:cursed'), true);
+assert.equal(treasureHunters.mastered.has('lil-uzi:base'), false);
+assert.equal(treasureHunters.mastered.has('plundarrgh:fortune'), true);
+assert.equal(treasureHunters.mastered.has('plundarrgh:base'), false);
+assert.equal(treasureHunters.mastered.has('re-pete:base'), true);
+assert.equal(treasureHunters.mastered.has('re-pete:cursed'), false);
 
 const liveTokenProgress = parseSpriteProgress({
   profileChanges: [
@@ -688,7 +725,8 @@ assert.equal(parseSpriteLevels(itemsAsProfileForCheck(v2Items))['jonesy:base'], 
 assert.deepEqual([...parseSpriteMastered(itemsAsProfileForCheck(v2Items))].sort(), ['jonesy:base']);
 assert.equal(parseSpriteResources(itemsAsProfileForCheck(v2Items)).dust, 8765);
 
-assert.equal(new Set(SPRITE_EXPORT_ORDER).size, 12);
+assert.equal(new Set(SPRITE_EXPORT_ORDER).size, 13);
+assert.deepEqual(parseRelicId('RookGecko_Variant_Cursed'), { family: 'lil-uzi', variant: 'cursed' });
 
 function itemsAsProfileForCheck(
   list: { templateId?: string; quantity?: number | string; attributes?: Record<string, unknown> }[]
@@ -719,11 +757,11 @@ assert.equal(
   false
 );
 const gizmoRes = parseSpriteResources(itemsAsProfileForCheck(gizmoV2));
-assert.ok(gizmoRes.gizmos.some((g) => g.id === 'spicy-taco' && g.quantity === 4));
-assert.ok(gizmoRes.gizmos.some((g) => g.id === 'llama-supply-drop' && g.quantity === 2));
+assert.ok(gizmoRes.gizmos.some((g) => g.id === 'golden-fireworks' && g.quantity === 0));
+assert.ok(gizmoRes.gizmos.some((g) => g.id === 'sprite-locator' && g.quantity === 0));
 assert.ok(gizmoRes.gizmos.some((g) => g.id === 'extraction-accelerator' && g.quantity === 3));
-assert.ok(gizmoRes.gizmos.some((g) => g.id === 'cheat-code-locator' && g.quantity === 3));
 assert.ok(gizmoRes.gizmos.some((g) => g.id === 'portable-extractor' && g.quantity === 2));
+assert.ok(gizmoRes.gizmos.every((g) => !/taco|llama|cheat|snack/.test(g.id)));
 
 const renamedSlots = parseSpriteResources(
   itemsAsProfileForCheck(
@@ -743,13 +781,11 @@ const renamedSlots = parseSpriteResources(
     })
   )
 );
-assert.ok(renamedSlots.gizmos.some((g) => g.id === 'spicy-taco' && g.quantity === 5));
-assert.ok(renamedSlots.gizmos.some((g) => g.id === 'llama-supply-drop' && g.quantity === 1));
 assert.ok(renamedSlots.gizmos.some((g) => g.id === 'extraction-accelerator' && g.quantity === 7));
-assert.ok(renamedSlots.gizmos.some((g) => g.id === 'cheat-code-locator' && g.quantity === 2));
 assert.ok(renamedSlots.gizmos.some((g) => g.id === 'portable-extractor' && g.quantity === 9));
-assert.ok(renamedSlots.gizmos.some((g) => g.id === 'snack-o-lantern' && g.quantity === 0));
+assert.ok(renamedSlots.gizmos.some((g) => g.id === 'golden-fireworks' && g.quantity === 0));
 assert.ok(renamedSlots.gizmos.some((g) => g.id === 'lucky-locator' && g.quantity === 0));
+assert.ok(renamedSlots.gizmos.every((g) => !/taco|llama|cheat|snack/.test(g.id)));
 
 const fortnitemaresGizmos = parseSpriteResources(
   itemsAsProfileForCheck(
@@ -767,9 +803,9 @@ const fortnitemaresGizmos = parseSpriteResources(
     })
   )
 );
-assert.ok(fortnitemaresGizmos.gizmos.some((g) => g.id === 'snack-o-lantern' && g.quantity === 2));
 assert.ok(fortnitemaresGizmos.gizmos.some((g) => g.id === 'lucky-locator' && g.quantity === 4));
-assert.ok(fortnitemaresGizmos.gizmos.some((g) => g.id === 'cheat-code-locator' && g.quantity === 0));
+assert.ok(fortnitemaresGizmos.gizmos.some((g) => g.id === 'sprite-locator' && g.quantity === 0));
+assert.ok(fortnitemaresGizmos.gizmos.every((g) => !/taco|llama|cheat|snack/.test(g.id)));
 
 const spriteBag = parseMagpieV2Inventory({
   inventory: [
@@ -802,7 +838,8 @@ assert.equal(merged.filter((item) => /Item00/.test(item.templateId ?? '')).lengt
 assert.ok(merged.some((item) => item.templateId === 'OnigiriSprite_Variant_A' && item.quantity === 3));
 const mergedRes = parseSpriteResources(itemsAsProfileForCheck(merged));
 assert.equal(mergedRes.dust, 8765);
-assert.ok(mergedRes.gizmos.some((g) => g.id === 'spicy-taco' && g.quantity === 4));
+assert.ok(mergedRes.gizmos.some((g) => g.id === 'golden-fireworks' && g.quantity === 0));
+assert.ok(mergedRes.gizmos.every((g) => !/taco|llama|cheat|snack/.test(g.id)));
 assert.equal(parseSpriteLevels(itemsAsProfileForCheck(merged))['jonesy:base'], 5);
 assert.equal(parseSpriteLevels(itemsAsProfileForCheck(merged))['onigiri:base'], 2);
 assert.ok(parseSpriteMastered(itemsAsProfileForCheck(merged)).has('jonesy:base'));
